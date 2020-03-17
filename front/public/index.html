@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#0065DB" />
+    <meta
+      name="google-site-verification"
+      content="neOTrE-YKZ9LbgLlaX8UkYN6MJTPlWpeotPQqbrJ19Q"
+    />
+    <meta
+      name="description"
+      content="Zen vous propose une actualisation et un envoi de documents simplifiés."
+    />
+
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+
+    <link rel="stylesheet" href="/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Lato:400,700"
+    />
+    <link rel="stylesheet" href="https://use.typekit.net/xno2nrm.css" />
+
+    <title>Zen, l'actualisation Pôle emploi en toute simplicité</title>
+
+    <!-- Sentry -->
+    <script
+      src="https://cdn.ravenjs.com/3.24.0/raven.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- End Sentry -->
+  </head>
+
+  <body id="body">
+    <noscript>
+      <iframe
+        id="gtm-frame"
+        src="https://www.googletagmanager.com/ns.html?id=GTM-58WMQPJ"
+        height="0"
+        width="0"
+      ></iframe>
+    </noscript>
+    <div id="root"></div>
+  </body>
+
+  <script type="text/javascript">
+    function handleIE() {
+      var ua = navigator.userAgent
+      if (ua.indexOf('MSIE ') > -1 || ua.indexOf('Trident/') > -1) {
+        var html = '<div id="browser-compatibility" style="font-size:16px;width:700px;margin:50px auto;text-align:center;">'
+        html += '<img src="./zen-logo.png" alt="" style="margin-bottom: 15px" />'
+        html += '<h1>Mettez votre navigateur à jour pour profiter pleinement du site zen.pole-emploi.fr !</h1>'
+        html += "<p>Votre navigateur ne permet pas de naviguer de manière sécurisée et dans des conditions d'affichage optimales. Nous vous recommandons d'utiliser l'un des navigateurs suivants :</p>"
+        html += '<div class="browsers" style="margin-bottom: 15px">'
+        html += '<a href="https://www.microsoft.com/en-us/edge" title="Nouvelle fenêtre" target="_blank"><img src="./browsers/edge-chronium.png" alt="Chronium Edge" /></a>'
+        html += '<a href="http://www.mozilla.org/fr/firefox/new/" title="Nouvelle fenêtre" target="_blank" ><img src="./browsers/firefox.png" alt="Firefox" /></a>'
+        html += '<a href="https://www.google.com/intl/fr_fr/chrome/browser/" title="Nouvelle fenêtre" target="_blank" ><img src="./browsers/chrome.png" alt="Chrome"/></a>'
+        html += '</div>'
+
+        var body = document.getElementById('body')
+        body.innerHTML = html
+      }
+    }
+    handleIE()
+  </script>
+</html>

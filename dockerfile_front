@@ -1,0 +1,13 @@
+FROM node:10.15.0
+
+WORKDIR /home/front
+
+# Note: we npm install in prod because build tools are dev dependencies
+CMD (which yarn || npm i -g yarn@1.15.2) && yarn && \
+    if [ "$NODE_ENV" = "production" ] || [ "$NODE_ENV" = "qa" ]; then \
+        yarn run build && \
+        cp -RT build dist && \
+        tail -f /dev/null; \
+    else \
+        yarn start; \
+    fi

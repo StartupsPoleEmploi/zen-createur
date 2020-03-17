@@ -1,0 +1,25 @@
+version: "2.4"
+services:
+  nginx:
+    volumes:
+      - "./nginx/dev.conf:/etc/nginx/conf.d/default.conf"
+      - "./front:/home/front"
+
+  node:
+    environment:
+      - NODE_ENV=development
+      - ZEN_ENV=development
+
+  front:
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_ZEN_ENV=development
+
+  front-admin:
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_ZEN_ENV=development
+
+  db:
+    ports:
+      - "5432:5432"

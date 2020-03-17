@@ -1,0 +1,38 @@
+html {
+  font-size: 62.5%;
+  /* 62.5% of 16px = 10px */
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+body {
+  /* override material-ui baseline default background */
+  background-color: #fff !important;
+}
+#gtm-frame {
+  display: none;
+  visibility: hidden;
+}
+
+/* Overlay for employer demo tooltips */
+.intro-overlay {
+  z-index: 1000002;
+}
+
+.intro-overlay-bg {
+  background: white;
+}
+/*
+  Make tooltip only visible when label is focused
+  (Too difficult to do it with material-ui)
+*/
+.MuiFormControl-root .MuiInputLabel-root:not(.MuiInputLabel-shrink) img {
+  transform: scale(0.75);
+  opacity: 0;
+  margin-left: 0;
+}
+.MuiFormControl-root .MuiInputLabel-shrink img {
+  margin-left: 6px;
+}
+.MuiBackdrop-root {
+  background-color: rgba(238, 238, 238, 0.8) !important;
+￼}

@@ -1,0 +1,75 @@
+version: "2.4"
+services:
+  nginx:
+    image: nginx
+    expose:
+      - "80"
+    volumes:
+      - "./nginx/e2e.conf:/etc/nginx/conf.d/default.conf"
+    environment:
+      - TZ=Europe/Paris
+      - NODE_ENV=test
+    depends_on:
+      - "db"
+      - "front"
+      - "node"
+
+  node:
+    build:
+      context: .
+      dockerfile: dockerfile_back
+    volumes:
+      - "./back:/home/back"
+    depends_on:
+      - "db"
+    environment:
+      - TZ=Europe/Paris
+      - DATABASE_URL=postgres://test-user:test-pass@db:5432/test-db
+      - COOKIE_SECRET=IAmSoSecret
+      - SENTRY_ENV=test
+      - TOKEN_HOST=http://localhost
+      - EMAIL_KEY=key
+      - EMAIL_KEY_SECRET=big_secret
+      - SLACK_WEBHOOK_SU_ZEN_TECH=http://localhost
+      - API_HOST=https://api-r.es-qvr.fr
+      - NODE_ENV=test
+      - ZEN_ENV=test
+
+  front:
+    build:
+      context: .
+      dockerfile: dockerfile_front
+    volumes:
+      - "./front:/home/front"
+    environment:
+      - NODE_ENV=test
+      - REACT_APP_ZEN_ENV=test
+      - TZ=Europe/Paris
+      - BUNDLE_TOKEN_ANALYZER=${BUNDLE_TOKEN_ANALYZER}
+    expose:
+      - "3000"
+
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=test-db
+      - POSTGRES_USER=test-user
+      - POSTGRES_PASSWORD=test-pass
+      - NODE_ENV=test
+      - TZ=Europe/Paris
+
+  e2e:
+    image: cypress/included:3.3.1
+    depends_on:
+      - "nginx"
+      - "db"
+      - "front"
+      - "node"
+    volumes:
+      - ./:/e2e
+    working_dir: /e2e
+    environment:
+      - CYPRESS_baseUrl=http://nginx
+      - NODE_ENV=test
+      - REACT_APP_ZEN_ENV=test
+      - TZ=Europe/Paris
