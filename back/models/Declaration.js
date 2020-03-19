@@ -2,32 +2,32 @@ const {
   BelongsToOneRelation,
   HasManyRelation,
   HasOneRelation,
-  ValidationError,
-} = require('objection')
+  ValidationError
+} = require('objection');
 
-const BaseModel = require('./BaseModel')
+const BaseModel = require('./BaseModel');
 
 class Declaration extends BaseModel {
   static get tableName() {
-    return 'declarations'
+    return 'declarations';
   }
 
   $beforeValidate(jsonSchema, json, opt) {
-    if (!opt.old && opt.patch) return // Custom validation logic only makes sense for objects modified using instance.$query()
+    if (!opt.old && opt.patch) return; // Custom validation logic only makes sense for objects modified using instance.$query()
 
-    const objectToValidate = { ...opt.old, ...json }
-    const { isLookingForJob, jobSearchStopMotive } = objectToValidate
+    const objectToValidate = { ...opt.old, ...json };
+    const { isLookingForJob, jobSearchStopMotive } = objectToValidate;
 
-    const throwValidationError = (label) => {
+    const throwValidationError = label => {
       throw new ValidationError({
         message: label,
-        type: 'DeclarationValidationError',
-      })
-    }
+        type: 'DeclarationValidationError'
+      });
+    };
 
     if (!isLookingForJob) {
       if (!jobSearchStopMotive) {
-        throwValidationError('isLookingForJob - stopJobSearchMotive')
+        throwValidationError('isLookingForJob - stopJobSearchMotive');
       }
     }
   }
@@ -46,6 +46,7 @@ class Declaration extends BaseModel {
         'hasInvalidity',
         'isLookingForJob',
         'hasFinishedDeclaringEmployers',
+        'taxeDue'
       ],
 
       properties: {
@@ -63,28 +64,29 @@ class Declaration extends BaseModel {
         jobSearchStopMotive: { type: ['string', 'null'] },
         hasFinishedDeclaringEmployers: {
           default: false,
-          type: 'boolean',
+          type: 'boolean'
         },
         isFinished: {
           default: false,
-          type: 'boolean',
+          type: 'boolean'
         },
         isEmailSent: {
           default: false,
-          type: 'boolean',
+          type: 'boolean'
         },
         isDocEmailSent: {
           default: false,
-          type: 'boolean',
+          type: 'boolean'
         },
         isCleanedUp: {
           default: false,
-          type: 'boolean',
+          type: 'boolean'
         },
         metadata: { type: 'object' },
         transmittedAt: { type: ['string', 'object', 'null'] },
-      },
-    }
+        taxeDue: { type: ['string', 'null'], enum: ['monthly', 'quaterly'] }
+      }
+    };
   }
 
   // This object defines the relations to other models.
@@ -95,42 +97,42 @@ class Declaration extends BaseModel {
         modelClass: `${__dirname}/User`,
         join: {
           from: 'declarations.userId',
-          to: 'Users.id',
-        },
+          to: 'Users.id'
+        }
       },
       employers: {
         relation: HasManyRelation,
         modelClass: `${__dirname}/Employer`,
         join: {
           from: 'declarations.id',
-          to: 'employers.declarationId',
-        },
+          to: 'employers.declarationId'
+        }
       },
       declarationMonth: {
         relation: BelongsToOneRelation,
         modelClass: `${__dirname}/DeclarationMonth`,
         join: {
           from: 'declarations.monthId',
-          to: 'declaration_months.id',
-        },
+          to: 'declaration_months.id'
+        }
       },
       infos: {
         relation: HasManyRelation,
         modelClass: `${__dirname}/DeclarationInfo`,
         join: {
           from: 'declarations.id',
-          to: 'declaration_infos.declarationId',
-        },
+          to: 'declaration_infos.declarationId'
+        }
       },
       review: {
         relation: HasOneRelation,
         modelClass: `${__dirname}/DeclarationReview`,
         join: {
           from: 'declarations.id',
-          to: 'declaration_reviews.declarationId',
-        },
-      },
-    }
+          to: 'declaration_reviews.declarationId'
+        }
+      }
+    };
   }
 
   // helper function to determine if a declaration needs documents
@@ -141,9 +143,9 @@ class Declaration extends BaseModel {
       'hasSickLeave',
       'hasMaternityLeave',
       'hasRetirement',
-      'hasInvalidity',
-    ].some((hasSomething) => declaration[hasSomething])
+      'hasInvalidity'
+    ].some(hasSomething => declaration[hasSomething]);
   }
 }
 
-module.exports = Declaration
+module.exports = Declaration;
