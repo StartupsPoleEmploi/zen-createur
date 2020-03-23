@@ -64,5 +64,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "babel": {
+    "presets": [
+      "react-app"
+    ]
+  },
+  "main": "index.js",
+  "license": "MIT"
 }
