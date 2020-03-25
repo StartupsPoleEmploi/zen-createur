@@ -164,6 +164,7 @@ export class Actu extends Component {
     validationErrors: [],
     isLoggedOut: false,
     isCreator: null,
+    creatorTaxeRate: null,
     hasEmployers: null,
     infos: [],
     ...formFields.reduce((prev, field) => ({ ...prev, [field]: null }), {}),
@@ -545,6 +546,7 @@ export class Actu extends Component {
         value={this.state.isCreator}
         onAnswer={this.onAnswer}
       />}
+      {this.state.isCreator !== null && <div>Question</div>}
     </StyledList>
   </StyledPaper>
 
@@ -557,6 +559,7 @@ export class Actu extends Component {
       hasMaternityLeave,
       isValidating,
       isCreator,
+      creatorTaxeRate,
       hasEmployers
     } = this.state
 
@@ -574,7 +577,7 @@ export class Actu extends Component {
 
     const useVerticalLayoutForQuestions = this.props.width === muiBreakpoints.xs
 
-    const isCreatorStep = isCreator === null || hasEmployers === null;
+    const isCreatorStep = isCreator === null || hasEmployers === null || creatorTaxeRate === null;
 
     return (
       <StyledActu>
