@@ -163,6 +163,8 @@ export class Actu extends Component {
     consistencyErrors: [],
     validationErrors: [],
     isLoggedOut: false,
+    isCreator: null,
+    hasEmployers: null,
     infos: [],
     ...formFields.reduce((prev, field) => ({ ...prev, [field]: null }), {}),
   }
@@ -529,6 +531,23 @@ export class Actu extends Component {
     return nodes
   }
 
+  renderCreatorQuestions = () => <StyledPaper>
+    <StyledList>
+      <DeclarationQuestion
+        label="Avez-vous travaillé pour un employeur ce mois-ci?"
+        name="hasEmployers"
+        value={this.state.hasEmployers}
+        onAnswer={this.onAnswer}
+      />
+      {this.state.hasEmployers !== null && <DeclarationQuestion
+        label={<>Avez-vous une entreprise ?<br />Ex: Auto-entrepeneur, micro-entreprise, SARL, VDI, etc.</>}
+        name="isCreator"
+        value={this.state.isCreator}
+        onAnswer={this.onAnswer}
+      />}
+    </StyledList>
+  </StyledPaper>
+
   render() {
     const {
       formError,
@@ -537,6 +556,8 @@ export class Actu extends Component {
       hasInternship,
       hasMaternityLeave,
       isValidating,
+      isCreator,
+      hasEmployers
     } = this.state
 
     const { user } = this.props
@@ -553,13 +574,16 @@ export class Actu extends Component {
 
     const useVerticalLayoutForQuestions = this.props.width === muiBreakpoints.xs
 
+    const isCreatorStep = isCreator === null || hasEmployers === null;
+
     return (
       <StyledActu>
         <Title>
           Déclarer ma situation de {activeMonthMoment.format('MMMM')}
         </Title>
 
-        <form>
+        {isCreatorStep && this.renderCreatorQuestions()}
+        {!isCreatorStep && <form>
           <StyledPaper>
             <StyledList>
               <DeclarationQuestion
@@ -605,7 +629,7 @@ export class Actu extends Component {
                   user.gender === USER_GENDER_MALE
                     ? ' ou en congé paternité'
                     : ''
-                } ?`}
+                  } ?`}
                 name="hasSickLeave"
                 value={this.state.hasSickLeave}
                 onAnswer={this.onAnswer}
@@ -737,7 +761,7 @@ export class Actu extends Component {
               </MainActionButton>
             </FinalButtonsContainer>
           </AlwaysVisibleContainer>
-        </form>
+        </form>}
 
         {!this.getFormError() && (
           // Note: only open this dialog if there is no form error (eg. the declaration can be sent)

@@ -53,8 +53,8 @@ export class UserJobCheck extends Component {
     return (
       <StyledUserJobCheck>
         <Typography variant="body1">
-          Si vous êtes créateur / créatrice d'entreprise ou auto-entrepreneur,
-          vous ne pouvez pas effectuer votre actualisation sur Zen.
+          Si vous êtes autre que créateur / créatrice d'entreprise / auto-entrepreneur ou assistante maternelle.<br />
+          Vous ne pouvez pas effectuer votre actualisation sur Zen.
         </Typography>
         <ButtonsContainer style={{ paddingTop: '3rem' }}>
           <MainActionButton primary onClick={this.showDeclarationForm}>
