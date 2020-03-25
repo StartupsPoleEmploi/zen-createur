@@ -747,4 +747,27 @@ router.get('/repartition/agency/csv', async (req, res) => {
   return res.send(csv)
 })
 
+// update user informations
+router.put('/user/:userId', async (req, res, next) => {
+  const informationAutorizedToModify = ['isAuthorized']
+
+  const update = {}
+  informationAutorizedToModify.map((info) => {
+    if (req.body[info] !== undefined) {
+      update[info] = req.body[info]
+    }
+
+    return info;
+  })
+
+  try {
+    const user = await User.query()
+      .findById(req.params.userId)
+      .patch(update)
+    return res.json(user)
+  } catch (err) {
+    next(err)
+  }
+})
+
 module.exports = router

@@ -88,8 +88,8 @@ services:
     build:
       context: .
       dockerfile: dockerfile_front
-    cpus: '0.50'
-    mem_limit: 1G
+    cpus: '2'
+    mem_limit: 2G
     volumes:
       - './front-admin:/home/front'
     expose:

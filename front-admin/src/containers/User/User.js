@@ -6,12 +6,13 @@ import superagent from 'superagent';
 import ZnContent from '../../components/ZnContent';
 import ZnHeader from '../../components/ZnHeader';
 import UserInfos from './components/UserInfos';
+import UserActions from './components/UserActions';
 import UserActivityLogs from './components/UserActivityLogs';
 import UserDeclarations from './components/UserDeclarations';
 
 type Props = {
-  match: Object,
-}
+  match: Object
+};
 
 export default function User({ match }: Props) {
   const [user, setUser] = useState(null);
@@ -23,20 +24,26 @@ export default function User({ match }: Props) {
       .then(({ body }) => setUser(body));
   }, [userId]);
 
-
   return (
     <div>
       <ZnHeader title={`Utilisateurs ${userId}`} />
       <ZnContent>
         {user ? (
           <>
-            <h2 style={{ textAlign: 'center' }}>{`${user.firstName} ${user.lastName}`}</h2>
+            <h2
+              style={{ textAlign: 'center' }}
+            >
+              {`${user.firstName} ${user.lastName}`}
+
+            </h2>
             <UserInfos user={user} />
+            <UserActions user={user} />
             <UserDeclarations declarations={user.declarations} />
             <UserActivityLogs activityLogs={user.activityLogs} />
           </>
-        )
-          : <h3 style={{ textAlign: 'center', margin: '20px' }}>Loading ...</h3>}
+        ) : (
+          <h3 style={{ textAlign: 'center', margin: '20px' }}>Loading ...</h3>
+        )}
       </ZnContent>
     </div>
   );

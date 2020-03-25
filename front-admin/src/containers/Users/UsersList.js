@@ -14,10 +14,11 @@ import { useUsers } from '../../common/contexts/usersCtx';
 export default function UsersList() {
   const history = useHistory();
   const {
-    users, showAuthorizedUsers, setAuthorizedUsers, isLoading,
+    users,
+    showAuthorizedUsers,
+    setAuthorizedUsers,
+    isLoading,
   } = useUsers();
-
-  if (users.length === 0) return null;
 
   const data = users.map((user) => ({
     ...user,
@@ -64,7 +65,10 @@ export default function UsersList() {
       znSort: false,
       znSearchable: false,
       render: (text, record) => (
-        <Button onClick={() => history.push(URLS.USERS.view(record.id))} target="_blank">
+        <Button
+          onClick={() => history.push(URLS.USERS.view(record.id))}
+          target="_blank"
+        >
           <Icon type="eye" style={{ color: 'blue' }} />
         </Button>
       ),
@@ -76,8 +80,13 @@ export default function UsersList() {
       <h1>Liste d'utilisateurs</h1>
 
       <div>
-        <Form.Item label={`Utilisateurs ${showAuthorizedUsers ? '' : ' non '} autorisés`}>
-          <Switch defaultChecked={showAuthorizedUsers} onChange={setAuthorizedUsers} />
+        <Form.Item
+          label={`Utilisateurs ${showAuthorizedUsers ? '' : ' non '} autorisés`}
+        >
+          <Switch
+            defaultChecked={showAuthorizedUsers}
+            onChange={setAuthorizedUsers}
+          />
         </Form.Item>
       </div>
       <ZnTable
@@ -89,7 +98,12 @@ export default function UsersList() {
         loading={isLoading}
         title={() => (
           <Row type="flex" justify="end">
-            <Button type="primary" href={`/zen-admin-api/users/csv?authorized=${showAuthorizedUsers ? 'true' : 'false'}`}>
+            <Button
+              type="primary"
+              href={`/zen-admin-api/users/csv?authorized=${
+                showAuthorizedUsers ? 'true' : 'false'
+              }`}
+            >
               <Icon type="download" />
               {' '}
               {`Utilisateurs ${showAuthorizedUsers ? '' : 'non'} autorisés`}
