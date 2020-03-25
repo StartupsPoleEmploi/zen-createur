@@ -4,7 +4,11 @@ import superagent from 'superagent';
 
 async function fetchUsers(showAuthorizedUsers) {
   return superagent
-    .get(`/zen-admin-api/users?authorized=${showAuthorizedUsers ? 'true' : 'false'}`)
+    .get(
+      `/zen-admin-api/users?authorized=${
+        showAuthorizedUsers ? 'true' : 'false'
+      }`,
+    )
     .then(({ body }) => body);
 }
 
@@ -36,7 +40,6 @@ export function UsersProvider(props) {
     />
   );
 }
-
 
 export const useUsers = () => {
   const context = React.useContext(UsersContext);

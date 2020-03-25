@@ -8,7 +8,8 @@ import ZnTable from '../../components/ZnTable';
 
 const actionsLabels = {
   VALIDATE_DECLARATION: 'Étape 1 (déclaration initiale) terminée',
-  VALIDATE_EMPLOYERS: 'Étape 2 (employeurs, salaires et heures travaillée) terminée',
+  VALIDATE_EMPLOYERS:
+    'Étape 2 (employeurs, salaires et heures travaillée) terminée',
   VALIDATE_FILES: 'Étape 3 (envoi des fichiers) terminée',
   TRANSMIT_FILE: 'Fichier transmis sur pole-emploi.fr',
   TRANSMIT_DECLARATION: 'Déclaration transmise sur pole-emploi.fr',

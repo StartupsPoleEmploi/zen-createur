@@ -20,7 +20,7 @@ const { peConnectScope, redirectUri } = config
 const tokenConfig = {
   redirect_uri: redirectUri,
   realm: REALM,
-  scope: peConnectScope
+  scope: peConnectScope,
 }
 
 router.get('/', (req, res, next) => {
@@ -87,12 +87,19 @@ router.get('/callback', async (req, res) => {
         // first login, need to set registerAt
         if (config.get('shouldSendTransactionalEmails') && dbUser.email) {
           // Note: We do not wait for Mailjet to answer to send data back to the user
-          mailjet.addUser(dbUser).then(() => {
-            if (dbUser.isAuthorized) return sendSubscriptionConfirmation(dbUser);
-          }).catch((e) => {
-            winston.error('[Login] error when add user to mailjet and send it the confirmation email', e);
-          })
-          
+          mailjet
+            .addUser(dbUser)
+            .then(() => {
+              if (dbUser.isAuthorized) {
+                return sendSubscriptionConfirmation(dbUser)
+              }
+            })
+            .catch((e) => {
+              winston.error(
+                '[Login] error when add user to mailjet and send it the confirmation email',
+                e,
+              )
+            })
         }
         dbUser = await dbUser
           .$query()
@@ -103,9 +110,7 @@ router.get('/callback', async (req, res) => {
 
     req.session.user = {
       ...pick(dbUser, ['id', 'firstName', 'lastName', 'email', 'gender']),
-      isAuthorized: config.authorizeAllUsers // For test environments
-        ? true
-        : dbUser.isAuthorized,
+      isAuthorized: dbUser.isAuthorized,
       isBlocked: dbUser.isBlocked,
       canSendDeclaration,
       hasAlreadySentDeclaration,
