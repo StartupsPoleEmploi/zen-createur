@@ -45,3 +45,9 @@ export const jobSearchEndMotive = {
 }
 
 export const MAX_PDF_PAGE = 5
+
+export const CREATORTAXRATE = {
+  MONTHLY: 'monthly',
+  QUARTELY: 'quartely',
+  YEARLY: 'yearly'
+}

@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import YesNoRadioGroup from '../Generic/YesNoRadioGroup'
 import { mobileBreakpoint } from '../../constants'
 
-const Container = styled.li`
+const Container = styled.div`
   padding: 1rem;
 `
 
@@ -41,7 +41,7 @@ const StyledFormControl = styled(FormControl)`
 export class DeclarationQuestion extends Component {
   static propTypes = {
     children: PropTypes.node,
-    label: PropTypes.string.isRequired,
+    label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
     name: PropTypes.string.isRequired,
     onAnswer: PropTypes.func.isRequired,
     value: PropTypes.bool,
