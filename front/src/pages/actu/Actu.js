@@ -2,7 +2,6 @@
 import Button from '@material-ui/core/Button'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import List from '@material-ui/core/List'
-import Paper from '@material-ui/core/Paper'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import Typography from '@material-ui/core/Typography'
@@ -29,6 +28,8 @@ import {
   jobSearchEndMotive,
   muiBreakpoints,
   ActuTypes as types,
+  mobileBreakpoint,
+  CREATORTAXRATE,
 } from '../../constants'
 import ScrollToButton from '../../components/Generic/ScrollToButton'
 
@@ -53,7 +54,7 @@ const StyledActu = styled.div`
   margin: 0 auto;
 `
 
-const StyledPaper = styled(Paper)`
+const StyledPaper = styled.div`
   width: 100%;
   margin: 4rem auto;
 `
@@ -85,13 +86,14 @@ const FinalButtonsContainer = styled.div`
   justify-content: space-around;
 `
 
-const StyledList = styled(List)`
-  && {
-    padding: 0;
-  }
-  & > *:nth-child(2n) {
-    /* primary color with 10% opacity */
-    background: rgba(0, 101, 219, 0.1);
+const StyledList = styled.div`
+  > * {
+    border-bottom: 1px solid #eeeeee;
+    padding: 1.5rem 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 `
 
@@ -111,6 +113,16 @@ const AddElementButton = styled(Button).attrs({
 })`
   && {
     background: #fff;
+  }
+`
+
+const QuestionLabel = styled(Typography)`
+  && {
+    flex-shrink: 1;
+
+    @media (max-width: ${mobileBreakpoint}) {
+      margin-bottom: 0.5rem;
+    }
   }
 `
 
@@ -166,6 +178,7 @@ export class Actu extends Component {
     isCreator: null,
     creatorTaxeRate: null,
     hasEmployers: null,
+    completeCreatorQuestion: false,
     infos: [],
     ...formFields.reduce((prev, field) => ({ ...prev, [field]: null }), {}),
   }
@@ -532,23 +545,67 @@ export class Actu extends Component {
     return nodes
   }
 
-  renderCreatorQuestions = () => <StyledPaper>
-    <StyledList>
-      <DeclarationQuestion
-        label="Avez-vous travaillé pour un employeur ce mois-ci?"
-        name="hasEmployers"
-        value={this.state.hasEmployers}
-        onAnswer={this.onAnswer}
-      />
-      {this.state.hasEmployers !== null && <DeclarationQuestion
-        label={<>Avez-vous une entreprise ?<br />Ex: Auto-entrepeneur, micro-entreprise, SARL, VDI, etc.</>}
-        name="isCreator"
-        value={this.state.isCreator}
-        onAnswer={this.onAnswer}
-      />}
-      {this.state.isCreator !== null && <div>Question</div>}
-    </StyledList>
-  </StyledPaper>
+  validateCreatorQuestions = () => {
+    this.setState({ completeCreatorQuestion: true })
+  }
+
+  renderCreatorQuestions = () => {
+    const isValidating = this.state.hasEmployers !== null && this.state.isCreator !== null && ((this.state.isCreator === true && this.state.creatorTaxeRate !== null) || this.state.isCreator === false);
+
+    return (<StyledPaper>
+      <StyledList>
+        <DeclarationQuestion
+          label="Avez-vous travaillé pour un employeur ce mois-ci?"
+          name="hasEmployers"
+          value={this.state.hasEmployers}
+          onAnswer={this.onAnswer}
+        />
+        <DeclarationQuestion
+          label={<>Avez-vous une entreprise ?<br />Ex: Auto-entrepeneur, micro-entreprise, SARL, VDI, etc.</>}
+          name="isCreator"
+          value={this.state.isCreator}
+          onAnswer={this.onAnswer}
+          style={{ visibility: this.state.hasEmployers === null ? 'hidden' : null }}
+        />
+        <div
+          style={{ marginTop: '1rem', marginLeft: '1rem', visibility: this.state.isCreator === true ? null : 'hidden' }}>
+          <QuestionLabel>Pour votre entreprise, vous déclarez votre chiffre d'affaire à l'URSSAF,<br />aux impôts...</QuestionLabel>
+          <RadioGroup
+            aria-label="Pour votre entreprise, vous déclarez votre chiffre d'affaire à l'URSSAF, aux impôts..."
+            name="creatorTaxeRate"
+            onChange={(val) => this.setState({ creatorTaxeRate: val.target.value })}
+            style={{ marginTop: '1rem' }}
+          >
+            <FormControlLabel
+              value={CREATORTAXRATE.MONTHLY}
+              control={<Radio color="primary" />}
+              label="Tous les mois"
+            />
+            <FormControlLabel
+              value={CREATORTAXRATE.QUARTELY}
+              control={<Radio color="primary" />}
+              label="Tous les trimestres"
+            />
+            <FormControlLabel
+              value={CREATORTAXRATE.YEARLY}
+              control={<Radio color="primary" />}
+              label="Tous les ans"
+            />
+          </RadioGroup>
+        </div>
+        <FinalButtonsContainer>
+          <MainActionButton
+            primary
+            onClick={this.validateCreatorQuestions}
+            disabled={!isValidating}
+          >
+            Suivant
+                <StyledArrowRightAlt />
+          </MainActionButton>
+        </FinalButtonsContainer>
+      </StyledList>
+    </StyledPaper>)
+  }
 
   render() {
     const {
@@ -558,9 +615,7 @@ export class Actu extends Component {
       hasInternship,
       hasMaternityLeave,
       isValidating,
-      isCreator,
-      creatorTaxeRate,
-      hasEmployers
+      completeCreatorQuestion
     } = this.state
 
     const { user } = this.props
@@ -577,16 +632,14 @@ export class Actu extends Component {
 
     const useVerticalLayoutForQuestions = this.props.width === muiBreakpoints.xs
 
-    const isCreatorStep = isCreator === null || hasEmployers === null || creatorTaxeRate === null;
-
     return (
       <StyledActu>
         <Title>
           Déclarer ma situation de {activeMonthMoment.format('MMMM')}
         </Title>
 
-        {isCreatorStep && this.renderCreatorQuestions()}
-        {!isCreatorStep && <form>
+        {!completeCreatorQuestion && this.renderCreatorQuestions()}
+        {completeCreatorQuestion && <form>
           <StyledPaper>
             <StyledList>
               <DeclarationQuestion

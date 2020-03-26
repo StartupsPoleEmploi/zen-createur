@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import YesNoRadioGroup from '../Generic/YesNoRadioGroup'
 import { mobileBreakpoint } from '../../constants'
 
-const Container = styled.li`
+const Container = styled.div`
   padding: 1rem;
 `
 

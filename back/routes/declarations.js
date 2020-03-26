@@ -108,8 +108,8 @@ router.post('/remove-file-page', (req, res, next) => {
 })
 
 router.get('/', (req, res, next) => {
- if ('active' in req.query && req.query.active !== 'true') return res.status(400).json('Bad request')
- if ('last' in req.query && req.query.last !== 'true') return res.status(400).json('Bad request')
+  if ('active' in req.query && req.query.active !== 'true') return res.status(400).json('Bad request')
+  if ('last' in req.query && req.query.last !== 'true') return res.status(400).json('Bad request')
 
   if (
     'last' in req.query ||
@@ -140,8 +140,8 @@ router.get('/', (req, res, next) => {
   const limit = Number.isNaN(queryLimit)
     ? MAX_MONTHS_TO_FETCH
     : queryLimit < MAX_MONTHS_TO_FETCH
-    ? queryLimit
-    : MAX_MONTHS_TO_FETCH
+      ? queryLimit
+      : MAX_MONTHS_TO_FETCH
 
   return Declaration.query()
     .eager(eagerDeclarationString)
@@ -159,6 +159,7 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
       ...req.body,
       userId: req.session.user.id,
       monthId: req.activeMonth.id,
+      taxeDue: req.body.creatorTaxeRate || null
     },
     'id',
   )
@@ -237,18 +238,18 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
             Promise.all([
               savedDeclaration,
               !declaration &&
-                ActivityLog.query(trx).insert({
-                  userId: req.session.user.id,
-                  action: ActivityLog.actions.VALIDATE_DECLARATION,
-                }),
+              ActivityLog.query(trx).insert({
+                userId: req.session.user.id,
+                action: ActivityLog.actions.VALIDATE_DECLARATION,
+              }),
               !declarationData.hasWorked &&
-                ActivityLog.query(trx).insert({
-                  userId: req.session.user.id,
-                  action: ActivityLog.actions.VALIDATE_EMPLOYERS,
-                  metadata: JSON.stringify({
-                    declarationId: savedDeclaration.id,
-                  }),
+              ActivityLog.query(trx).insert({
+                userId: req.session.user.id,
+                action: ActivityLog.actions.VALIDATE_EMPLOYERS,
+                metadata: JSON.stringify({
+                  declarationId: savedDeclaration.id,
                 }),
+              }),
             ]),
           ),
         )
@@ -404,17 +405,17 @@ router.post(
 
         let documentFileObj = req.body.skip
           ? {
-              // Used in case the user sent his file by another means.
-              file: null,
-              originalFileName: null,
-              isTransmitted: true,
-            }
+            // Used in case the user sent his file by another means.
+            file: null,
+            originalFileName: null,
+            isTransmitted: true,
+          }
           : {
-              file: req.file.filename,
-              originalFileName: isAddingFile
-                ? declarationInfo.originalFileName
-                : req.file.originalname,
-            }
+            file: req.file.filename,
+            originalFileName: isAddingFile
+              ? declarationInfo.originalFileName
+              : req.file.originalname,
+          }
 
         if (!req.body.skip) {
           const existingDocumentIsPDF =
