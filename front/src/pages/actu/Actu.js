@@ -190,7 +190,6 @@ export class Actu extends Component {
     isLoggedOut: false,
     isCreator: null,
     creatorTaxeRate: null,
-    hasEmployers: null,
     completeCreatorQuestion: false,
     infos: [],
     ...formFields.reduce((prev, field) => ({ ...prev, [field]: null }), {}),
@@ -563,15 +562,15 @@ export class Actu extends Component {
   }
 
   renderCreatorQuestions = () => {
-    const isValidating = this.state.hasEmployers !== null && this.state.isCreator !== null && ((this.state.isCreator === true && this.state.creatorTaxeRate !== null) || this.state.isCreator === false);
+    const isValidating = this.state.hasWorked !== null && this.state.isCreator !== null && ((this.state.isCreator === true && this.state.creatorTaxeRate !== null) || this.state.isCreator === false);
     const helperText = <>Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au mois ou au trimestre. En cas de doute, vous pouvez consulter votre compte en ligne sur le site <u>Autoentrepreneur.urssaf.fr.</u></>;
 
     return (<StyledPaper>
       <StyledList>
         <DeclarationQuestion
           label="Avez-vous travaillé pour un employeur ce mois-ci?"
-          name="hasEmployers"
-          value={this.state.hasEmployers}
+          name="hasWorked"
+          value={this.state.hasWorked}
           onAnswer={this.onAnswer}
         />
         <DeclarationQuestion
@@ -579,7 +578,7 @@ export class Actu extends Component {
           name="isCreator"
           value={this.state.isCreator}
           onAnswer={this.onAnswer}
-          style={{ visibility: this.state.hasEmployers === null ? 'hidden' : null }}
+          style={{ visibility: this.state.hasWorked === null ? 'hidden' : null }}
         />
         <div
           style={{ marginTop: '1rem', marginLeft: '1rem', visibility: this.state.isCreator === true ? null : 'hidden' }}>
@@ -661,13 +660,6 @@ export class Actu extends Component {
         {completeCreatorQuestion && <form>
           <StyledPaper>
             <StyledList>
-              <DeclarationQuestion
-                verticalLayout={useVerticalLayoutForQuestions}
-                label="Avez-vous travaillé ?"
-                name="hasWorked"
-                value={this.state.hasWorked}
-                onAnswer={this.onAnswer}
-              />
               <DeclarationQuestion
                 verticalLayout={useVerticalLayoutForQuestions}
                 label="Avez-vous été en formation ?"
