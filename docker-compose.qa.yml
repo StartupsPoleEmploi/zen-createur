@@ -1,26 +1,16 @@
-version: "2.4"
+version: '2.4'
 services:
   nginx:
+    build:
+      context: .
+      dockerfile: ./dockerfile_nginx_prod
+      args:
+        ZEN_ENV: ${ZEN_ENV}
     volumes:
-      - "./nginx/qa.conf:/etc/nginx/conf.d/default.conf"
+      - '/var/log/nginx:/var/log/nginx'
 
-  node:
+  api:
+    volumes:
+      - '/var/log/zen-createur_api:/var/log/zen-createur_api'
     environment:
-      - NODE_ENV=qa
-      - REACT_APP_ZEN_ENV=qa
-    cpus: '1.5'
-    mem_limit: 2G
-
-  front:
-    environment:
-      - NODE_ENV=qa
-      - REACT_APP_ZEN_ENV=qa
-
-  front-admin:
-    environment:
-      - NODE_ENV=qa
-      - REACT_APP_ZEN_ENV=qa
-
-  db:
-    cpus: '1.5'
-    mem_limit: 2G
+      - WINSTON_FILE_FOLDER=/var/log/zen-createur_api

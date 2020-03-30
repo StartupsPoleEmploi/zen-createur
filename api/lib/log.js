@@ -20,7 +20,7 @@ if (WINSTON_ENABLE_LOG === 'true') {
   }))
 }
 
-if (WINSTON_ENABLE_FILE === 'true') {
+if (WINSTON_ENABLE_FILE === 'true' && WINSTON_FILE_FOLDER) {
   winston.add(new winston.transports.File({
     level: 'error',
     filename: `${WINSTON_FILE_FOLDER}/error.log`,

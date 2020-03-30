@@ -32,7 +32,7 @@ const isTestEnv = process.env.NODE_ENV === 'test'
 const isProd = process.env.NODE_ENV === 'production'
 
 if (!isDevEnv) {
-  winston.info('Starting back')
+  winston.info('Starting api')
 }
 if (
   isProd &&

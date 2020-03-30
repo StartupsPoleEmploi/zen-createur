@@ -12,14 +12,14 @@ services:
     depends_on:
       - "db"
       - "front"
-      - "node"
+      - "api"
 
-  node:
+  api:
     build:
       context: .
-      dockerfile: dockerfile_back
+      dockerfile: ./dockerfile_api
     volumes:
-      - "./back:/home/back"
+      - "./api:/home/api"
     depends_on:
       - "db"
     environment:
@@ -38,7 +38,7 @@ services:
   front:
     build:
       context: .
-      dockerfile: dockerfile_front
+      dockerfile: ./dockerfile_front
     volumes:
       - "./front:/home/front"
     environment:
@@ -64,9 +64,9 @@ services:
       - "nginx"
       - "db"
       - "front"
-      - "node"
+      - "api"
     volumes:
-      - ./:/e2e
+      - ../:/e2e
     working_dir: /e2e
     environment:
       - CYPRESS_baseUrl=http://nginx

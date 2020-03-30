@@ -1,65 +1,40 @@
 version: '2.4'
 services:
-  node:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./dockerfile_nginx_prod
+      args:
+        ZEN_ENV: ${ZEN_ENV}
+    volumes:
+      - '/var/log/nginx:/var/log/nginx'
+
+  api:
     volumes:
       - '/mnt/datalakepe/:/mnt/datalakepe/'
+      - '/var/log/zen-createur_api:/var/log/zen-createur_api'
     environment:
-      - NODE_ENV=production
-      - ZEN_ENV=production
-
-  front:
-    environment:
-      - NODE_ENV=production
-      - REACT_APP_ZEN_ENV=production
-      - NPM_CONFIG_PRODUCTION=false
-      - YARN_PRODUCTION=false
-
-  front-admin:
-    environment:
-      - NODE_ENV=production
-      - REACT_APP_ZEN_ENV=production
-      - NPM_CONFIG_PRODUCTION=false
-      - YARN_PRODUCTION=false
+      - WINSTON_FILE_FOLDER=/var/log/zen-createur_api
 
   cron:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: dockerfile_cron
+      dockerfile: ./dockerfile_cron
+      args:
+        NODE_ENV: ${NODE_ENV}
     cpus: '4.0'
     mem_limit: 8G
     volumes:
-      - './back:/home/back'
       - '/mnt/datalakepe/:/mnt/datalakepe/'
+      - '/var/log/zen-createur_cron:/var/log/zen-createur_cron'
     networks:
-      zen_createur_network:
-        ipv4_address: 192.168.0.85
+      zc_network:
+        ipv4_address: 172.0.0.101
     depends_on:
       - 'db'
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - CLIENT_OAUTH_ID=${CLIENT_OAUTH_ID}
-      - CLIENT_OAUTH_SECRET=${CLIENT_OAUTH_SECRET}
-      - API_HOST=${API_HOST}
-      - TOKEN_HOST=${TOKEN_HOST}
-      - APP_HOST=${APP_HOST}
-      - COOKIE_SECRET=${COOKIE_SECRET}
-      - AUTH_REDIRECT_URI=${AUTH_REDIRECT_URI}
-      - SENTRY_ENV=${SENTRY_ENV}
-      - SENTRY_URL=${SENTRY_URL}
-      - EMAIL_KEY=${EMAIL_KEY}
-      - EMAIL_KEY_SECRET=${EMAIL_KEY_SECRET}
       - TZ=Europe/Paris
-      - SLACK_WEBHOOK_SU_ZEN=${SLACK_WEBHOOK_SU_ZEN}
-      - SLACK_WEBHOOK_SU_ZEN_TECH=${SLACK_WEBHOOK_SU_ZEN_TECH}
-      - SEND_CAMPAIGN_EMAILS=${SEND_CAMPAIGN_EMAILS}
-      - SEND_TRANSACTIONAL_EMAILS=${SEND_TRANSACTIONAL_EMAILS}
-      - AUTHORIZE_ALL_USERS=${AUTHORIZE_ALL_USERS}
-      - WINSTON_ENABLE_SLACK=${WINSTON_ENABLE_SLACK}
-      - WINSTON_ENABLE_LOG=${WINSTON_ENABLE_LOG}
-      - WINSTON_ENABLE_FILE=${WINSTON_ENABLE_FILE}
-      - WINSTON_FILE_FOLDER=/var/log/zen_cron
-      - NODE_ENV=production
-      - REACT_APP_ZEN_ENV=production
-      - NPM_CONFIG_PRODUCTION=false
-      - YARN_PRODUCTION=false
+      - WINSTON_FILE_FOLDER=/var/log/zen-createur_cron

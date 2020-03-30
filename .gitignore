@@ -1,4 +1,7 @@
 /.env
+/.env.qa
+/.env.production
+script/.env
 node_modules
 nginx/entrust-zen.pole-emploi.fr-key.pem
 nginx/.htpasswd

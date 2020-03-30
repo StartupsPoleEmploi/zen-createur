@@ -26,7 +26,7 @@ Production containers only open port 443 & 80
 ## Development help
 
 - Pressing Escape on the development environment will show a modal allowing to edit the contents of `req.session.user`, allowing for quick user change
-- Adding a `local-development.js` file in `back/config` will allow disabling calls to pe-api, resulting in less dependencies and easier development in case of partner qa environment failures. Template :
+- Adding a `local-development.js` file in `api/config` will allow disabling calls to pe-api, resulting in less dependencies and easier development in case of partner qa environment failures. Template :
 
 ```js
 module.exports = {
