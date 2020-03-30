@@ -15,6 +15,9 @@ import { connect } from 'react-redux'
 import store from 'store2'
 import styled from 'styled-components'
 import ArrowRightAlt from '@material-ui/icons/ArrowRightAlt'
+import Box from '@material-ui/core/Box';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
+
 
 import { postDeclaration as postDeclarationAction } from '../../redux/actions/declarations'
 import DeclarationDialogsHandler from '../../components/Actu/DeclarationDialogs/DeclarationDialogsHandler'
@@ -30,8 +33,10 @@ import {
   ActuTypes as types,
   mobileBreakpoint,
   CREATORTAXRATE,
+  helpColor,
 } from '../../constants'
 import ScrollToButton from '../../components/Generic/ScrollToButton'
+import TooltipOnFocus from '../../components/Generic/TooltipOnFocus'
 
 const USER_GENDER_MALE = 'male'
 const MAX_DATE = new Date('2029-12-31T00:00:00.000Z')
@@ -123,6 +128,14 @@ const QuestionLabel = styled(Typography)`
     @media (max-width: ${mobileBreakpoint}) {
       margin-bottom: 0.5rem;
     }
+  }
+`
+
+const InfoImg = styled(InfoOutlinedIcon)`
+  && {
+    color: ${helpColor};
+    vertical-align: sub;
+    margin-left: 0.5rem;
   }
 `
 
@@ -551,6 +564,7 @@ export class Actu extends Component {
 
   renderCreatorQuestions = () => {
     const isValidating = this.state.hasEmployers !== null && this.state.isCreator !== null && ((this.state.isCreator === true && this.state.creatorTaxeRate !== null) || this.state.isCreator === false);
+    const helperText = <>Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au mois ou au trimestre. En cas de doute, vous pouvez consulter votre compte en ligne sur le site <u>Autoentrepreneur.urssaf.fr.</u></>;
 
     return (<StyledPaper>
       <StyledList>
@@ -576,21 +590,26 @@ export class Actu extends Component {
             onChange={(val) => this.setState({ creatorTaxeRate: val.target.value })}
             style={{ marginTop: '1rem' }}
           >
-            <FormControlLabel
-              value={CREATORTAXRATE.MONTHLY}
-              control={<Radio color="primary" />}
-              label="Tous les mois"
-            />
-            <FormControlLabel
-              value={CREATORTAXRATE.QUARTELY}
-              control={<Radio color="primary" />}
-              label="Tous les trimestres"
-            />
-            <FormControlLabel
-              value={CREATORTAXRATE.YEARLY}
-              control={<Radio color="primary" />}
-              label="Tous les ans"
-            />
+            <Box display="flex" alignItems="center">
+              <Box flex={1}><FormControlLabel
+                value={CREATORTAXRATE.MONTHLY}
+                control={<Radio color="primary" />}
+                label="Tous les mois"
+              /></Box>
+              <TooltipOnFocus content={helperText}>
+                <InfoImg />
+              </TooltipOnFocus>
+            </Box>
+            <Box display="flex" alignItems="center">
+              <Box flex={1}><FormControlLabel
+                value={CREATORTAXRATE.QUARTELY}
+                control={<Radio color="primary" />}
+                label="Tous les trimestres"
+              /></Box>
+              <TooltipOnFocus content={helperText}>
+                <InfoImg />
+              </TooltipOnFocus>
+            </Box>
           </RadioGroup>
         </div>
         <FinalButtonsContainer>
