@@ -15,6 +15,7 @@ import { connect } from 'react-redux'
 import store from 'store2'
 import styled from 'styled-components'
 import ArrowRightAlt from '@material-ui/icons/ArrowRightAlt'
+import ArrowBack from '@material-ui/icons/ArrowBack'
 import Box from '@material-ui/core/Box';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
 
@@ -110,6 +111,10 @@ const AddElementButtonContainer = styled.div`
 
 const StyledArrowRightAlt = styled(ArrowRightAlt)`
   margin-left: 1rem;
+`
+
+const StyledArrowBack = styled(ArrowBack)`
+  margin-right: 1rem;
 `
 
 const AddElementButton = styled(Button).attrs({
@@ -557,8 +562,8 @@ export class Actu extends Component {
     return nodes
   }
 
-  validateCreatorQuestions = () => {
-    this.setState({ completeCreatorQuestion: true })
+  validateCreatorQuestions = (state = true) => {
+    this.setState({ completeCreatorQuestion: state })
   }
 
   renderCreatorQuestions = () => {
@@ -818,6 +823,14 @@ export class Actu extends Component {
           <AlwaysVisibleContainer>
             {formError && <ErrorMessage>{formError}</ErrorMessage>}
             <FinalButtonsContainer>
+              <MainActionButton
+                primary={false}
+                onClick={() => this.validateCreatorQuestions(false)}
+              >
+                <StyledArrowBack />
+                Retour
+              </MainActionButton>
+
               <MainActionButton
                 primary
                 onClick={this.state.hasWorked ? this.onSubmit : this.openDialog}
