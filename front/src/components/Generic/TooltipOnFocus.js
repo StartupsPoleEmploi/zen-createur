@@ -111,6 +111,7 @@ class TooltipOnFocus extends Component {
     super(props)
     this.state = {
       arrowRef: null,
+      tooltipIsOpen: false,
     }
   }
 
@@ -119,6 +120,10 @@ class TooltipOnFocus extends Component {
       arrowRef,
     })
 
+  setTooltipIsOpen = state => {
+    this.setState({ tooltipIsOpen: state })
+  }
+
   render() {
     const { children, classes, content, tooltipId, ...props } = this.props
 
@@ -126,8 +131,9 @@ class TooltipOnFocus extends Component {
       <Tooltip
         id={tooltipId}
         placement="bottom"
-        aria-hidden="false"
-        enterTouchDelay={0}
+        open={this.state.tooltipIsOpen}
+        // onOpen={() => this.setTooltipIsOpen(true)}
+        onClose={() => this.setTooltipIsOpen(false)}
         title={
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -153,7 +159,11 @@ class TooltipOnFocus extends Component {
         }}
         {...props}
       >
-        {children}
+        {/* eslint-disable */}
+        <div onClick={() => this.setTooltipIsOpen(!this.state.tooltipIsOpen)}>
+          {children}
+        </div>
+        {/* eslint-enable */}
       </Tooltip>
     )
   }

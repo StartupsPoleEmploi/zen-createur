@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import Check from '@material-ui/icons/Check'
 
-import RestoreIcon from '@material-ui/icons/Restore'
+// import RestoreIcon from '@material-ui/icons/Restore'
 import HomeOutlined from '@material-ui/icons/HomeOutlined'
 import DnsOutlined from '@material-ui/icons/DnsOutlined'
 import DescriptionOutlined from '@material-ui/icons/DescriptionOutlined'
@@ -30,7 +30,7 @@ const [
   employersRoute,
   filesRoute,
   dashboardRoute,
-  historyRoute,
+  // historyRoute,
 ] = stepperRoutes
 const routesWithDisplayedNav = stepperRoutes.concat('/thanks')
 
@@ -180,7 +180,7 @@ const ListIcon = styled(DnsOutlined)`
   }
 `
 
-const RestoreIconImg = styled(RestoreIcon)`
+/* const RestoreIconImg = styled(RestoreIcon)`
   width: 2.5rem;
   margin-right: 1rem;
   color: #1e2c59;
@@ -188,7 +188,7 @@ const RestoreIconImg = styled(RestoreIcon)`
   @media (max-width: ${mobileBreakpoint}) {
     margin-right: 0;
   }
-`
+` */
 
 const CheckIcon = styled(Check)`
   width: 2.5rem;
@@ -311,7 +311,7 @@ export const NavLogin = ({
           onClick={() => push(filesRoute)}
           role="link"
         />
-        <StyledTab
+        {/* <StyledTab
           label={
             <>
               <RestoreIconImg alt="" />
@@ -322,7 +322,7 @@ export const NavLogin = ({
           disabled={!isFilesServiceUp}
           onClick={() => push(historyRoute)}
           role="link"
-        />
+        /> */}
       </StyledTabs>
     )
   }
@@ -349,11 +349,11 @@ export const NavLogin = ({
             label={
               <>
                 {activeDeclaration &&
-                activeDeclaration.hasFinishedDeclaringEmployers ? (
-                  <CheckIcon />
-                ) : (
-                  <ListIcon alt="" />
-                )}
+                  activeDeclaration.hasFinishedDeclaringEmployers ? (
+                    <CheckIcon />
+                  ) : (
+                    <ListIcon alt="" />
+                  )}
                 Mon actualisation
               </>
             }
@@ -410,7 +410,7 @@ export const NavLogin = ({
           isActive={pathname === filesRoute && isFilesServiceUp}
         />
 
-        <StepperItem
+        {/* <StepperItem
           label={
             <>
               <RestoreIconImg alt="" /> Mon historique
@@ -419,7 +419,7 @@ export const NavLogin = ({
           link={historyRoute}
           shouldActivateLink={!user.needOnBoarding}
           isActive={pathname === historyRoute && isFilesServiceUp}
-        />
+        /> */}
       </UlStepper>
     </Nav>
   )

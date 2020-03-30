@@ -15,6 +15,10 @@ import { connect } from 'react-redux'
 import store from 'store2'
 import styled from 'styled-components'
 import ArrowRightAlt from '@material-ui/icons/ArrowRightAlt'
+import ArrowBack from '@material-ui/icons/ArrowBack'
+import Box from '@material-ui/core/Box';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
+
 
 import { postDeclaration as postDeclarationAction } from '../../redux/actions/declarations'
 import DeclarationDialogsHandler from '../../components/Actu/DeclarationDialogs/DeclarationDialogsHandler'
@@ -30,8 +34,10 @@ import {
   ActuTypes as types,
   mobileBreakpoint,
   CREATORTAXRATE,
+  helpColor,
 } from '../../constants'
 import ScrollToButton from '../../components/Generic/ScrollToButton'
+import TooltipOnFocus from '../../components/Generic/TooltipOnFocus'
 
 const USER_GENDER_MALE = 'male'
 const MAX_DATE = new Date('2029-12-31T00:00:00.000Z')
@@ -107,6 +113,10 @@ const StyledArrowRightAlt = styled(ArrowRightAlt)`
   margin-left: 1rem;
 `
 
+const StyledArrowBack = styled(ArrowBack)`
+  margin-right: 1rem;
+`
+
 const AddElementButton = styled(Button).attrs({
   variant: 'outlined',
   color: 'primary',
@@ -123,6 +133,14 @@ const QuestionLabel = styled(Typography)`
     @media (max-width: ${mobileBreakpoint}) {
       margin-bottom: 0.5rem;
     }
+  }
+`
+
+const InfoImg = styled(InfoOutlinedIcon)`
+  && {
+    color: ${helpColor};
+    vertical-align: sub;
+    margin-left: 0.5rem;
   }
 `
 
@@ -177,7 +195,6 @@ export class Actu extends Component {
     isLoggedOut: false,
     isCreator: null,
     creatorTaxeRate: null,
-    hasEmployers: null,
     completeCreatorQuestion: false,
     infos: [],
     ...formFields.reduce((prev, field) => ({ ...prev, [field]: null }), {}),
@@ -545,19 +562,20 @@ export class Actu extends Component {
     return nodes
   }
 
-  validateCreatorQuestions = () => {
-    this.setState({ completeCreatorQuestion: true })
+  validateCreatorQuestions = (state = true) => {
+    this.setState({ completeCreatorQuestion: state })
   }
 
   renderCreatorQuestions = () => {
-    const isValidating = this.state.hasEmployers !== null && this.state.isCreator !== null && ((this.state.isCreator === true && this.state.creatorTaxeRate !== null) || this.state.isCreator === false);
+    const isValidating = this.state.hasWorked !== null && this.state.isCreator !== null && ((this.state.isCreator === true && this.state.creatorTaxeRate !== null) || this.state.isCreator === false);
+    const helperText = <>Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au mois ou au trimestre. En cas de doute, vous pouvez consulter votre compte en ligne sur le site <u>Autoentrepreneur.urssaf.fr.</u></>;
 
     return (<StyledPaper>
       <StyledList>
         <DeclarationQuestion
           label="Avez-vous travaillé pour un employeur ce mois-ci?"
-          name="hasEmployers"
-          value={this.state.hasEmployers}
+          name="hasWorked"
+          value={this.state.hasWorked}
           onAnswer={this.onAnswer}
         />
         <DeclarationQuestion
@@ -565,7 +583,7 @@ export class Actu extends Component {
           name="isCreator"
           value={this.state.isCreator}
           onAnswer={this.onAnswer}
-          style={{ visibility: this.state.hasEmployers === null ? 'hidden' : null }}
+          style={{ visibility: this.state.hasWorked === null ? 'hidden' : null }}
         />
         <div
           style={{ marginTop: '1rem', marginLeft: '1rem', visibility: this.state.isCreator === true ? null : 'hidden' }}>
@@ -573,24 +591,30 @@ export class Actu extends Component {
           <RadioGroup
             aria-label="Pour votre entreprise, vous déclarez votre chiffre d'affaire à l'URSSAF, aux impôts..."
             name="creatorTaxeRate"
+            value={this.state.creatorTaxeRate}
             onChange={(val) => this.setState({ creatorTaxeRate: val.target.value })}
             style={{ marginTop: '1rem' }}
           >
-            <FormControlLabel
-              value={CREATORTAXRATE.MONTHLY}
-              control={<Radio color="primary" />}
-              label="Tous les mois"
-            />
-            <FormControlLabel
-              value={CREATORTAXRATE.QUARTELY}
-              control={<Radio color="primary" />}
-              label="Tous les trimestres"
-            />
-            <FormControlLabel
-              value={CREATORTAXRATE.YEARLY}
-              control={<Radio color="primary" />}
-              label="Tous les ans"
-            />
+            <Box display="flex" alignItems="center">
+              <Box flex={1}><FormControlLabel
+                value={CREATORTAXRATE.MONTHLY}
+                control={<Radio color="primary" />}
+                label="Tous les mois"
+              /></Box>
+              <TooltipOnFocus content={helperText}>
+                <InfoImg />
+              </TooltipOnFocus>
+            </Box>
+            <Box display="flex" alignItems="center">
+              <Box flex={1}><FormControlLabel
+                value={CREATORTAXRATE.QUARTELY}
+                control={<Radio color="primary" />}
+                label="Tous les trimestres"
+              /></Box>
+              <TooltipOnFocus content={helperText}>
+                <InfoImg />
+              </TooltipOnFocus>
+            </Box>
           </RadioGroup>
         </div>
         <FinalButtonsContainer>
@@ -635,20 +659,13 @@ export class Actu extends Component {
     return (
       <StyledActu>
         <Title>
-          Déclarer ma situation de {activeMonthMoment.format('MMMM')}
+          Déclarer ma situation de {activeMonthMoment.format('MMMM')} {activeMonthMoment.format('YYYY')}
         </Title>
 
         {!completeCreatorQuestion && this.renderCreatorQuestions()}
         {completeCreatorQuestion && <form>
           <StyledPaper>
             <StyledList>
-              <DeclarationQuestion
-                verticalLayout={useVerticalLayoutForQuestions}
-                label="Avez-vous travaillé ?"
-                name="hasWorked"
-                value={this.state.hasWorked}
-                onAnswer={this.onAnswer}
-              />
               <DeclarationQuestion
                 verticalLayout={useVerticalLayoutForQuestions}
                 label="Avez-vous été en formation ?"
@@ -807,6 +824,14 @@ export class Actu extends Component {
           <AlwaysVisibleContainer>
             {formError && <ErrorMessage>{formError}</ErrorMessage>}
             <FinalButtonsContainer>
+              <MainActionButton
+                primary={false}
+                onClick={() => this.validateCreatorQuestions(false)}
+              >
+                <StyledArrowBack />
+                Retour
+              </MainActionButton>
+
               <MainActionButton
                 primary
                 onClick={this.state.hasWorked ? this.onSubmit : this.openDialog}
