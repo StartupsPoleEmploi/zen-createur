@@ -654,7 +654,7 @@ export class Actu extends Component {
     return (
       <StyledActu>
         <Title>
-          Déclarer ma situation de {activeMonthMoment.format('MMMM')}
+          Déclarer ma situation de {activeMonthMoment.format('MMMM')} {activeMonthMoment.format('YYYY')}
         </Title>
 
         {!completeCreatorQuestion && this.renderCreatorQuestions()}
