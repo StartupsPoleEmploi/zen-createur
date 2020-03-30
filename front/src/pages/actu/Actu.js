@@ -591,6 +591,7 @@ export class Actu extends Component {
           <RadioGroup
             aria-label="Pour votre entreprise, vous déclarez votre chiffre d'affaire à l'URSSAF, aux impôts..."
             name="creatorTaxeRate"
+            value={this.state.creatorTaxeRate}
             onChange={(val) => this.setState({ creatorTaxeRate: val.target.value })}
             style={{ marginTop: '1rem' }}
           >
