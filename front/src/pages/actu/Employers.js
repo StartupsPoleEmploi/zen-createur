@@ -20,6 +20,7 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 import superagent from 'superagent'
 
+import { Box } from '@material-ui/core'
 import {
   fetchDeclarations as fetchDeclarationsAction,
   postEmployers as postEmployersAction,
@@ -46,11 +47,9 @@ import {
 } from '../../lib/salary'
 import { setNoNeedEmployerOnBoarding as setNoNeedEmployerOnBoardingAction } from '../../redux/actions/user'
 import EmployerOnBoarding from './EmployerOnBoarding/EmployerOnBoarding'
+import { ucfirst } from '../../utils/utils.tool'
 
 const StyledEmployers = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding-bottom: 4rem;
 
   @media (max-width: ${mobileBreakpoint}) {
@@ -60,9 +59,8 @@ const StyledEmployers = styled.div`
 
 const Title = styled(Typography)`
   && {
-    text-align: center;
+    font-weight: 400;
     padding-bottom: 1.5rem;
-    font-weight: bold;
   }
 `
 
@@ -141,6 +139,23 @@ const StyledMainAction = styled(MainActionButton)`
       width: 17rem;
     }
   }
+`
+
+const BoxPanel = styled.div`
+  margin: 70px auto 0 auto;
+  padding: 0 40px;
+  width: 520px;
+
+  p {
+    font-size: 16px;
+    line-height: 24px;
+  }
+`
+
+const Block = styled.div`
+  border-radius: 15px;
+  background-color: #FAFAFA;
+  padding: 20px;
 `
 
 const employerTemplate = {
@@ -299,7 +314,7 @@ export class Employers extends Component {
       !this.state.isLoading &&
       !this.hasSubmittedAndFinished &&
       get(this.state.currentDeclaration, 'hasFinishedDeclaringEmployers') ===
-        false
+      false
     ) {
       this.onSave()
     }
@@ -468,6 +483,21 @@ export class Employers extends Component {
     />
   )
 
+  renderEmployerPanel = () => {
+    const { employers } = this.state
+
+    return (<>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].hasWorked && <Box flex={1}><BoxPanel><Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
+      <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
+      <Block>
+        <p>Pour quel employeur avez-vous travaillé<br />en {moment(this.props.activeMonth).format('MMMM YYYY')}</p>
+        {employers.map(this.renderEmployerQuestion)}
+      </Block>
+    </BoxPanel></Box>}</>)
+  }
+
+  renderCreatorPanel = () => <>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].taxeDue && <Box flex={1}><BoxPanel><Title variant="h6" component="h1">
+    <b>MES ENTREPRISES</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>creator</BoxPanel></Box>}</>
+
   render() {
     const { employers, error, isLoading } = this.state
 
@@ -480,10 +510,15 @@ export class Employers extends Component {
     }
     return (
       <StyledEmployers>
-        <Title variant="h6" component="h1">
-          Pour quels employeurs avez-vous travaillé en{' '}
-          {moment(this.props.activeMonth).format('MMMM YYYY')} ?
-        </Title>
+
+        <Box display="flex">
+          {this.renderEmployerPanel()}
+          {this.renderCreatorPanel()}
+        </Box>
+
+
+
+
 
         {this.props.user.needEmployerOnBoarding && (
           <EmployerOnBoarding onFinish={this.onEmployerOnBoardingEnd} />
