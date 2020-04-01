@@ -46,7 +46,6 @@ import {
   WORK_HOURS,
 } from '../../lib/salary'
 import { setNoNeedEmployerOnBoarding as setNoNeedEmployerOnBoardingAction } from '../../redux/actions/user'
-import EmployerOnBoarding from './EmployerOnBoarding/EmployerOnBoarding'
 import { ucfirst } from '../../utils/utils.tool'
 
 const StyledEmployers = styled.div`
@@ -72,7 +71,6 @@ const Form = styled.form`
 
 const AddEmployersButtonContainer = styled.div`
   display: flex;
-  width: 100%;
   justify-content: center;
   align-items: center;
   margin: 3rem 0;
@@ -80,10 +78,10 @@ const AddEmployersButtonContainer = styled.div`
 
 const AddEmployersButton = styled(Button)`
   && {
-    width: 23rem;
     margin: 0 5rem;
     min-height: 5.5rem;
     color: black;
+    white-space: nowrap;
 
     @media (max-width: ${intermediaryBreakpoint}) {
       margin: 0 3rem;
@@ -92,14 +90,10 @@ const AddEmployersButton = styled(Button)`
 `
 
 const LineDiv = styled.div`
-  width: 100%;
+  flex: 1;
   max-width: 16.6rem;
   height: 0.1rem;
   background-color: #e4e4e4;
-
-  @media (max-width: ${intermediaryBreakpoint}) {
-    width: 15%;
-  }
 `
 const ButtonsContainer = styled.div`
   display: flex;
@@ -479,6 +473,7 @@ export class Employers extends Component {
       index={index}
       onChange={this.onChange}
       onRemove={this.onRemove}
+      canRemove={this.state.employers.length > 1}
       activeMonth={this.props.activeMonth}
     />
   )
@@ -489,9 +484,21 @@ export class Employers extends Component {
     return (<>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].hasWorked && <Box flex={1}><BoxPanel><Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
       <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
       <Block>
-        <p>Pour quel employeur avez-vous travaillé<br />en {moment(this.props.activeMonth).format('MMMM YYYY')}</p>
+        <p>Pour quel employeur avez-vous travaillé<br />en {moment(this.props.activeMonth).format('MMMM YYYY')} ?</p>
         {employers.map(this.renderEmployerQuestion)}
       </Block>
+      <AddEmployersButtonContainer>
+        <LineDiv />
+        <AddEmployersButton
+          variant="outlined"
+          color="primary"
+          onClick={this.addEmployer}
+        >
+          <Add style={{ marginRight: '1rem', color: primaryBlue }} />
+              Ajouter un employeur
+            </AddEmployersButton>
+        <LineDiv />
+      </AddEmployersButtonContainer>
     </BoxPanel></Box>}</>)
   }
 
@@ -520,24 +527,10 @@ export class Employers extends Component {
 
 
 
-        {this.props.user.needEmployerOnBoarding && (
-          <EmployerOnBoarding onFinish={this.onEmployerOnBoardingEnd} />
-        )}
-        <Form>
-          {employers.map(this.renderEmployerQuestion)}
 
-          <AddEmployersButtonContainer>
-            <LineDiv />
-            <AddEmployersButton
-              variant="outlined"
-              color="primary"
-              onClick={this.addEmployer}
-            >
-              <Add style={{ marginRight: '1rem', color: primaryBlue }} />
-              Ajouter un employeur
-            </AddEmployersButton>
-            <LineDiv />
-          </AddEmployersButtonContainer>
+        <Form>
+
+
 
           <StyledAlwaysVisibleContainer
             scrollButtonTopValue="0"

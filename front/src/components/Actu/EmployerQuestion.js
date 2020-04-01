@@ -1,4 +1,3 @@
-import FormControl from '@material-ui/core/FormControl'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import FormLabel from '@material-ui/core/FormLabel'
 import TextField from '@material-ui/core/TextField'
@@ -9,6 +8,7 @@ import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import withWidth from '@material-ui/core/withWidth'
 
+import { Box } from '@material-ui/core'
 import EuroInput from '../Generic/EuroInput'
 import HourInput from '../Generic/HourInput'
 import YesNoRadioGroup from '../Generic/YesNoRadioGroup'
@@ -16,41 +16,15 @@ import TooltipOnFocus from '../Generic/TooltipOnFocus'
 import warn from '../../images/warn.png'
 
 const StyledContainer = styled.div`
-  display: flex;
-  align-items: center;
+  position: relative;
 `
 
 const StyledMain = styled.div`
-  display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-  border: 1px solid #adafaf;
-  border-radius: 1rem;
-  padding: 1rem;
   margin-bottom: 1.5rem;
   margin-top: 1rem;
-  max-width: 95rem;
-  flex-wrap: wrap;
-  box-shadow: 0 0 0.5rem 0.1rem #eeeeee;
-`
-
-const StyledFormControl = styled(FormControl)`
-  && {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    flex: 0 1 auto;
-    max-width: 30rem;
-
-    @media (max-width: 811px) {
-      margin-top: 1rem;
-    }
-  }
 `
 
 const StyledFormLabel = styled(FormLabel)`
-  flex-shrink: 1;
   margin-right: 1rem;
   && {
     color: #000;
@@ -71,13 +45,6 @@ const RemoveButton = styled.button`
   }
 `
 
-const EmployerQuestionContainer = styled.div`
-  display: inline-flex;
-  @media (max-width: 811px) {
-    width: 100%;
-  }
-`
-
 const DeleteIcon = styled(Delete)`
   && {
     width: 2.5rem;
@@ -87,13 +54,12 @@ const DeleteIcon = styled(Delete)`
 
 const StyledTextField = styled(TextField)`
   && {
-    width: 15rem;
-    margin-right: 1rem;
+    width: 100%;
+    margin-bottom: 40px;
+  }
 
-    @media (max-width: 811px) {
-      margin-right: inherit;
-      width: 100%;
-    }
+  label > div {
+    display: flex;
   }
 `
 
@@ -145,6 +111,7 @@ export class EmployerQuestion extends PureComponent {
       hasEndedThisMonth,
       verticalLayout,
       width,
+      canRemove,
     } = this.props
 
     const showTooltip = index === 0
@@ -152,32 +119,30 @@ export class EmployerQuestion extends PureComponent {
     return (
       <StyledContainer className="employer-question">
         <StyledMain>
-          <div>
-            <EmployerQuestionContainer>
-              <StyledTextField
-                id={`employerName[${index}]`}
-                className="root-employer"
-                label={this.renderLabel({
-                  id: `employerName[${index}]`,
-                  label: 'Nom employeur',
-                  content:
-                    'Si vous avez plusieurs employeurs, cliquez sur "Ajouter un employeur"',
-                  showTooltip,
-                })}
-                name={`employerName[${index}]`}
-                value={employerName.value}
-                onChange={this.onChange}
-                onBlur={this.onChange}
-                error={!!employerName.error}
-                helperText={employerName.error}
-                inputProps={{
-                  'aria-describedby': `employerNameDescription[${index}]`,
-                }}
-                fullWidth={verticalLayout}
-              />
-            </EmployerQuestionContainer>
+          <StyledTextField
+            id={`employerName[${index}]`}
+            className="root-employer"
+            label={this.renderLabel({
+              id: `employerName[${index}]`,
+              label: 'Nom employeur',
+              content:
+                'Si vous avez plusieurs employeurs, cliquez sur "Ajouter un employeur"',
+              showTooltip,
+            })}
+            name={`employerName[${index}]`}
+            value={employerName.value}
+            onChange={this.onChange}
+            onBlur={this.onChange}
+            error={!!employerName.error}
+            helperText={employerName.error}
+            inputProps={{
+              'aria-describedby': `employerNameDescription[${index}]`,
+            }}
+            fullWidth={verticalLayout}
+          />
 
-            <EmployerQuestionContainer>
+          <Box display="flex">
+            <Box flex={1}>
               <StyledTextField
                 id={`workHours[${index}]`}
                 className="root-work-hours"
@@ -203,9 +168,9 @@ export class EmployerQuestion extends PureComponent {
                 }}
                 fullWidth={verticalLayout}
               />
-            </EmployerQuestionContainer>
+            </Box>
 
-            <EmployerQuestionContainer>
+            <Box flex={1} style={{ marginLeft: '20px' }}>
               <StyledTextField
                 id={`salary[${index}]`}
                 className="root-salary"
@@ -230,44 +195,47 @@ export class EmployerQuestion extends PureComponent {
                 }}
                 fullWidth={verticalLayout}
               />
-            </EmployerQuestionContainer>
-          </div>
-          <StyledFormControl className="root-contract">
-            <StyledFormLabel
-              style={{ paddingTop: '1rem', paddingBottom: '1rem' }}
-            >
-              {width !== 'xs' ? (
-                <>
-                  Contrat terminé en{' '}
-                  {moment(this.props.activeMonth).format('MMMM')}
+            </Box>
+          </Box>
+          <Box display="flex">
+            <Box flex={1}>
+              <StyledFormLabel
+                style={{ paddingTop: '1rem', paddingBottom: '1rem' }}
+              >
+                {width !== 'xs' ? (
+                  <>
+                    Contrat terminé en<br />
+                    {moment(this.props.activeMonth).format('MMMM YYYY')}
                   &nbsp;?
                 </>
-              ) : (
-                <>
-                  Terminé en {moment(this.props.activeMonth).format('MMMM')}
+                ) : (
+                    <>
+                      Terminé en {moment(this.props.activeMonth).format('MMMM')}
                   &nbsp;?
                 </>
-              )}
-              {hasEndedThisMonth.error && (
-                <FormHelperText error>{hasEndedThisMonth.error}</FormHelperText>
-              )}
-            </StyledFormLabel>
-            <YesNoRadioGroup
-              yesTooltipContent={`Si votre employeur vous a payé des congés, n’oubliez pas
+                  )}
+                {hasEndedThisMonth.error && (
+                  <FormHelperText error>{hasEndedThisMonth.error}</FormHelperText>
+                )}
+              </StyledFormLabel>
+            </Box>
+            <Box flex={1}>
+              <YesNoRadioGroup
+                yesTooltipContent={`Si votre employeur vous a payé des congés, n’oubliez pas
                     d’inclure cette somme dans le salaire brut déclaré`}
-              name={`hasEndedThisMonth[${index}]`}
-              value={hasEndedThisMonth.value}
-              onAnswer={this.onChange}
-            />
-          </StyledFormControl>
+                name={`hasEndedThisMonth[${index}]`}
+                value={hasEndedThisMonth.value}
+                onAnswer={this.onChange}
+              /></Box>
+          </Box>
         </StyledMain>
-        <RemoveButton
+        {canRemove && <RemoveButton
           onClick={this.onRemove}
           type="button"
           aria-label="Supprimer"
         >
           <DeleteIcon />
-        </RemoveButton>
+        </RemoveButton>}
       </StyledContainer>
     )
   }
@@ -293,6 +261,7 @@ EmployerQuestion.propTypes = {
   index: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
   onRemove: PropTypes.func.isRequired,
+  canRemove: PropTypes.bool.isRequired,
   activeMonth: PropTypes.instanceOf(Date).isRequired,
   verticalLayout: PropTypes.bool,
   width: PropTypes.string.isRequired,
