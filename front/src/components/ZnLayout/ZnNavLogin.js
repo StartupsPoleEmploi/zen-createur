@@ -259,7 +259,7 @@ export const NavLogin = ({
     !!activeMonth &&
     !!activeDeclaration &&
     !activeDeclaration.hasFinishedDeclaringEmployers &&
-    userCanDeclare
+    userCanDeclare && pathname !== declarationRoute
 
   // Mobile version
   if (useMobileVersion && isNavVisible) {
@@ -387,7 +387,7 @@ export const NavLogin = ({
             <StepperItem
               label={
                 <SubLabel style={{ paddingLeft: '5.5rem' }}>
-                  Mes employeurs
+                  Mes activités
                 </SubLabel>
               }
               link={employersRoute}
