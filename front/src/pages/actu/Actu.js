@@ -1,7 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import Button from '@material-ui/core/Button'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-import List from '@material-ui/core/List'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import Typography from '@material-ui/core/Typography'
@@ -498,6 +497,7 @@ export class Actu extends Component {
     allowRemove = false,
     startLabel = 'Date de début',
     endLabel = 'Date de fin',
+    largeLabel = false
   }) => {
     const activeMonthMoment = moment(this.props.activeMonth)
 
@@ -528,7 +528,7 @@ export class Actu extends Component {
               maxDate={datePickerMaxDate}
               name={`infos[${key}].startDate`}
               value={declarationInfo.startDate}
-              style={{ paddingRight: '1rem' }}
+              style={{ paddingRight: '1rem', width: largeLabel ? 200 : null }}
             />
           )}
           {showEndDate && (
@@ -542,6 +542,7 @@ export class Actu extends Component {
               initialFocusedDate={datePickerMaxDate}
               name={`infos[${key}].endDate`}
               value={declarationInfo.endDate}
+              style={{ width: largeLabel ? 200 : null }}
             />
           )}
           {allowRemove && (
@@ -586,7 +587,7 @@ export class Actu extends Component {
           style={{ visibility: this.state.hasWorked === null ? 'hidden' : null }}
         />
         <div
-          style={{ marginTop: '1rem', marginLeft: '1rem', visibility: this.state.isCreator === true ? null : 'hidden' }}>
+          style={{ marginTop: '1rem', visibility: this.state.isCreator === true ? null : 'hidden' }}>
           <QuestionLabel>Pour votre entreprise, vous déclarez votre chiffre d'affaire à l'URSSAF,<br />aux impôts...</QuestionLabel>
           <RadioGroup
             aria-label="Pour votre entreprise, vous déclarez votre chiffre d'affaire à l'URSSAF, aux impôts..."
@@ -773,12 +774,7 @@ export class Actu extends Component {
                   startLabel: 'Depuis le',
                 })}
               </DeclarationQuestion>
-            </StyledList>
-          </StyledPaper>
-
-          {!this.state.hasTrained && (
-            <StyledPaper>
-              <List>
+              {!this.state.hasTrained && (
                 <DeclarationQuestion
                   verticalLayout={useVerticalLayoutForQuestions}
                   label="Souhaitez-vous rester inscrit à Pôle emploi ?"
@@ -791,6 +787,7 @@ export class Actu extends Component {
                     type: types.JOB_SEARCH,
                     showStartDate: false,
                     endLabel: 'Date de fin de recherche',
+                    largeLabel: true
                   })}
                   <RadioGroup
                     row
@@ -817,9 +814,9 @@ export class Actu extends Component {
                     />
                   </RadioGroup>
                 </DeclarationQuestion>
-              </List>
-            </StyledPaper>
-          )}
+              )}
+            </StyledList>
+          </StyledPaper>
 
           <AlwaysVisibleContainer>
             {formError && <ErrorMessage>{formError}</ErrorMessage>}
