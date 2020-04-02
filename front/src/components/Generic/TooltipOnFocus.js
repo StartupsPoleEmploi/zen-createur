@@ -120,8 +120,9 @@ class TooltipOnFocus extends Component {
       arrowRef,
     })
 
-  setTooltipIsOpen = state => {
-    this.setState({ tooltipIsOpen: state })
+  setTooltipIsOpen = (state, event) => {
+    this.setState({ tooltipIsOpen: state });
+    if (event) { event.stopPropagation(); }
   }
 
   render() {
@@ -160,7 +161,7 @@ class TooltipOnFocus extends Component {
         {...props}
       >
         {/* eslint-disable */}
-        <div onClick={() => this.setTooltipIsOpen(!this.state.tooltipIsOpen)}>
+        <div onClick={event => this.setTooltipIsOpen(!this.state.tooltipIsOpen, event)}>
           {children}
         </div>
         {/* eslint-enable */}

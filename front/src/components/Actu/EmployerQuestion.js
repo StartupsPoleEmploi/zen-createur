@@ -21,6 +21,10 @@ const Title = styled(Typography)`
   && {
     font-weight: 500;
     flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 16px;
   }
 `
 
@@ -86,10 +90,7 @@ const InfoImg = styled.img`
 const CollapsedTitle = styled.div`
   display: flex;
   align-items: center;
-
-  > p {
-
-  }
+  cursor: pointer;
 `
 
 
