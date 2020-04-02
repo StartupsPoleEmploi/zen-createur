@@ -10,8 +10,6 @@ services:
       - "api"
     environment:
       - TZ=Europe/Paris
-    volumes:
-      - './api/extracts:/home/extracts'
     networks:
       zc_network:
         ipv4_address: 172.0.0.10
