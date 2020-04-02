@@ -17,6 +17,7 @@ services:
       - WINSTON_FILE_FOLDER=/var/log/zen-createur_api
 
   cron:
+    image: zen-createur-cron_${ZEN_ENV}
     container_name: 'zen-createur-cron_${ZEN_ENV}'
     restart: unless-stopped
     build:

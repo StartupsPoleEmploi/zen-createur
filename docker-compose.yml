@@ -1,6 +1,7 @@
 version: '2.4'
 services:
   nginx:
+    image: zen-createur-nginx_${ZEN_ENV}
     container_name: 'zen-createur-nginx_${ZEN_ENV}'
     restart: unless-stopped
     ports:
@@ -15,6 +16,7 @@ services:
         ipv4_address: 172.0.0.10
 
   api:
+    image: zen-createur-api_${ZEN_ENV}
     container_name: 'zen-createur-api_${ZEN_ENV}'
     restart: unless-stopped
     build:
