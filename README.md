@@ -2,17 +2,14 @@
 
 ## Setup
 
-**A `.env` file must be created and populated with appropriate configuration values. Sample values in the `.env.example` file.**
+**A `.env.development` file must be created and populated with appropriate configuration values. Sample values in the `.env.example` file.**
 
 **For front-end Sentry use, a `front/.env.local` needs creation and configuration too.**
 
 Install Docker, Docker-Compose and yarn, then
 
 ```
-yarn
-docker-compose build
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up # dev
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up # prod
+yarn run start:dev
 ```
 
 Dev containers start with :
@@ -35,7 +32,12 @@ module.exports = {
 };
 ```
 
-## Production
+## Deploy QA
+  - update / create the `.env.qa` file
+  - run : `sh ./script/deploy-qa.sh`
+  - connect to the server `ssh zen-createur-qa`
+  - go to teh correct folder `cd /home/docker/zen-createur`
+  - update docker : `sh ./script/start-qa.sh`
 
 ### HTTPS certificate
 
