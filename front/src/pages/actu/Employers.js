@@ -20,6 +20,7 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 import superagent from 'superagent'
 
+import { Box } from '@material-ui/core'
 import {
   fetchDeclarations as fetchDeclarationsAction,
   postEmployers as postEmployersAction,
@@ -45,12 +46,9 @@ import {
   WORK_HOURS,
 } from '../../lib/salary'
 import { setNoNeedEmployerOnBoarding as setNoNeedEmployerOnBoardingAction } from '../../redux/actions/user'
-import EmployerOnBoarding from './EmployerOnBoarding/EmployerOnBoarding'
+import { ucfirst } from '../../utils/utils.tool'
 
 const StyledEmployers = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding-bottom: 4rem;
 
   @media (max-width: ${mobileBreakpoint}) {
@@ -60,9 +58,8 @@ const StyledEmployers = styled.div`
 
 const Title = styled(Typography)`
   && {
-    text-align: center;
+    font-weight: 400;
     padding-bottom: 1.5rem;
-    font-weight: bold;
   }
 `
 
@@ -74,7 +71,6 @@ const Form = styled.form`
 
 const AddEmployersButtonContainer = styled.div`
   display: flex;
-  width: 100%;
   justify-content: center;
   align-items: center;
   margin: 3rem 0;
@@ -82,10 +78,10 @@ const AddEmployersButtonContainer = styled.div`
 
 const AddEmployersButton = styled(Button)`
   && {
-    width: 23rem;
     margin: 0 5rem;
     min-height: 5.5rem;
     color: black;
+    white-space: nowrap;
 
     @media (max-width: ${intermediaryBreakpoint}) {
       margin: 0 3rem;
@@ -94,14 +90,10 @@ const AddEmployersButton = styled(Button)`
 `
 
 const LineDiv = styled.div`
-  width: 100%;
+  flex: 1;
   max-width: 16.6rem;
   height: 0.1rem;
   background-color: #e4e4e4;
-
-  @media (max-width: ${intermediaryBreakpoint}) {
-    width: 15%;
-  }
 `
 const ButtonsContainer = styled.div`
   display: flex;
@@ -141,6 +133,23 @@ const StyledMainAction = styled(MainActionButton)`
       width: 17rem;
     }
   }
+`
+
+const BoxPanel = styled.div`
+  margin: 70px auto 0 auto;
+  padding: 0 40px;
+  width: 520px;
+
+  p {
+    font-size: 16px;
+    line-height: 24px;
+  }
+`
+
+const Block = styled.div`
+  border-radius: 15px;
+  background-color: #FAFAFA;
+  padding: 20px;
 `
 
 const employerTemplate = {
@@ -227,6 +236,7 @@ export class Employers extends Component {
     validationErrors: [],
     isValidating: false,
     isLoggedOut: false,
+    selectedEmployer: 0,
   }
 
   componentDidMount() {
@@ -299,7 +309,7 @@ export class Employers extends Component {
       !this.state.isLoading &&
       !this.hasSubmittedAndFinished &&
       get(this.state.currentDeclaration, 'hasFinishedDeclaringEmployers') ===
-        false
+      false
     ) {
       this.onSave()
     }
@@ -308,6 +318,7 @@ export class Employers extends Component {
   addEmployer = () =>
     this.setState(({ employers }) => ({
       employers: employers.concat({ ...employerTemplate }),
+      selectedEmployer: employers.length
     }))
 
   // onChange - let the user type whatever he wants, show errors
@@ -325,10 +336,17 @@ export class Employers extends Component {
       error: null,
     }))
 
-  onRemove = (index) =>
+  onRemove = (index) => {
+    let selectedEmployer = index;
+    if (this.state.selectedEmployer === index) {
+      selectedEmployer = index - 1;
+    }
+
     this.setState(({ employers }) => ({
       employers: employers.filter((e, key) => key !== index),
+      selectedEmployer
     }))
+  }
 
   onSave = () =>
     this.props.postEmployers({
@@ -457,6 +475,14 @@ export class Employers extends Component {
   closePreviousEmployersModal = () =>
     this.setState({ showPreviousEmployersModal: false })
 
+  onCollapsed = (index) => {
+    if (this.state.selectedEmployer === index) {
+      this.setState({ selectedEmployer: -1 })
+    } else {
+      this.setState({ selectedEmployer: index })
+    }
+  }
+
   renderEmployerQuestion = (data, index) => (
     <EmployerQuestion
       {...data}
@@ -464,9 +490,41 @@ export class Employers extends Component {
       index={index}
       onChange={this.onChange}
       onRemove={this.onRemove}
+      onCollapsed={() => this.onCollapsed(index)}
+      defaultName={`Employeur ${index + 1}`}
+      collapsed={this.state.selectedEmployer !== index}
+      showCollapsedTitle={this.state.employers.length > 1}
+      canRemove={this.state.employers.length > 1}
       activeMonth={this.props.activeMonth}
     />
   )
+
+  renderEmployerPanel = () => {
+    const { employers } = this.state
+
+    return (<>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].hasWorked && <Box flex={1}><BoxPanel><Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
+      <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
+      <Block style={{ backgroundColor: 'transparent' }}>
+        {employers.length <= 1 && (<p>Pour quel employeur avez-vous travaillé<br />en {moment(this.props.activeMonth).format('MMMM YYYY')} ?</p>)}
+        {employers.map(this.renderEmployerQuestion)}
+      </Block>
+      <AddEmployersButtonContainer>
+        <LineDiv />
+        <AddEmployersButton
+          variant="outlined"
+          color="primary"
+          onClick={this.addEmployer}
+        >
+          <Add style={{ marginRight: '1rem', color: primaryBlue }} />
+              Ajouter un employeur
+            </AddEmployersButton>
+        <LineDiv />
+      </AddEmployersButtonContainer>
+    </BoxPanel></Box>}</>)
+  }
+
+  renderCreatorPanel = () => <>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].taxeDue && <Box flex={1}><BoxPanel><Title variant="h6" component="h1">
+    <b>MON ENTREPRISE</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>creator</BoxPanel></Box>}</>
 
   render() {
     const { employers, error, isLoading } = this.state
@@ -480,29 +538,20 @@ export class Employers extends Component {
     }
     return (
       <StyledEmployers>
-        <Title variant="h6" component="h1">
-          Pour quels employeurs avez-vous travaillé en{' '}
-          {moment(this.props.activeMonth).format('MMMM YYYY')} ?
-        </Title>
 
-        {this.props.user.needEmployerOnBoarding && (
-          <EmployerOnBoarding onFinish={this.onEmployerOnBoardingEnd} />
-        )}
+        <Box display="flex">
+          {this.renderEmployerPanel()}
+          {this.renderCreatorPanel()}
+        </Box>
+
+
+
+
+
+
         <Form>
-          {employers.map(this.renderEmployerQuestion)}
 
-          <AddEmployersButtonContainer>
-            <LineDiv />
-            <AddEmployersButton
-              variant="outlined"
-              color="primary"
-              onClick={this.addEmployer}
-            >
-              <Add style={{ marginRight: '1rem', color: primaryBlue }} />
-              Ajouter un employeur
-            </AddEmployersButton>
-            <LineDiv />
-          </AddEmployersButtonContainer>
+
 
           <StyledAlwaysVisibleContainer
             scrollButtonTopValue="0"
