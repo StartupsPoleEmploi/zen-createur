@@ -236,6 +236,7 @@ export class Employers extends Component {
     validationErrors: [],
     isValidating: false,
     isLoggedOut: false,
+    selectedEmployer: 0,
   }
 
   componentDidMount() {
@@ -317,6 +318,7 @@ export class Employers extends Component {
   addEmployer = () =>
     this.setState(({ employers }) => ({
       employers: employers.concat({ ...employerTemplate }),
+      selectedEmployer: employers.length
     }))
 
   // onChange - let the user type whatever he wants, show errors
@@ -334,10 +336,17 @@ export class Employers extends Component {
       error: null,
     }))
 
-  onRemove = (index) =>
+  onRemove = (index) => {
+    let selectedEmployer = index;
+    if (this.state.selectedEmployer === index) {
+      selectedEmployer = index - 1;
+    }
+
     this.setState(({ employers }) => ({
       employers: employers.filter((e, key) => key !== index),
+      selectedEmployer
     }))
+  }
 
   onSave = () =>
     this.props.postEmployers({
@@ -466,6 +475,14 @@ export class Employers extends Component {
   closePreviousEmployersModal = () =>
     this.setState({ showPreviousEmployersModal: false })
 
+  onCollapsed = (index) => {
+    if (this.state.selectedEmployer === index) {
+      this.setState({ selectedEmployer: -1 })
+    } else {
+      this.setState({ selectedEmployer: index })
+    }
+  }
+
   renderEmployerQuestion = (data, index) => (
     <EmployerQuestion
       {...data}
@@ -473,6 +490,10 @@ export class Employers extends Component {
       index={index}
       onChange={this.onChange}
       onRemove={this.onRemove}
+      onCollapsed={() => this.onCollapsed(index)}
+      defaultName={`Employeur ${index + 1}`}
+      collapsed={this.state.selectedEmployer !== index}
+      showCollapsedTitle={this.state.employers.length > 1}
       canRemove={this.state.employers.length > 1}
       activeMonth={this.props.activeMonth}
     />
@@ -483,8 +504,8 @@ export class Employers extends Component {
 
     return (<>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].hasWorked && <Box flex={1}><BoxPanel><Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
       <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
-      <Block>
-        <p>Pour quel employeur avez-vous travaillé<br />en {moment(this.props.activeMonth).format('MMMM YYYY')} ?</p>
+      <Block style={{ backgroundColor: 'transparent' }}>
+        {employers.length <= 1 && (<p>Pour quel employeur avez-vous travaillé<br />en {moment(this.props.activeMonth).format('MMMM YYYY')} ?</p>)}
         {employers.map(this.renderEmployerQuestion)}
       </Block>
       <AddEmployersButtonContainer>
@@ -503,7 +524,7 @@ export class Employers extends Component {
   }
 
   renderCreatorPanel = () => <>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].taxeDue && <Box flex={1}><BoxPanel><Title variant="h6" component="h1">
-    <b>MES ENTREPRISES</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>creator</BoxPanel></Box>}</>
+    <b>MON ENTREPRISE</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>creator</BoxPanel></Box>}</>
 
   render() {
     const { employers, error, isLoading } = this.state

@@ -7,13 +7,22 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import withWidth from '@material-ui/core/withWidth'
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown'
 
-import { Box } from '@material-ui/core'
+
+import { Box, Typography } from '@material-ui/core'
 import EuroInput from '../Generic/EuroInput'
 import HourInput from '../Generic/HourInput'
 import YesNoRadioGroup from '../Generic/YesNoRadioGroup'
 import TooltipOnFocus from '../Generic/TooltipOnFocus'
 import warn from '../../images/warn.png'
+
+const Title = styled(Typography)`
+  && {
+    font-weight: 500;
+    flex: 1;
+  }
+`
 
 const StyledContainer = styled.div`
   position: relative;
@@ -38,7 +47,10 @@ const RemoveButton = styled.button`
   cursor: pointer;
   background: none;
   text-transform: uppercase;
-  padding-left: 1rem;
+  padding-left: 20px;
+  position: absolute;
+  left: 100%;
+  top: 53px;
   &::-moz-focus-inner {
     border: 0;
     padding: 0;
@@ -70,6 +82,16 @@ const InfoImg = styled.img`
   cursor: pointer;
   z-index: 2;
 `
+
+const CollapsedTitle = styled.div`
+  display: flex;
+  align-items: center;
+
+  > p {
+
+  }
+`
+
 
 export class EmployerQuestion extends PureComponent {
   onChange = ({ target: { name: fieldName, value: _value }, type }) => {
@@ -112,13 +134,21 @@ export class EmployerQuestion extends PureComponent {
       verticalLayout,
       width,
       canRemove,
+      defaultName,
+      collapsed,
+      showCollapsedTitle,
     } = this.props
 
     const showTooltip = index === 0
 
     return (
       <StyledContainer className="employer-question">
-        <StyledMain>
+        {showCollapsedTitle && <CollapsedTitle onClick={this.props.onCollapsed}>
+          <Title variant="h6" component="h1">{employerName.value || defaultName}</Title>
+          <p>{collapsed ? 'AFFICHER' : 'MASQUER'}</p>
+          <ArrowDropDown style={{ color: '#0065DB' }} />
+        </CollapsedTitle>}
+        {!collapsed && <><StyledMain>
           <StyledTextField
             id={`employerName[${index}]`}
             className="root-employer"
@@ -176,7 +206,7 @@ export class EmployerQuestion extends PureComponent {
                 className="root-salary"
                 label={this.renderLabel({
                   id: `salary[${index}]`,
-                  label: 'Salaire brut €',
+                  label: 'Salaire € brut',
                   content: 'Déclarez le salaire brut pour cet employeur',
                   showTooltip,
                 })}
@@ -229,13 +259,13 @@ export class EmployerQuestion extends PureComponent {
               /></Box>
           </Box>
         </StyledMain>
-        {canRemove && <RemoveButton
-          onClick={this.onRemove}
-          type="button"
-          aria-label="Supprimer"
-        >
-          <DeleteIcon />
-        </RemoveButton>}
+          {canRemove && <RemoveButton
+            onClick={this.onRemove}
+            type="button"
+            aria-label="Supprimer"
+          >
+            <DeleteIcon />
+          </RemoveButton>}</>}
       </StyledContainer>
     )
   }
@@ -261,10 +291,14 @@ EmployerQuestion.propTypes = {
   index: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
   onRemove: PropTypes.func.isRequired,
+  onCollapsed: PropTypes.func.isRequired,
   canRemove: PropTypes.bool.isRequired,
   activeMonth: PropTypes.instanceOf(Date).isRequired,
   verticalLayout: PropTypes.bool,
   width: PropTypes.string.isRequired,
+  showCollapsedTitle: PropTypes.bool.isRequired,
+  defaultName: PropTypes.string.isRequired,
+  collapsed: PropTypes.bool.isRequired
 }
 
 export default withWidth()(EmployerQuestion)
