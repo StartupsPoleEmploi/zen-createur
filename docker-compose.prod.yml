@@ -7,34 +7,33 @@ services:
       args:
         ZEN_ENV: ${ZEN_ENV}
     volumes:
-      - '/var/log/nginx:/var/log/nginx'
+      - './var/log/nginx:/var/log/nginx'
 
   api:
     volumes:
       - '/mnt/datalakepe/:/mnt/datalakepe/'
-      - '/var/log/zen-createur_api:/var/log/zen-createur_api'
+      - './var/log/zen-createur_api:/var/log/zen-createur_api'
     environment:
       - WINSTON_FILE_FOLDER=/var/log/zen-createur_api
 
   cron:
+    container_name: 'zen-createur-cron_${ZEN_ENV}'
     restart: unless-stopped
     build:
       context: .
       dockerfile: ./dockerfile_cron
       args:
         NODE_ENV: ${NODE_ENV}
-    cpus: '4.0'
-    mem_limit: 8G
     volumes:
       - '/mnt/datalakepe/:/mnt/datalakepe/'
-      - '/var/log/zen-createur_cron:/var/log/zen-createur_cron'
+      - './var/log/zen-createur_cron:/var/log/zen-createur_cron'
     networks:
       zc_network:
         ipv4_address: 172.0.0.101
     depends_on:
       - 'db'
     env_file:
-      - .env
+      - .env.${ZEN_ENV}
     environment:
       - TZ=Europe/Paris
       - WINSTON_FILE_FOLDER=/var/log/zen-createur_cron

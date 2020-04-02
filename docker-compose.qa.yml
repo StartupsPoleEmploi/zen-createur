@@ -7,10 +7,10 @@ services:
       args:
         ZEN_ENV: ${ZEN_ENV}
     volumes:
-      - '/var/log/nginx:/var/log/nginx'
+      - './var/log/nginx:/var/log/nginx'
 
   api:
     volumes:
-      - '/var/log/zen-createur_api:/var/log/zen-createur_api'
+      - './var/log/zen-createur_api:/var/log/zen-createur_api'
     environment:
       - WINSTON_FILE_FOLDER=/var/log/zen-createur_api
