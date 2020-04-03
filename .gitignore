@@ -18,4 +18,4 @@ front_old
 
 var/
 
-docker-build*
+images-docker*

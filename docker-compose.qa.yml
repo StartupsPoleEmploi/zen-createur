@@ -1,6 +1,7 @@
 version: '2.4'
 services:
   nginx:
+    image: zen-createur-nginx_${ZEN_ENV}:${BUILD_VERSION}
     build:
       context: .
       dockerfile: ./dockerfile_nginx_prod
@@ -10,6 +11,7 @@ services:
       - './var/log/nginx:/var/log/nginx'
 
   api:
+    image: zen-createur-api_${ZEN_ENV}:${BUILD_VERSION}
     volumes:
       - './var/log/zen-createur_api:/var/log/zen-createur_api'
     environment:

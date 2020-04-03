@@ -16,9 +16,16 @@ if [ $ZEN_ENV != "qa" ]; then
   exit 1;
 fi
 
-echo "Load last NGINX build ..."
-docker load -i docker-build-$ZEN_ENV/nginx
-echo "Load last API build ..."
-docker load -i docker-build-$ZEN_ENV/api
+VERSION=$(ls -1t images-docker-$ZEN_ENV/api* | head -1 | sed "s/images-docker-$ZEN_ENV\/api_//")
+if [ $# -eq 1 ]; then
+  VERSION=$1;
+fi
+export BUILD_VERSION=${VERSION}
+echo "BUILD_VERSION=${BUILD_VERSION}"
 
-docker-compose -f docker-compose.yml -f docker-compose.$ZEN_ENV.yml up -d --no-build
+echo "Load last NGINX build ..."
+docker load -i images-docker-$ZEN_ENV/nginx_${BUILD_VERSION}
+echo "Load last API build ..."
+docker load -i images-docker-$ZEN_ENV/api_${BUILD_VERSION}
+
+docker-compose -f docker-compose.yml -f docker-compose.${ZEN_ENV}.yml up -d --no-build
