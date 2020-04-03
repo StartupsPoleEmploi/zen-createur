@@ -25,9 +25,11 @@
     "antd": "^3.26.0",
     "babel-plugin-import": "^1.13.0",
     "chart.js": "^2.9.3",
+    "customize-cra": "^0.9.1",
     "history": "^4.9.0",
     "moment": "^2.24.0",
     "react": "^16.8.6",
+    "react-app-rewired": "^2.1.5",
     "react-chartkick": "^0.4.0",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
@@ -36,14 +38,12 @@
     "superagent": "^5.1.2"
   },
   "devDependencies": {
-    "customize-cra": "^0.9.1",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.17.0",
-    "eslint-plugin-react-hooks": "^1.7.0",
-    "react-app-rewired": "^2.1.5"
+    "eslint-plugin-react-hooks": "^1.7.0"
   },
   "babel": {
     "presets": [
