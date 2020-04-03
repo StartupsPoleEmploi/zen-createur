@@ -4,24 +4,28 @@
 # these are what will be served by nginx use alias build to be easier to refer this container elsewhere
 # e.g inside nginx container
 FROM node:12.16.1 as BUILD_FRONT
+ARG ZEN_ENV=$ZEN_ENV
 
 WORKDIR /app
-ARG SOURCE_DIRECTORY="./front"
-COPY $SOURCE_DIRECTORY .
+COPY ./front .
+COPY ./.env.$ZEN_ENV .env.local
 
 RUN which yarn || npm i -g yarn@1.15.2
-RUN yarn install
+RUN yarn install --production
 RUN yarn run build
+
 
 # -------------------- BUILD FRONT-ADMIN -------------------- 
 # Same as fornt but for frontAdmin
 FROM node:12.16.1 as BUILD_FRONT_ADMIN
+ARG ZEN_ENV=$ZEN_ENV
+
 WORKDIR /app
-ARG SOURCE_DIRECTORY="./front-admin"
-COPY $SOURCE_DIRECTORY .
+COPY ./front-admin .
+COPY ./.env.$ZEN_ENV .env.local
 
 RUN which yarn || npm i -g yarn@1.15.2
-RUN yarn install
+RUN yarn install --production
 RUN yarn run build
 
 
