@@ -89,7 +89,7 @@ for (let i = 1; i < 16; i++) {
 
       const json2csvParser = new Parser({ fields })
       fs.writeFileSync(
-        `/home/back/scripts/${monthLabel}-documents-not-transmitted-to-pe.csv`,
+        `/home/api/scripts/${monthLabel}-documents-not-transmitted-to-pe.csv`,
         json2csvParser.parse(csv),
       )
     })

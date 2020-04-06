@@ -9,8 +9,8 @@ module.exports = {
   // pm2-dev has a bug which prevents the env to be the same in dev.
   // should be the same ASAP.
   // https://github.com/Unitech/pm2/issues/3158
-  uploadsDirectory: '/home/back/uploads/',
-  uploadsDeclarationDirectory: '/home/back/uploads/declarations/',
+  uploadsDirectory: '/home/api/uploads/',
+  uploadsDeclarationDirectory: '/home/api/uploads/declarations/',
   shouldSendCampaignEmails: process.env.SEND_CAMPAIGN_EMAILS === 'true',
   shouldSendTransactionalEmails:
     process.env.SEND_TRANSACTIONAL_EMAILS === 'true',

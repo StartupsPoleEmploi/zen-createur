@@ -17,7 +17,7 @@ import store from './redux/store';
 import DeveloperDialog from './components/Generic/DeveloperDialog';
 import CookiePolicy from './components/Generic/CookiePolicy';
 
-const environment = process.env.REACT_APP_SENTRY_ENV || process.env.NODE_ENV;
+const environment = process.env.REACT_APP_SENTRY_ENV || process.env.REACT_APP_ZEN_ENV;
 
 if (environment !== 'development') {
   window.Raven.config(

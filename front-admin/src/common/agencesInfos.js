@@ -1,4 +1,4 @@
-// Duplicate of /back/lib/admin/geo.js => don't forget to update it too !
+// Duplicate of /api/lib/admin/geo.js => don't forget to update it too !
 const listAgences = [
   {
     region: 'AUVERGNE RHONE-ALPES',

@@ -14,10 +14,7 @@ module.exports = function overrideCustom(config, env) {
   )(config, env);
 
   // manage root path
-  const isEnvDevelopment = env === 'development';
-  if (isEnvDevelopment) {
-    config.output.publicPath = '/zen-admin';
-  }
+  config.output.publicPath = '/zen-admin';
 
   return config;
 };

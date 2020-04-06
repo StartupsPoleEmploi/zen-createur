@@ -1,7 +1,7 @@
 const config = {
   apps: [
     {
-      name: 'back',
+      name: 'api',
       script: 'bin/www',
       watch:
         process.env.NODE_ENV === 'development' ||
@@ -9,7 +9,7 @@ const config = {
       ignore_watch: ['uploads', 'datalake', 'var'],
     },
     {
-      name: 'admin',
+      name: 'api-admin',
       script: 'bin/www',
       args: '--admin',
       watch: process.env.NODE_ENV === 'development',

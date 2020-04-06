@@ -1,0 +1,45 @@
+# -------------------- BUILD FRONT -------------------- 
+# set the base image for production, node is only used for building 
+# the static Html and javascript files as react creates static html and js files after build
+# these are what will be served by nginx use alias build to be easier to refer this container elsewhere
+# e.g inside nginx container
+FROM node:12.16.1 as BUILD_FRONT
+ARG ZEN_ENV=$ZEN_ENV
+
+WORKDIR /app
+COPY ./front .
+COPY ./.env.$ZEN_ENV .env.local
+
+RUN which yarn || npm i -g yarn@1.15.2
+RUN yarn install --production
+RUN yarn run build
+
+
+# -------------------- BUILD FRONT-ADMIN -------------------- 
+# Same as fornt but for frontAdmin
+FROM node:12.16.1 as BUILD_FRONT_ADMIN
+ARG ZEN_ENV=$ZEN_ENV
+
+WORKDIR /app
+COPY ./front-admin .
+COPY ./.env.$ZEN_ENV .env.local
+
+RUN which yarn || npm i -g yarn@1.15.2
+RUN yarn install --production
+RUN yarn run build
+
+
+# -------------------- NGINX -------------------- 
+FROM nginx
+ARG ZEN_ENV=$ZEN_ENV
+# copy the build folder from react to the root of nginx (www)
+COPY --from=BUILD_FRONT /app/build /home/front
+COPY --from=BUILD_FRONT_ADMIN /app/build /home/front-admin
+# copy the nginx config
+COPY ./nginx/$ZEN_ENV.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/.htpasswd.$ZEN_ENV /etc/nginx/.htpasswd
+COPY ./nginx/dhparam.pem /etc/nginx/ssl/dhparam.pem
+COPY ./nginx/zen.crt /etc/nginx/ssl/zen.crt
+COPY ./nginx/entrust-zen.pole-emploi.fr-key.pem /etc/nginx/ssl/entrust-zen.pole-emploi.fr-key.pem
+
+CMD ["nginx", "-g", "daemon off;"]
