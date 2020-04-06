@@ -34,11 +34,10 @@ services:
       - API_HOST=https://api-r.es-qvr.fr
       - NODE_ENV=test
       - ZEN_ENV=test
+      - WINSTON_ENABLE_LOG=true
 
   front:
-    build:
-      context: .
-      dockerfile: ./dockerfile_front
+    image: node:12.16.1
     volumes:
       - "./front:/home/front"
     environment:
@@ -48,6 +47,11 @@ services:
       - BUNDLE_TOKEN_ANALYZER=${BUNDLE_TOKEN_ANALYZER}
     expose:
       - "3000"
+    command: > 
+      bash -c "cd /home/front &&
+        (which yarn || npm i -g yarn@1.15.2) &&
+        yarn install && 
+        yarn start;"
 
   db:
     image: postgres
@@ -66,7 +70,7 @@ services:
       - "front"
       - "api"
     volumes:
-      - ../:/e2e
+      - ./:/e2e
     working_dir: /e2e
     environment:
       - CYPRESS_baseUrl=http://nginx
