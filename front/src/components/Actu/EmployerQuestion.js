@@ -11,6 +11,7 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown'
 
 
 import { Box, Typography } from '@material-ui/core'
+import red from '@material-ui/core/colors/red'
 import EuroInput from '../Generic/EuroInput'
 import HourInput from '../Generic/HourInput'
 import YesNoRadioGroup from '../Generic/YesNoRadioGroup'
@@ -30,6 +31,10 @@ const Title = styled(Typography)`
 
 const StyledContainer = styled.div`
   position: relative;
+`
+
+const Asterisk = styled.span`
+  color: ${red[500]};
 `
 
 const StyledMain = styled.div`
@@ -142,11 +147,12 @@ export class EmployerQuestion extends PureComponent {
     } = this.props
 
     const showTooltip = index === 0
+    const hasFormError = workHours.error || employerName.error || salary.error;
 
     return (
       <StyledContainer className="employer-question">
         {showCollapsedTitle && <CollapsedTitle onClick={this.props.onCollapsed}>
-          <Title variant="h6" component="h1">{employerName.value || defaultName}</Title>
+          <Title variant="h6" component="h1">{employerName.value || defaultName} {hasFormError && <Asterisk>*</Asterisk>}</Title>
           <p>{collapsed ? 'AFFICHER' : 'MASQUER'}</p>
           <ArrowDropDown style={{ color: '#0065DB' }} />
           {canRemove && <RemoveButton
