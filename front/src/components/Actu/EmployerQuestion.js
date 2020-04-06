@@ -54,7 +54,8 @@ const RemoveButton = styled.button`
   padding-left: 20px;
   position: absolute;
   left: 100%;
-  top: 53px;
+  top: 14px;
+  opacity: 0.7;
   &::-moz-focus-inner {
     border: 0;
     padding: 0;
@@ -148,6 +149,13 @@ export class EmployerQuestion extends PureComponent {
           <Title variant="h6" component="h1">{employerName.value || defaultName}</Title>
           <p>{collapsed ? 'AFFICHER' : 'MASQUER'}</p>
           <ArrowDropDown style={{ color: '#0065DB' }} />
+          {canRemove && <RemoveButton
+            onClick={this.onRemove}
+            type="button"
+            aria-label="Supprimer"
+          >
+            <DeleteIcon />
+          </RemoveButton>}
         </CollapsedTitle>}
         {!collapsed && <><StyledMain>
           <StyledTextField
@@ -259,14 +267,7 @@ export class EmployerQuestion extends PureComponent {
                 onAnswer={this.onChange}
               /></Box>
           </Box>
-        </StyledMain>
-          {canRemove && <RemoveButton
-            onClick={this.onRemove}
-            type="button"
-            aria-label="Supprimer"
-          >
-            <DeleteIcon />
-          </RemoveButton>}</>}
+        </StyledMain></>}
       </StyledContainer>
     )
   }
