@@ -17,6 +17,7 @@ const mailjet = NodeMailjet.connect(
   { version: 'v3.1' },
 )
 
+// eslint-disable-next-line no-unused-vars
 async function sendMail(opts) {
   return mailjet.post('send', { version: 'v3.1' }).request({
     // Mailjet *will* send e-mails out of prod if this line is removed
@@ -41,6 +42,7 @@ async function manageContact({ email, name, properties }) {
     })
 }
   
+// eslint-disable-next-line no-unused-vars
 function formatDateForSegmentFilter(date) {
   return parseInt(format(date, 'YYYYMM'), 10)
 }
@@ -56,6 +58,7 @@ async function deleteUser(email) {
     })
 }
 
+// eslint-disable-next-line no-unused-vars
 async function getUser(email) {
   return mailjet.get('contact', { version: 'v3' })
     .id(email)
@@ -70,6 +73,7 @@ async function getUser(email) {
 }
 
 // https://github.com/mailjet/api-documentation/blob/master/guides/_exclusionlist.md
+// eslint-disable-next-line no-unused-vars
 async function setExcludedUserFromCampaigns(email, toExclude) {
   return mailjet.put('contact', { version: 'v3' })
     .id(email)
@@ -82,6 +86,7 @@ async function setExcludedUserFromCampaigns(email, toExclude) {
     })
 }
 
+// eslint-disable-next-line no-unused-vars
 async function addUser(user) {
   return manageContact({
     email: user.email,
@@ -93,6 +98,7 @@ async function addUser(user) {
   })
 }
 
+// eslint-disable-next-line no-unused-vars
 async function changeContactEmail({ oldEmail, newEmail }) {
   return mailjet.post('contactslist', { version: 'v3' })
   .id(LIST_ID)
@@ -105,10 +111,12 @@ async function changeContactEmail({ oldEmail, newEmail }) {
   })
 }
 
+// eslint-disable-next-line no-unused-vars
 async function createSegment(opts) {
   return mailjet.post('contactfilter', { version: 'v3' }).request(opts)
 }
 
+// eslint-disable-next-line no-unused-vars
 async function createCampaignDraft(opts) {
   return mailjet.post('campaigndraft', { version: 'v3' }).request({
     Locale: 'fr_FR',
@@ -120,6 +128,7 @@ async function createCampaignDraft(opts) {
   })
 }
 
+// eslint-disable-next-line no-unused-vars
 async function getTemplate(id) {
   const result = await mailjet.get('template', { version: 'v3' })
     .id(id)
@@ -137,6 +146,7 @@ async function getTemplate(id) {
   return { html, text }
 }
 
+// eslint-disable-next-line no-unused-vars
 async function setTemplate(id, opts) {
   return mailjet.post('campaigndraft', { version: 'v3' })
     .id(id)
@@ -144,6 +154,7 @@ async function setTemplate(id, opts) {
     .request(opts)
 }
 
+// eslint-disable-next-line no-unused-vars
 async function sendCampaignTest(id) {
   return mailjet.post('campaigndraft', { version: 'v3' })
     .id(id)
@@ -158,6 +169,7 @@ async function sendCampaignTest(id) {
     })
 }
 
+// eslint-disable-next-line no-unused-vars
 async function scheduleCampaign(id, opts = {}) {
   const scheduledDate = opts.Date || addDays(new Date(), 1)
   return mailjet
@@ -194,20 +206,20 @@ async function scheduleCampaign(id, opts = {}) {
 
 module.exports = {
   // user
-  addUser,
-  manageContact,
-  deleteUser,
-  setExcludedUserFromCampaigns,
-  changeContactEmail,
-  getUser,
+  addUser: async () => {},
+  manageContact: async () => {},
+  deleteUser: async () => {},
+  setExcludedUserFromCampaigns: async () => {},
+  changeContactEmail: async () => {},
+  getUser: async () => {},
 
   // email
-  sendMail,
-  createSegment,
-  createCampaignDraft,
-  getTemplate,
-  setTemplate,
-  sendCampaignTest,
-  scheduleCampaign,
-  formatDateForSegmentFilter,
+  sendMail: async () => {},
+  createSegment: async () => {},
+  createCampaignDraft: async () => {},
+  getTemplate: async () => {},
+  setTemplate: async () => {},
+  sendCampaignTest: async () => {},
+  scheduleCampaign: async () => {},
+  formatDateForSegmentFilter: async () => {},
 }
