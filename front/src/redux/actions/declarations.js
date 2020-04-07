@@ -304,26 +304,20 @@ export const hideInfoFilePreview = () => ({
   type: HIDE_INFO_FILE_PREVIEW,
 })
 
-export const postDeclaration = (formData) => (dispatch, getState) => {
-  console.log(dispatch, getState)
-
-  return superagent
-    .post('/api/declarations', formData)
-    .set('CSRF-Token', getState().userReducer.user.csrfToken)
-    .then((res) => {
-      console.log(res)
-      if (res.body.hasFinishedDeclaringEmployers) {
-        dispatch({ type: SHOW_DECLARATION_TRANSMITTED_DIALOG })
-      }
-      return res
-    })
-    .catch(catchMaintenance)
-    .catch((err) => {
-      console.log(err)
-      if (manageErrorCsrfToken(err, dispatch)) return
-      throw err
-    })
-}
+export const postDeclaration = (formData) => (dispatch, getState) => superagent
+  .post('/api/declarations', formData)
+  .set('CSRF-Token', getState().userReducer.user.csrfToken)
+  .then((res) => {
+    if (res.body.hasFinishedDeclaringEmployers) {
+      dispatch({ type: SHOW_DECLARATION_TRANSMITTED_DIALOG })
+    }
+    return res
+  })
+  .catch(catchMaintenance)
+  .catch((err) => {
+    if (manageErrorCsrfToken(err, dispatch)) return
+    throw err
+  })
 
 export const postEmployers = (formData) => (dispatch, getState) =>
   superagent

@@ -411,7 +411,6 @@ export class Actu extends Component {
 
     const hasWorked = (this.state.hasEmployers || this.state.creatorTaxeRate !== null);
     const objectToSend = { ...this.state, hasWorked, ignoreErrors }
-    console.log('objectToSend', objectToSend)
 
     return this.props
       .postDeclaration(objectToSend)
@@ -624,7 +623,7 @@ export class Actu extends Component {
         <FinalButtonsContainer>
           <MainActionButton
             primary
-            onClick={this.validateCreatorQuestions}
+            onClick={() => this.validateCreatorQuestions(true)}
             disabled={!isValidating}
           >
             Suivant
