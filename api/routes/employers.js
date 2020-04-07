@@ -14,7 +14,7 @@ const {
 const { requireActiveMonth } = require('../lib/middleware/activeMonthMiddleware')
 const {
   fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated,
-} = require('../lib/declaration')
+} = require('../controllers/declarationCtrl')
 const { sendDeclaration } = require('../lib/pe-api/declaration')
 const { sendDocument } = require('../lib/pe-api/documents')
 const { refreshAccessToken } = require('../lib/middleware/refreshAccessTokenMiddleware')

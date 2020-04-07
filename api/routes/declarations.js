@@ -16,7 +16,7 @@ const {
 } = require('../lib/upload')
 const {
   fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated,
-} = require('../lib/declaration')
+} = require('../controllers/declarationCtrl')
 const { requireActiveMonth } = require('../lib/middleware/activeMonthMiddleware')
 const { refreshAccessToken } = require('../lib/middleware/refreshAccessTokenMiddleware')
 const { sendDocument } = require('../lib/pe-api/documents')

@@ -92,7 +92,5 @@ const fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated = ({
     })
 
 module.exports = {
-  hasMissingEmployersDocuments,
-  hasMissingDeclarationDocuments,
   fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated,
 }
