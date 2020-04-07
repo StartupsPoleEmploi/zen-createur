@@ -51,3 +51,5 @@ export const CREATORTAXRATE = {
   QUARTELY: 'quartely',
   YEARLY: 'yearly'
 }
+
+export const MAXHOURCANWORK = 151;

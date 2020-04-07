@@ -330,19 +330,20 @@ export class Employers extends Component {
     }))
 
   // onChange - let the user type whatever he wants, show errors
-  onChange = ({ index, name, value }) => {
+  onChange = ({ index, name, value, from }) => {
     const error = getFieldError({ name, value })
 
-    this.updateValue({ index, name, value, error })
+    this.updateValue({ index, name, value, error, from })
   }
 
-  updateValue = ({ index, name, value, error }) =>
-    this.setState(({ employers: prevEmployers }) => ({
-      employers: prevEmployers.map((employer, key) =>
+  updateValue = ({ index, name, value, error, from }) => {
+    this.setState(({ [from]: prevEmployers }) => ({
+      [from]: prevEmployers.map((employer, key) =>
         key === index ? { ...employer, [name]: { value, error } } : employer,
       ),
       error: null,
     }))
+  }
 
   onRemove = (index) => {
     let selectedEmployer = index;
@@ -553,7 +554,7 @@ export class Employers extends Component {
 
     return (<>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].taxeDue && <Box flex={1}><BoxPanel><Block style={{ paddingTop: '50px' }}>
       <Title variant="h6" component="h1">
-        <b>MON ENTREPRISE</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
+        <b>{enterprises.length > 1 ? 'MES ENTREPRISES' : 'MON ENTREPRISE'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
       {enterprises.map(this.renderCreatorQuestion)}</Block></BoxPanel></Box>}</>)
   }
 

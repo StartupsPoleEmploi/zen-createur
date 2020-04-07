@@ -5,14 +5,18 @@ import React, { PureComponent } from 'react'
 import styled from 'styled-components'
 import withWidth from '@material-ui/core/withWidth'
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Radio from '@material-ui/core/Radio'
 
 
-import { Box, Typography } from '@material-ui/core'
+import { Typography } from '@material-ui/core'
 import red from '@material-ui/core/colors/red'
-import EuroInput from '../Generic/EuroInput'
+import EuroInputWithoutTaxe from '../Generic/EuroInputWithoutTaxe'
 import HourInput from '../Generic/HourInput'
 import TooltipOnFocus from '../Generic/TooltipOnFocus'
 import warn from '../../images/warn.png'
+import { mobileBreakpoint, MAXHOURCANWORK } from '../../constants'
 
 const Title = styled(Typography)`
   && {
@@ -88,8 +92,22 @@ const CollapsedTitle = styled.div`
   cursor: pointer;
 `
 
+const QuestionLabel = styled(Typography)`
+  && {
+    flex-shrink: 1;
+
+    @media (max-width: ${mobileBreakpoint}) {
+      margin-bottom: 0.5rem;
+    }
+  }
+  `
+
 
 export class CreatorQuestion extends PureComponent {
+  state = {
+    timeWorked: null
+  }
+
   onChange = ({ target: { name: fieldName, value: _value }, type }) => {
     let value = _value
     if (type === 'blur' && fieldName.startsWith('employerName')) {
@@ -104,6 +122,7 @@ export class CreatorQuestion extends PureComponent {
       name,
       value,
       index: this.props.index,
+      from: 'enterprises'
     })
   }
 
@@ -119,6 +138,49 @@ export class CreatorQuestion extends PureComponent {
       )}
     </div>
   )
+
+  updateTimeworked = (time) => {
+    this.setState({ timeWorked: time });
+    switch (time) {
+      case "no":
+        this.props.onChange({
+          name: "workHours",
+          value: 1,
+          index: this.props.index,
+          from: 'enterprises'
+        })
+        this.props.onChange({
+          name: "turnover",
+          value: 0,
+          index: this.props.index,
+          from: 'enterprises'
+        })
+        break;
+      case "alf":
+        this.props.onChange({
+          name: "workHours",
+          value: "",
+          index: this.props.index,
+          from: 'enterprises'
+        })
+        this.props.onChange({
+          name: "turnover",
+          value: 0,
+          index: this.props.index,
+          from: 'enterprises'
+        })
+        break;
+      case "full":
+        this.props.onChange({
+          name: "workHours",
+          value: MAXHOURCANWORK,
+          index: this.props.index,
+          from: 'enterprises'
+        })
+        break;
+      default: break;
+    }
+  }
 
   render() {
     const {
@@ -150,62 +212,80 @@ export class CreatorQuestion extends PureComponent {
           </RemoveButton>}
         </CollapsedTitle>}
         {!collapsed && <><StyledMain>
-          <Box display="flex">
-            <Box flex={1}>
-              <StyledTextField
-                id={`workHours[${index}]`}
-                className="root-work-hours"
-                label={this.renderLabel({
-                  id: `workHours[${index}]`,
-                  label: "Nombre d'heures",
-                  content:
-                    'Indiquez les heures qui seront inscrites sur votre fiche de paie',
-                  showTooltip,
-                })}
-                name={`workHours[${index}]`}
-                value={workHours.value}
-                onChange={this.onChange}
-                error={!!workHours.error}
-                helperText={workHours.error}
-                InputProps={{
-                  inputComponent: HourInput,
-                }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                inputProps={{
-                  maxLength: 4,
-                  'aria-describedby': `workHoursDescription[${index}]`,
-                }}
-                fullWidth={verticalLayout}
-              />
-            </Box>
+          <QuestionLabel>Avez-vous travaillé pour votre entreprise ?</QuestionLabel>
+          <RadioGroup
+            aria-label="Avez-vous travaillé pour votre entreprise ?"
+            value={this.state.timeWorked}
+            onChange={(val) => this.updateTimeworked(val.target.value)}
+            style={{ marginBottom: '1.5rem' }}
+          >
+            <FormControlLabel
+              value="no"
+              control={<Radio color="primary" />}
+              label="Non, pas ce mois-ci"
+            />
+            <FormControlLabel
+              value="alf"
+              control={<Radio color="primary" />}
+              label="Oui, à temps partiel"
+            />
+            <FormControlLabel
+              value="full"
+              control={<Radio color="primary" />}
+              label="Oui, à temps plein"
+            />
+          </RadioGroup>
+          {this.state.timeWorked === "alf" &&
+            <StyledTextField
+              id={`creator-workHours[${index}]`}
+              className="root-work-hours"
+              label={this.renderLabel({
+                id: `creator-workHours[${index}]`,
+                label: "Estimation du nombre d'heures travaillées",
+                content:
+                  "Indiquez une estimation du nombre d'heures travaillés.",
+                showTooltip,
+              })}
+              name={`workHours[${index}]`}
+              value={workHours.value}
+              onChange={this.onChange}
+              error={!!workHours.error}
+              helperText={workHours.error}
+              InputProps={{
+                inputComponent: HourInput,
+              }}
+              // eslint-disable-next-line react/jsx-no-duplicate-props
+              inputProps={{
+                maxLength: 4,
+                'aria-describedby': `workHoursDescription[${index}]`,
+              }}
+              fullWidth={verticalLayout}
+            />}
 
-            <Box flex={1} style={{ marginLeft: '20px' }}>
-              <StyledTextField
-                id={`turnover[${index}]`}
-                className="root-salary"
-                label={this.renderLabel({
-                  id: `turnover[${index}]`,
-                  label: "Montant chiffre d'affaire",
-                  content: 'Déclarez le salaire brut pour cet employeur',
-                  showTooltip,
-                })}
-                name={`turnover[${index}]`}
-                value={turnover.value}
-                onChange={this.onChange}
-                error={!!turnover.error}
-                helperText={turnover.error}
-                InputProps={{
-                  inputComponent: EuroInput,
-                }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                inputProps={{
-                  maxLength: 10,
-                  'aria-describedby': `salaryDescription[${index}]`,
-                }}
-                fullWidth={verticalLayout}
-              />
-            </Box>
-          </Box>
+          <StyledTextField
+            id={`creator-turnover[${index}]`}
+            className="root-salary"
+            label={this.renderLabel({
+              id: `creator-turnover[${index}]`,
+              label: "Montant chiffre d'affaire",
+              content: "Déclarez votre chiffre d'affaire",
+              showTooltip,
+            })}
+            name={`turnover[${index}]`}
+            value={turnover.value}
+            onChange={this.onChange}
+            error={!!turnover.error}
+            helperText={turnover.error}
+            InputProps={{
+              inputComponent: EuroInputWithoutTaxe,
+            }}
+            // eslint-disable-next-line react/jsx-no-duplicate-props
+            inputProps={{
+              maxLength: 10,
+              'aria-describedby': `salaryDescription[${index}]`,
+            }}
+            fullWidth={verticalLayout}
+          />
         </StyledMain></>}
       </StyledContainer>
     )
