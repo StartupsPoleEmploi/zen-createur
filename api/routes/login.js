@@ -48,10 +48,7 @@ router.get('/callback', async (req, res) => {
     if (req.session.state !== req.query.state || !req.query.code) {
       return res.redirect('/?loginFailed')
     }
-    const authToken = await userCtrl.getAuthToken(
-      req.query.code,
-      req.session.nonce,
-    )
+    const authToken = await userCtrl.getAuthToken(req.query.code, req.session.nonce)
     req.session.userSecret = {
       accessToken: authToken.token.access_token,
       refreshToken: authToken.token.refresh_token,
@@ -65,9 +62,7 @@ router.get('/callback', async (req, res) => {
     const userinfo = await userCtrl.getUserinfo(authToken)
     let dbUser = await User.query().findOne({ peId: userinfo.peId })
     if (!dbUser) {
-      // user is not in the DB, so the user is not acceptable (is not asking to "Asmat")
-      // PS: we take all "Asmat" from datalake (view code on file /lib/importUserFromDatalake.js)
-      // so we only insert the user into the DB and not Authorize him
+      // user is not in the DB, so the user is not acceptable
       // NOTE: the user is not add to mailjet and doesn't receive any message
       const userToSave = {
         ...pick(userinfo, ['peId', 'email', 'firstName', 'lastName', 'gender']),
@@ -75,36 +70,24 @@ router.get('/callback', async (req, res) => {
         isAuthorized: false,
         registeredAt: new Date(),
       }
-      dbUser = await User.query()
-        .insert(userToSave)
-        .returning('*')
+      dbUser = await User.query().insert(userToSave).returning('*')
       canSendDeclaration = false
       hasAlreadySentDeclaration = false
-    } else {
-      // the user is in DB, we get it from datalake file /lib/importUserFromDatalake.js
-      // eslint-disable-next-line no-lonely-if
-      if (!dbUser.registeredAt) {
-        // first login, need to set registerAt
-        if (config.get('shouldSendTransactionalEmails') && dbUser.email) {
-          // Note: We do not wait for Mailjet to answer to send data back to the user
-          mailjet
-            .addUser(dbUser)
-            .then(() => {
-              if (dbUser.isAuthorized) {
-                return sendSubscriptionConfirmation(dbUser)
-              }
-            })
-            .catch((e) => {
-              winston.error(
-                '[Login] error when add user to mailjet and send it the confirmation email',
-                e,
-              )
-            })
-        }
-        dbUser = await dbUser
-          .$query()
-          .patch({ registeredAt: new Date() })
-          .returning('*')
+      if (config.get('shouldSendTransactionalEmails') && dbUser.email) {
+        // Note: We do not wait for Mailjet to answer to send data back to the user
+        mailjet
+          .addUser(dbUser)
+          .then(() => {
+            if (dbUser.isAuthorized) {
+              return sendSubscriptionConfirmation(dbUser)
+            }
+          })
+          .catch((e) => {
+            winston.error(
+              '[Login] error when add user to mailjet and send it the confirmation email',
+              e,
+            )
+          })
       }
     }
 
