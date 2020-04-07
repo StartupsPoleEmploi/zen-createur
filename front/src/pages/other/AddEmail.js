@@ -99,7 +99,7 @@ export class AddEmail extends Component {
     }
 
     superagent
-      .patch('/api/user', { email: this.state.email })
+      .patch('/api/user/add-email', { email: this.state.email })
       .set('CSRF-Token', this.props.csrfToken)
       .then(() => {
         this.props.setEmail(this.state.email.trim())

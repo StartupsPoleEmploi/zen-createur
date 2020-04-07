@@ -86,7 +86,7 @@ export class EmailForm extends PureComponent {
     }
 
     superagent
-      .patch('/api/user', { email: this.state.email })
+      .patch('/api/user/add-email', { email: this.state.email })
       .set('CSRF-Token', this.props.csrfToken)
       .then(() => {
         this.setState({ isSuccess: true, isError: false })

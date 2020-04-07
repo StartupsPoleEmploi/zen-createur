@@ -74,7 +74,7 @@ router.post('/disable-need-employer-on-boarding', (req, res, next) => {
     .catch(next)
 })
 
-router.patch('/', (req, res, next) => {
+router.patch('/add-email', (req, res, next) => {
   // This is only intended to let an user add his email,
   // not modify it.
   if (!req.session.user || !req.session.user.id || req.session.user.email) {
