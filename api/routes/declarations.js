@@ -214,7 +214,7 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
     }
   } catch (e) {
     Raven.captureException(e)
-    return res.status(400).json('Invalid declaration')
+    return res.status(400).json(e)
   }
 
   return Declaration.query()

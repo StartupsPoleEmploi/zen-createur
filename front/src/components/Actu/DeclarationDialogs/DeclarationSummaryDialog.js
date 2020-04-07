@@ -158,16 +158,16 @@ const DeclarationSummaryDialog = ({
                     {_isNaN(totalSalary) || totalSalary === 0 ? (
                       '-'
                     ) : (
-                      <NumberFormat
-                        thousandSeparator=" "
-                        decimalSeparator=","
-                        decimalScale={0}
-                        fixedDecimalScale
-                        displayType="text"
-                        suffix=" €"
-                        value={totalSalary}
-                      />
-                    )}
+                        <NumberFormat
+                          thousandSeparator=" "
+                          decimalSeparator=","
+                          decimalScale={0}
+                          fixedDecimalScale
+                          displayType="text"
+                          suffix=" €"
+                          value={totalSalary}
+                        />
+                      )}
                   </DeclarationValues>
                 </div>
               </>
@@ -254,25 +254,25 @@ const DeclarationSummaryDialog = ({
                   Oui, je souhaite rester inscrit à Pôle emploi
                 </DeclarationValues>
               ) : (
-                <>
-                  <DeclarationValues>
-                    Non, je ne souhaite pas rester inscrit à Pôle emploi
+                  <>
+                    <DeclarationValues>
+                      Non, je ne souhaite pas rester inscrit à Pôle emploi
                   </DeclarationValues>
 
-                  <DeclarationValues>
-                    Date de fin : {formatDate(jobSearch.endDate)}
-                  </DeclarationValues>
-                  <DeclarationValues>
-                    Motif :{' '}
-                    {declaration.jobSearchStopMotive ===
-                      jobSearchEndMotive.WORK && 'Reprise du travail'}
-                    {declaration.jobSearchStopMotive ===
-                      jobSearchEndMotive.RETIREMENT && 'Retraite'}
-                    {declaration.jobSearchStopMotive ===
-                      jobSearchEndMotive.OTHER && 'Autre'}
-                  </DeclarationValues>
-                </>
-              )}
+                    <DeclarationValues>
+                      Date de fin : {formatDate(jobSearch.endDate)}
+                    </DeclarationValues>
+                    <DeclarationValues>
+                      Motif :{' '}
+                      {declaration.jobSearchStopMotive ===
+                        jobSearchEndMotive.WORK && 'Reprise du travail'}
+                      {declaration.jobSearchStopMotive ===
+                        jobSearchEndMotive.RETIREMENT && 'Retraite'}
+                      {declaration.jobSearchStopMotive ===
+                        jobSearchEndMotive.OTHER && 'Autre'}
+                    </DeclarationValues>
+                  </>
+                )}
             </div>
           </DeclarationContent>
         </>

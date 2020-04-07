@@ -361,6 +361,7 @@ export class Employers extends Component {
   onSubmit = ({ ignoreErrors = false } = {}) => {
     this.setState({ isValidating: true })
 
+    console.log(this.state)
     return this.props
       .postEmployers({
         employers: getEmployersMapFromFormData(this.state.employers),
@@ -504,7 +505,7 @@ export class Employers extends Component {
   renderEmployerPanel = () => {
     const { employers } = this.state
 
-    return (<>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].hasWorked && <Box flex={1}><BoxPanel style={{ marginTop: '70px' }}><Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
+    return (<>{this.props.declarations[0].hasEmployers && <Box flex={1}><BoxPanel style={{ marginTop: '70px' }}><Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
       <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
       <Block style={{ backgroundColor: 'transparent' }}>
         {employers.length <= 1 && (<p>Pour quel employeur avez-vous travaillé<br />en {moment(this.props.activeMonth).format('MMMM YYYY')} ?</p>)}
@@ -545,7 +546,7 @@ export class Employers extends Component {
     const { enterprises } = this.state
 
 
-    return (<>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].taxeDue && <Box flex={1}><BoxPanel><Block style={{ paddingTop: '50px' }}>
+    return (<>{this.props.declarations[0].taxeDue && <Box flex={1}><BoxPanel><Block style={{ paddingTop: '50px' }}>
       <Title variant="h6" component="h1">
         <b>{enterprises.length > 1 ? 'MES ENTREPRISES' : 'MON ENTREPRISE'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
       {enterprises.map(this.renderCreatorQuestion)}</Block></BoxPanel></Box>}</>)
@@ -564,10 +565,10 @@ export class Employers extends Component {
     return (
       <StyledEmployers>
 
-        <Box display="flex">
+        {this.props.declarations && this.props.declarations.length && <><Box display="flex">
           {this.renderEmployerPanel()}
           {this.renderCreatorPanel()}
-        </Box>
+        </Box></>}
 
         <StyledAlwaysVisibleContainer
           scrollButtonTopValue="0"

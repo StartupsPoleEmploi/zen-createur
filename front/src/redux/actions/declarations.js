@@ -96,10 +96,10 @@ const getUploadErrorMessage = (err) =>
   err.status === 413
     ? `Erreur : Fichier trop lourd (limite : 5000ko) ou dépassant la taille autorisée : ${MAX_PDF_PAGE} pages`
     : err.status === 400
-    ? 'Fichier invalide (accepté : .png, .jpg, .pdf)'
-    : err.status === 422
-    ? `Erreur : Le fichier que vous avez envoyé est illisible et ne peut être traité. Merci de vérifier le document`
-    : `Désolé, une erreur s'est produite. Merci de vérifier que le fichier que vous envoyez est valide, et de réessayer ultérieurement`
+      ? 'Fichier invalide (accepté : .png, .jpg, .pdf)'
+      : err.status === 422
+        ? `Erreur : Le fichier que vous avez envoyé est illisible et ne peut être traité. Merci de vérifier le document`
+        : `Désolé, une erreur s'est produite. Merci de vérifier que le fichier que vous envoyez est valide, et de réessayer ultérieurement`
 
 export const uploadEmployerFile = ({
   documentId,
@@ -304,11 +304,14 @@ export const hideInfoFilePreview = () => ({
   type: HIDE_INFO_FILE_PREVIEW,
 })
 
-export const postDeclaration = (formData) => (dispatch, getState) =>
-  superagent
+export const postDeclaration = (formData) => (dispatch, getState) => {
+  console.log(dispatch, getState)
+
+  return superagent
     .post('/api/declarations', formData)
     .set('CSRF-Token', getState().userReducer.user.csrfToken)
     .then((res) => {
+      console.log(res)
       if (res.body.hasFinishedDeclaringEmployers) {
         dispatch({ type: SHOW_DECLARATION_TRANSMITTED_DIALOG })
       }
@@ -316,9 +319,11 @@ export const postDeclaration = (formData) => (dispatch, getState) =>
     })
     .catch(catchMaintenance)
     .catch((err) => {
+      console.log(err)
       if (manageErrorCsrfToken(err, dispatch)) return
       throw err
     })
+}
 
 export const postEmployers = (formData) => (dispatch, getState) =>
   superagent
