@@ -29,7 +29,6 @@ import DeclarationDialogsHandler from '../../components/Actu/DeclarationDialogs/
 import EmployerQuestion from '../../components/Actu/EmployerQuestion'
 import LoginAgainDialog from '../../components/Actu/LoginAgainDialog'
 import PreviousEmployersDialog from '../../components/Actu/PreviousEmployersDialog'
-import WorkSummary from '../../components/Actu/WorkSummary'
 import AlwaysVisibleContainer from '../../components/Generic/AlwaysVisibleContainer'
 import MainActionButton from '../../components/Generic/MainActionButton'
 import {
@@ -62,12 +61,6 @@ const Title = styled(Typography)`
     font-weight: 400;
     padding-bottom: 1.5rem;
   }
-`
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 `
 
 const AddEmployersButtonContainer = styled.div`
@@ -559,7 +552,7 @@ export class Employers extends Component {
   }
 
   render() {
-    const { employers, error, isLoading } = this.state
+    const { error, isLoading } = this.state
 
     if (isLoading) {
       return (
@@ -576,37 +569,25 @@ export class Employers extends Component {
           {this.renderCreatorPanel()}
         </Box>
 
+        <StyledAlwaysVisibleContainer
+          scrollButtonTopValue="0"
+          style={{ marginTop: '2rem', alignSelf: 'stretch' }}
+        >
+          {error && <ErrorMessage>{error}</ErrorMessage>}
 
-
-
-
-
-        <Form>
-
-
-
-          <StyledAlwaysVisibleContainer
-            scrollButtonTopValue="0"
-            style={{ marginTop: '2rem', alignSelf: 'stretch' }}
-          >
-            {error && <ErrorMessage>{error}</ErrorMessage>}
-
-            <WorkSummary employers={employers} />
-
-            <ButtonsContainer>
-              <StyledMainAction primary onClick={this.openDialog}>
-                Envoyer mon
+          <ButtonsContainer>
+            <StyledMainAction primary onClick={this.openDialog}>
+              Envoyer mon
                 <br />
                 actualisation
               </StyledMainAction>
-              <StyledMainAction primary={false} onClick={this.saveAndRedirect}>
-                Enregistrer
+            <StyledMainAction primary={false} onClick={this.saveAndRedirect}>
+              Enregistrer
                 <br />
                 et finir plus tard
               </StyledMainAction>
-            </ButtonsContainer>
-          </StyledAlwaysVisibleContainer>
-        </Form>
+          </ButtonsContainer>
+        </StyledAlwaysVisibleContainer>
 
         <DeclarationDialogsHandler
           isLoading={this.state.isValidating}
