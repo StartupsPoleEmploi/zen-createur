@@ -29,7 +29,6 @@ import DeclarationDialogsHandler from '../../components/Actu/DeclarationDialogs/
 import EmployerQuestion from '../../components/Actu/EmployerQuestion'
 import LoginAgainDialog from '../../components/Actu/LoginAgainDialog'
 import PreviousEmployersDialog from '../../components/Actu/PreviousEmployersDialog'
-import WorkSummary from '../../components/Actu/WorkSummary'
 import AlwaysVisibleContainer from '../../components/Generic/AlwaysVisibleContainer'
 import MainActionButton from '../../components/Generic/MainActionButton'
 import {
@@ -47,6 +46,7 @@ import {
 } from '../../lib/salary'
 import { setNoNeedEmployerOnBoarding as setNoNeedEmployerOnBoardingAction } from '../../redux/actions/user'
 import { ucfirst } from '../../utils/utils.tool'
+import { CreatorQuestion } from '../../components/Actu/CreatorQuestion'
 
 const StyledEmployers = styled.div`
   padding-bottom: 4rem;
@@ -61,12 +61,6 @@ const Title = styled(Typography)`
     font-weight: 400;
     padding-bottom: 1.5rem;
   }
-`
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 `
 
 const AddEmployersButtonContainer = styled.div`
@@ -136,7 +130,7 @@ const StyledMainAction = styled(MainActionButton)`
 `
 
 const BoxPanel = styled.div`
-  margin: 70px auto 0 auto;
+  margin: 20px auto 0 auto;
   padding: 0 40px;
   width: 520px;
 
@@ -157,6 +151,11 @@ const employerTemplate = {
   workHours: { value: '', error: null },
   salary: { value: '', error: null },
   hasEndedThisMonth: { value: null, error: null },
+}
+
+const enterpriseTemplate = {
+  workHours: { value: '', error: null },
+  turnover: { value: '', error: null },
 }
 
 const getEmployersMapFromFormData = (employers) =>
@@ -227,6 +226,7 @@ export class Employers extends Component {
 
   state = {
     employers: [{ ...employerTemplate }],
+    enterprises: [{ ...enterpriseTemplate }],
     previousEmployers: [],
     isLoading: true,
     error: null,
@@ -237,6 +237,7 @@ export class Employers extends Component {
     isValidating: false,
     isLoggedOut: false,
     selectedEmployer: 0,
+    selectedEnterprise: 0,
   }
 
   componentDidMount() {
@@ -322,19 +323,20 @@ export class Employers extends Component {
     }))
 
   // onChange - let the user type whatever he wants, show errors
-  onChange = ({ index, name, value }) => {
+  onChange = ({ index, name, value, from }) => {
     const error = getFieldError({ name, value })
 
-    this.updateValue({ index, name, value, error })
+    this.updateValue({ index, name, value, error, from })
   }
 
-  updateValue = ({ index, name, value, error }) =>
-    this.setState(({ employers: prevEmployers }) => ({
-      employers: prevEmployers.map((employer, key) =>
+  updateValue = ({ index, name, value, error, from }) => {
+    this.setState(({ [from]: prevEmployers }) => ({
+      [from]: prevEmployers.map((employer, key) =>
         key === index ? { ...employer, [name]: { value, error } } : employer,
       ),
       error: null,
     }))
+  }
 
   onRemove = (index) => {
     let selectedEmployer = index;
@@ -359,6 +361,7 @@ export class Employers extends Component {
   onSubmit = ({ ignoreErrors = false } = {}) => {
     this.setState({ isValidating: true })
 
+    console.log(this.state)
     return this.props
       .postEmployers({
         employers: getEmployersMapFromFormData(this.state.employers),
@@ -502,7 +505,7 @@ export class Employers extends Component {
   renderEmployerPanel = () => {
     const { employers } = this.state
 
-    return (<>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].hasWorked && <Box flex={1}><BoxPanel><Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
+    return (<>{this.props.declarations[0].hasEmployers && <Box flex={1}><BoxPanel style={{ marginTop: '70px' }}><Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
       <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
       <Block style={{ backgroundColor: 'transparent' }}>
         {employers.length <= 1 && (<p>Pour quel employeur avez-vous travaillé<br />en {moment(this.props.activeMonth).format('MMMM YYYY')} ?</p>)}
@@ -523,11 +526,34 @@ export class Employers extends Component {
     </BoxPanel></Box>}</>)
   }
 
-  renderCreatorPanel = () => <>{this.props.declarations && this.props.declarations.length && this.props.declarations[0].taxeDue && <Box flex={1}><BoxPanel><Title variant="h6" component="h1">
-    <b>MON ENTREPRISE</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>creator</BoxPanel></Box>}</>
+  renderCreatorQuestion = (data, index) => (
+    <CreatorQuestion
+      {...data}
+      key={index}
+      index={index}
+      onChange={this.onChange}
+      onRemove={this.onRemove}
+      onCollapsed={() => this.onCollapsed(index)}
+      defaultName={`Entreprise ${index + 1}`}
+      collapsed={this.state.selectedEnterprise !== index}
+      showCollapsedTitle={this.state.enterprises.length > 1}
+      canRemove={this.state.enterprises.length > 1}
+      activeMonth={this.props.activeMonth}
+    />
+  )
+
+  renderCreatorPanel = () => {
+    const { enterprises } = this.state
+
+
+    return (<>{this.props.declarations[0].taxeDue && <Box flex={1}><BoxPanel><Block style={{ paddingTop: '50px' }}>
+      <Title variant="h6" component="h1">
+        <b>{enterprises.length > 1 ? 'MES ENTREPRISES' : 'MON ENTREPRISE'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
+      {enterprises.map(this.renderCreatorQuestion)}</Block></BoxPanel></Box>}</>)
+  }
 
   render() {
-    const { employers, error, isLoading } = this.state
+    const { error, isLoading } = this.state
 
     if (isLoading) {
       return (
@@ -539,42 +565,30 @@ export class Employers extends Component {
     return (
       <StyledEmployers>
 
-        <Box display="flex">
+        {this.props.declarations && this.props.declarations.length && <><Box display="flex">
           {this.renderEmployerPanel()}
           {this.renderCreatorPanel()}
-        </Box>
+        </Box></>}
 
+        <StyledAlwaysVisibleContainer
+          scrollButtonTopValue="0"
+          style={{ marginTop: '2rem', alignSelf: 'stretch' }}
+        >
+          {error && <ErrorMessage>{error}</ErrorMessage>}
 
-
-
-
-
-        <Form>
-
-
-
-          <StyledAlwaysVisibleContainer
-            scrollButtonTopValue="0"
-            style={{ marginTop: '2rem', alignSelf: 'stretch' }}
-          >
-            {error && <ErrorMessage>{error}</ErrorMessage>}
-
-            <WorkSummary employers={employers} />
-
-            <ButtonsContainer>
-              <StyledMainAction primary onClick={this.openDialog}>
-                Envoyer mon
+          <ButtonsContainer>
+            <StyledMainAction primary onClick={this.openDialog}>
+              Envoyer mon
                 <br />
                 actualisation
               </StyledMainAction>
-              <StyledMainAction primary={false} onClick={this.saveAndRedirect}>
-                Enregistrer
+            <StyledMainAction primary={false} onClick={this.saveAndRedirect}>
+              Enregistrer
                 <br />
                 et finir plus tard
               </StyledMainAction>
-            </ButtonsContainer>
-          </StyledAlwaysVisibleContainer>
-        </Form>
+          </ButtonsContainer>
+        </StyledAlwaysVisibleContainer>
 
         <DeclarationDialogsHandler
           isLoading={this.state.isValidating}

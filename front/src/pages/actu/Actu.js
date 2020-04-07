@@ -144,7 +144,6 @@ const InfoImg = styled(InfoOutlinedIcon)`
 `
 
 const formFields = [
-  'hasWorked',
   'hasTrained',
   'hasInternship',
   'hasSickLeave',
@@ -194,6 +193,7 @@ export class Actu extends Component {
     isLoggedOut: false,
     isCreator: null,
     creatorTaxeRate: null,
+    hasEmployers: null,
     completeCreatorQuestion: false,
     infos: [],
     ...formFields.reduce((prev, field) => ({ ...prev, [field]: null }), {}),
@@ -294,7 +294,6 @@ export class Actu extends Component {
 
   hasAnsweredMainQuestions = () =>
     ![
-      this.state.hasWorked,
       this.state.hasTrained,
       this.state.hasInternship,
       this.state.hasSickLeave,
@@ -410,10 +409,13 @@ export class Actu extends Component {
 
     this.setState({ isValidating: true })
 
+    const hasWorked = (this.state.hasEmployers || this.state.creatorTaxeRate !== null);
+    const objectToSend = { ...this.state, hasWorked, ignoreErrors }
+
     return this.props
-      .postDeclaration({ ...this.state, ignoreErrors })
+      .postDeclaration(objectToSend)
       .then(() =>
-        this.props.history.push(this.state.hasWorked ? '/employers' : '/files'),
+        this.props.history.push(hasWorked ? '/employers' : '/files'),
       )
       .catch((err) => {
         if (
@@ -568,15 +570,15 @@ export class Actu extends Component {
   }
 
   renderCreatorQuestions = () => {
-    const isValidating = this.state.hasWorked !== null && this.state.isCreator !== null && ((this.state.isCreator === true && this.state.creatorTaxeRate !== null) || this.state.isCreator === false);
+    const isValidating = this.state.hasEmployers !== null && this.state.isCreator !== null && ((this.state.isCreator === true && this.state.creatorTaxeRate !== null) || this.state.isCreator === false);
     const helperText = <>Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au mois ou au trimestre. En cas de doute, vous pouvez consulter votre compte en ligne sur le site <u>Autoentrepreneur.urssaf.fr.</u></>;
 
     return (<StyledPaper>
       <StyledList>
         <DeclarationQuestion
           label="Avez-vous travaillé pour un employeur ce mois-ci?"
-          name="hasWorked"
-          value={this.state.hasWorked}
+          name="hasEmployers"
+          value={this.state.hasEmployers}
           onAnswer={this.onAnswer}
         />
         <DeclarationQuestion
@@ -584,7 +586,7 @@ export class Actu extends Component {
           name="isCreator"
           value={this.state.isCreator}
           onAnswer={this.onAnswer}
-          style={{ visibility: this.state.hasWorked === null ? 'hidden' : null }}
+          style={{ visibility: this.state.hasEmployers === null ? 'hidden' : null }}
         />
         <div
           style={{ marginTop: '1rem', visibility: this.state.isCreator === true ? null : 'hidden' }}>
@@ -621,7 +623,7 @@ export class Actu extends Component {
         <FinalButtonsContainer>
           <MainActionButton
             primary
-            onClick={this.validateCreatorQuestions}
+            onClick={() => this.validateCreatorQuestions(true)}
             disabled={!isValidating}
           >
             Suivant
@@ -831,7 +833,7 @@ export class Actu extends Component {
 
               <MainActionButton
                 primary
-                onClick={this.state.hasWorked ? this.onSubmit : this.openDialog}
+                onClick={this.state.hasEmployers || this.state.creatorTaxeRate !== null ? this.onSubmit : this.openDialog}
                 disabled={!this.hasAnsweredMainQuestions() || isValidating}
               >
                 Suivant

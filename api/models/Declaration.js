@@ -38,6 +38,7 @@ class Declaration extends BaseModel {
       required: [
         'userId',
         'hasWorked',
+        'hasEmployers',
         'hasTrained',
         'hasInternship',
         'hasSickLeave',
@@ -54,6 +55,7 @@ class Declaration extends BaseModel {
         userId: { type: 'integer' },
         monthId: { type: ['integer'] },
         hasWorked: { type: 'boolean' },
+        hasEmployers: { type: 'boolean' },
         hasTrained: { type: 'boolean' },
         hasInternship: { type: 'boolean' },
         hasSickLeave: { type: 'boolean' },
@@ -84,7 +86,7 @@ class Declaration extends BaseModel {
         },
         metadata: { type: 'object' },
         transmittedAt: { type: ['string', 'object', 'null'] },
-        taxeDue: { type: ['string', 'null'], enum: ['monthly', 'quaterly'] }
+        taxeDue: { type: ['string', 'null'], enum: [null, 'monthly', 'quaterly'] }
       }
     };
   }
