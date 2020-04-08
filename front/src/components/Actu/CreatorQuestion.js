@@ -113,6 +113,11 @@ const QuestionLabel = styled(Typography)`
 
 
 export class CreatorQuestion extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.turnoverInput = React.createRef();
+  }
+
   state = {
     timeWorked: null
   }
@@ -164,6 +169,7 @@ export class CreatorQuestion extends PureComponent {
           index: this.props.index,
           from: 'enterprises'
         })
+        this.turnoverInput.current.focus();
         break;
       case "alf":
         this.props.onChange({
@@ -187,6 +193,7 @@ export class CreatorQuestion extends PureComponent {
           index: this.props.index,
           from: 'enterprises'
         })
+        this.turnoverInput.current.focus();
         break;
       default: break;
     }
@@ -277,6 +284,7 @@ export class CreatorQuestion extends PureComponent {
               helperText={workHours.error}
               InputProps={{
                 inputComponent: HourInput,
+                autoFocus: true
               }}
               // eslint-disable-next-line react/jsx-no-duplicate-props
               inputProps={{
@@ -309,6 +317,7 @@ export class CreatorQuestion extends PureComponent {
               'aria-describedby': `salaryDescription[${index}]`,
             }}
             fullWidth={verticalLayout}
+            inputRef={this.turnoverInput}
           />
         </StyledMain></>}
       </StyledContainer>

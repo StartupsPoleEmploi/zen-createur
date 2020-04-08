@@ -326,8 +326,6 @@ export class Employers extends Component {
   onChange = ({ index, name, value, from, ignoreError = false }) => {
     let error = null;
 
-    console.log(name, value, from)
-
     if (!ignoreError) {
       error = getFieldError({ name, value })
     }
@@ -350,8 +348,6 @@ export class Employers extends Component {
       selectedEmployer = index - 1;
     }
 
-    console.log(index, from, selectedEmployer)
-
     this.setState(({ [from]: employers }) => ({
       [from]: employers.filter((e, key) => key !== index),
       selectedEmployer
@@ -369,7 +365,6 @@ export class Employers extends Component {
   onSubmit = ({ ignoreErrors = false } = {}) => {
     this.setState({ isValidating: true })
 
-    console.log(this.state)
     return this.props
       .postEmployers({
         employers: getEmployersMapFromFormData(this.state.employers),
