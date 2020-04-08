@@ -8,15 +8,16 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Radio from '@material-ui/core/Radio'
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
 
 
-import { Typography } from '@material-ui/core'
+import { Typography, Box } from '@material-ui/core'
 import red from '@material-ui/core/colors/red'
 import EuroInputWithoutTaxe from '../Generic/EuroInputWithoutTaxe'
 import HourInput from '../Generic/HourInput'
 import TooltipOnFocus from '../Generic/TooltipOnFocus'
 import warn from '../../images/warn.png'
-import { mobileBreakpoint, MAXHOURCANWORK } from '../../constants'
+import { mobileBreakpoint, MAXHOURCANWORK, helpColor } from '../../constants'
 
 const Title = styled(Typography)`
   && {
@@ -75,6 +76,14 @@ const StyledTextField = styled(TextField)`
 
   label > div {
     display: flex;
+  }
+`
+
+const InfoTooltipImg = styled(InfoOutlinedIcon)`
+  && {
+    color: ${helpColor};
+    vertical-align: sub;
+    margin-left: 0.5rem;
   }
 `
 
@@ -161,7 +170,8 @@ export class CreatorQuestion extends PureComponent {
           name: "workHours",
           value: "",
           index: this.props.index,
-          from: 'enterprises'
+          from: 'enterprises',
+          ignoreError: true
         })
         this.props.onChange({
           name: "turnover",
@@ -219,21 +229,36 @@ export class CreatorQuestion extends PureComponent {
             onChange={(val) => this.updateTimeworked(val.target.value)}
             style={{ marginBottom: '1.5rem' }}
           >
-            <FormControlLabel
-              value="no"
-              control={<Radio color="primary" />}
-              label="Non, pas ce mois-ci"
-            />
-            <FormControlLabel
-              value="alf"
-              control={<Radio color="primary" />}
-              label="Oui, à temps partiel"
-            />
-            <FormControlLabel
-              value="full"
-              control={<Radio color="primary" />}
-              label="Oui, à temps plein"
-            />
+            <Box display="flex" alignItems="center">
+              <Box flex={1}><FormControlLabel
+                value="no"
+                control={<Radio color="primary" />}
+                label="Non, pas ce mois-ci"
+              /></Box>
+              <TooltipOnFocus content="Si vous déclarez ne pas avoir travaillé pour votre entreprise, le nombre d'heure inscrit sur votre déclaration d'actualisation Pôle emploi sera de 1 heure. Si vous souhaitez arrêter l'activité de votre entreprise, vous devez le déclarer à Pôle emploi.">
+                <InfoTooltipImg />
+              </TooltipOnFocus>
+            </Box>
+            <Box display="flex" alignItems="center">
+              <Box flex={1}><FormControlLabel
+                value="alf"
+                control={<Radio color="primary" />}
+                label="Oui, à temps partiel"
+              /></Box>
+              <TooltipOnFocus content="Temps partiel est la ligne à remplir si n'avez pas travaillé tout ce mois-ci pour votre entreprise. Quelques heures ou plusieurs jours dans le mois ? Pour exemple, 7h équivaut à une journée pleine.">
+                <InfoTooltipImg />
+              </TooltipOnFocus>
+            </Box>
+            <Box display="flex" alignItems="center">
+              <Box flex={1}><FormControlLabel
+                value="full"
+                control={<Radio color="primary" />}
+                label="Oui, à temps plein"
+              /></Box>
+              <TooltipOnFocus content="Si vous déclarez avoir travaillé pour votre entreprise à temps plein pour ce mois, le nombre d'heure inscrit sur votre déclaration d'actualisation Pôle emploi sera de 151 heures.">
+                <InfoTooltipImg />
+              </TooltipOnFocus>
+            </Box>
           </RadioGroup>
           {this.state.timeWorked === "alf" &&
             <StyledTextField
@@ -244,7 +269,6 @@ export class CreatorQuestion extends PureComponent {
                 label: "Estimation du nombre d'heures travaillées",
                 content:
                   "Indiquez une estimation du nombre d'heures travaillés.",
-                showTooltip,
               })}
               name={`workHours[${index}]`}
               value={workHours.value}
@@ -268,7 +292,7 @@ export class CreatorQuestion extends PureComponent {
             label={this.renderLabel({
               id: `creator-turnover[${index}]`,
               label: "Montant chiffre d'affaire",
-              content: "Déclarez votre chiffre d'affaire",
+              content: "Vous devez renseigner un chiffre d'affaire en € TTC avant abattement, mis à jour avec le ou les montants facturés ce mois-ci.",
               showTooltip,
             })}
             name={`turnover[${index}]`}

@@ -14,6 +14,7 @@ const TooltipTitle = styled(Typography)`
     font-weight: bold;
     font-size: 1.6rem;
     padding-bottom: 1.5rem;
+    z-index: 100;
   }
 `
 
@@ -121,8 +122,8 @@ class TooltipOnFocus extends Component {
     })
 
   setTooltipIsOpen = (state, event) => {
-    this.setState({ tooltipIsOpen: state });
     if (event) { event.stopPropagation(); }
+    this.setState({ tooltipIsOpen: state });
   }
 
   render() {
@@ -134,7 +135,7 @@ class TooltipOnFocus extends Component {
         placement="bottom"
         open={this.state.tooltipIsOpen}
         // onOpen={() => this.setTooltipIsOpen(true)}
-        onClose={() => this.setTooltipIsOpen(false)}
+        // onClose={() => this.setTooltipIsOpen(false)}
         title={
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>

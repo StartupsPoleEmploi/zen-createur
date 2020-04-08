@@ -34,6 +34,7 @@ import ZnLayout from './components/ZnLayout'
 import NotAutorized from './pages/other/NotAutorized'
 import AddEmail from './pages/other/AddEmail'
 import Cgu from './pages/other/Cgu'
+import './styles/Main.css';
 
 class App extends Component {
   constructor(props) {
@@ -230,13 +231,13 @@ class App extends Component {
               user.isBlocked ? (
                 <Redirect to="/dashboard" />
               ) : (
-                <Actu
-                  {...props}
-                  activeMonth={activeMonth}
-                  declaration={activeDeclaration}
-                  user={user}
-                />
-              )
+                  <Actu
+                    {...props}
+                    activeMonth={activeMonth}
+                    declaration={activeDeclaration}
+                    user={user}
+                  />
+                )
             }
           />
           <PrivateRoute
@@ -247,8 +248,8 @@ class App extends Component {
               user.isBlocked ? (
                 <Redirect to="/dashboard" />
               ) : (
-                <Employers {...props} user={user} activeMonth={activeMonth} />
-              )
+                  <Employers {...props} user={user} activeMonth={activeMonth} />
+                )
             }
           />
 
