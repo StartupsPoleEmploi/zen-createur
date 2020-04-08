@@ -42,6 +42,7 @@ import {
   MIN_SALARY,
   MIN_WORK_HOURS,
   SALARY,
+  TURNOVER,
   WORK_HOURS,
 } from '../../lib/salary'
 import { setNoNeedEmployerOnBoarding as setNoNeedEmployerOnBoardingAction } from '../../redux/actions/user'
@@ -181,7 +182,7 @@ const getFieldError = ({ name, value }) => {
       return `Merci de corriger le nombre d'heures travaillées`
     }
   }
-  if (name === SALARY) {
+  if (name === SALARY || name === TURNOVER) {
     if (_isNaN(value)) {
       return `Merci de ne saisir que des chiffres`
     }
