@@ -323,8 +323,12 @@ export class Employers extends Component {
     }))
 
   // onChange - let the user type whatever he wants, show errors
-  onChange = ({ index, name, value, from }) => {
-    const error = getFieldError({ name, value })
+  onChange = ({ index, name, value, from, ignoreError = false }) => {
+    let error = null;
+
+    if (!ignoreError) {
+      error = getFieldError({ name, value })
+    }
 
     this.updateValue({ index, name, value, error, from })
   }
