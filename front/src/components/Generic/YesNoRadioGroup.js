@@ -47,13 +47,15 @@ const StyledRadio = styled(Radio)`
 const getFormValue = (value) => (value === null ? '' : value ? YES : NO)
 
 export class YesNoRadioGroup extends Component {
-  onChange = (event) =>
+  onChange = (event) => {
+    console.log(event, YES)
     this.props.onAnswer({
       target: {
         value: event.target.value === YES,
         name: this.props.name,
       },
     })
+  }
 
   render() {
     const { name, value, yesTooltipContent } = this.props
@@ -81,8 +83,8 @@ export class YesNoRadioGroup extends Component {
               {yesRadio}
             </TooltipOnFocus>
           ) : (
-            yesRadio
-          )
+              yesRadio
+            )
         }
         label={
           <span

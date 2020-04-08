@@ -157,7 +157,7 @@ export class EmployerQuestion extends PureComponent {
           <p>{collapsed ? 'AFFICHER' : 'MASQUER'}</p>
           <ArrowDropDown style={{ color: '#0065DB' }} />
           {canRemove && <RemoveButton
-            onClick={this.onRemove}
+            onClick={event => { event.stopPropagation(); this.onRemove() }}
             type="button"
             aria-label="Supprimer"
           >

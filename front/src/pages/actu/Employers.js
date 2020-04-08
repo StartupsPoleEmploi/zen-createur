@@ -326,6 +326,8 @@ export class Employers extends Component {
   onChange = ({ index, name, value, from, ignoreError = false }) => {
     let error = null;
 
+    console.log(name, value, from)
+
     if (!ignoreError) {
       error = getFieldError({ name, value })
     }
@@ -342,14 +344,16 @@ export class Employers extends Component {
     }))
   }
 
-  onRemove = (index) => {
+  onRemove = (index, from = 'employers') => {
     let selectedEmployer = index;
     if (this.state.selectedEmployer === index) {
       selectedEmployer = index - 1;
     }
 
-    this.setState(({ employers }) => ({
-      employers: employers.filter((e, key) => key !== index),
+    console.log(index, from, selectedEmployer)
+
+    this.setState(({ [from]: employers }) => ({
+      [from]: employers.filter((e, key) => key !== index),
       selectedEmployer
     }))
   }
@@ -483,6 +487,7 @@ export class Employers extends Component {
     this.setState({ showPreviousEmployersModal: false })
 
   onCollapsed = (index) => {
+    console.log('on collap', index)
     if (this.state.selectedEmployer === index) {
       this.setState({ selectedEmployer: -1 })
     } else {
@@ -496,7 +501,7 @@ export class Employers extends Component {
       key={index}
       index={index}
       onChange={this.onChange}
-      onRemove={this.onRemove}
+      onRemove={() => this.onRemove(index, 'employers')}
       onCollapsed={() => this.onCollapsed(index)}
       defaultName={`Employeur ${index + 1}`}
       collapsed={this.state.selectedEmployer !== index}
@@ -508,6 +513,8 @@ export class Employers extends Component {
 
   renderEmployerPanel = () => {
     const { employers } = this.state
+
+    console.log(this.state)
 
     return (<>{this.props.declarations[0].hasEmployers && <Box flex={1}><BoxPanel style={{ marginTop: '70px' }}><Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
       <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>
@@ -536,8 +543,6 @@ export class Employers extends Component {
       key={index}
       index={index}
       onChange={this.onChange}
-      onRemove={this.onRemove}
-      onCollapsed={() => this.onCollapsed(index)}
       defaultName={`Entreprise ${index + 1}`}
       collapsed={this.state.selectedEnterprise !== index}
       showCollapsedTitle={this.state.enterprises.length > 1}
