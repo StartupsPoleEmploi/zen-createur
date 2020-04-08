@@ -196,7 +196,7 @@ export class EmployerQuestion extends PureComponent {
                   id: `workHours[${index}]`,
                   label: "Nombre d'heures",
                   content:
-                    'Indiquez les heures qui seront inscrites sur votre fiche de paie',
+                    'Inscrivez les heures qui sont inscrites sur votre fiche de paie.',
                   showTooltip,
                 })}
                 name={`workHours[${index}]`}
