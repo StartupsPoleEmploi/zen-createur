@@ -114,6 +114,22 @@ class TooltipOnFocus extends Component {
       arrowRef: null,
       tooltipIsOpen: false,
     }
+
+    document.body.onclick = () => {
+      this.setTooltipIsOpen(false);
+    }
+  }
+
+  componentDidMount = () => {
+    document.body.addEventListener('click', this.myHandler);
+  }
+
+  componentWillUnmount = () => {
+    document.body.removeEventListener('click', this.myHandler);
+  }
+
+  myHandler = () => {
+    this.setTooltipIsOpen(false);
   }
 
   handleArrowRef = (arrowRef) =>
