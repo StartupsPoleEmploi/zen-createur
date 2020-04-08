@@ -487,7 +487,6 @@ export class Employers extends Component {
     this.setState({ showPreviousEmployersModal: false })
 
   onCollapsed = (index) => {
-    console.log('on collap', index)
     if (this.state.selectedEmployer === index) {
       this.setState({ selectedEmployer: -1 })
     } else {
@@ -513,8 +512,6 @@ export class Employers extends Component {
 
   renderEmployerPanel = () => {
     const { employers } = this.state
-
-    console.log(this.state)
 
     return (<>{this.props.declarations[0].hasEmployers && <Box flex={1}><BoxPanel style={{ marginTop: '70px' }}><Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
       <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b> - {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}</Title>

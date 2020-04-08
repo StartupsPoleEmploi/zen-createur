@@ -147,7 +147,7 @@ export class EmployerQuestion extends PureComponent {
       showCollapsedTitle,
     } = this.props
 
-    const showTooltip = index === 0
+    const showTooltip = true
     const hasFormError = workHours.error || employerName.error || salary.error;
 
     return (
