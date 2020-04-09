@@ -59,7 +59,6 @@ function extractAgencyCode(agencyLabel) {
   return agencyLabel.split('-')[0].trim();
 }
 
-// prettier-ignore
 function updateUrlParams({
   period, agency, department, region,
 }) {

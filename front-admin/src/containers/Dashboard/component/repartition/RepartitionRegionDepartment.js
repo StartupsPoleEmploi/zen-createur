@@ -80,7 +80,6 @@ function RepartitionRegionDepartment({
   }
 
   useEffect(() => {
-    // prettier-ignore
     async function fetchData() {
       setIsLoading(true);
       let url = `/zen-admin-api/declarations?monthId=${declarationMonth.id}`;

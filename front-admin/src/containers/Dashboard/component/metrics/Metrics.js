@@ -11,7 +11,6 @@ import 'chart.js';
 import './metrics.css';
 
 
-// prettier-ignore
 const URLS = {
   'new-user': '/zen-admin-api/metrics/new-users',
   'declaration-started': '/zen-admin-api/metrics/declaration-started',

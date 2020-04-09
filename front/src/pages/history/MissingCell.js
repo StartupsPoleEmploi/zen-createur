@@ -8,7 +8,6 @@ import { getDeclarationMissingFilesNb } from '../../lib/file';
 import { intermediaryBreakpoint, mobileBreakpoint } from '../../constants';
 import TooltipOnFocus from '../../components/Generic/TooltipOnFocus';
 
-// prettier-ignore
 const DOCUMENT_LABELS_FORMAT = {
   sickLeave: (n) => `${n} ${n > 1 ? 'feuilles maladies envoyées' : 'feuille maladie envoyée'}`,
   internship: (n) => `${n} ${n > 1 ? 'attestations de stage envoyées' : 'attestation de stage envoyée'}`,
