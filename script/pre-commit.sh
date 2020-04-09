@@ -8,7 +8,7 @@ BASEDIR=$(dirname "$0")
 cd $BASEDIR/..
 ROOT_DIR=$(pwd)
 
-filesChange=$(git diff --staged  --name-only --staged --raw);
+filesChange=$(git diff --staged --name-only --raw);
 foldres=("api" "front" "front-admin");
 
 for folder in "${foldres[@]}"; do
