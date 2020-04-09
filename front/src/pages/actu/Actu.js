@@ -99,6 +99,10 @@ const StyledList = styled.div`
     &:last-child {
       border-bottom: none;
     }
+
+    &.force-border {
+      border-bottom: 1px solid #eeeeee;
+    }
   }
 `
 
@@ -769,6 +773,7 @@ export class Actu extends Component {
                 name="hasInvalidity"
                 value={this.state.hasInvalidity}
                 onAnswer={this.onAnswer}
+                className="force-border"
               >
                 {this.renderDatePickerGroup({
                   type: types.INVALIDITY,
@@ -776,49 +781,54 @@ export class Actu extends Component {
                   startLabel: 'Depuis le',
                 })}
               </DeclarationQuestion>
-              {!this.state.hasTrained && (
-                <DeclarationQuestion
-                  verticalLayout={useVerticalLayoutForQuestions}
-                  label="Souhaitez-vous rester inscrit à Pôle emploi ?"
-                  name="isLookingForJob"
-                  value={this.state.isLookingForJob}
-                  onAnswer={this.onAnswer}
-                  withChildrenOnNo
-                >
-                  {this.renderDatePickerGroup({
-                    type: types.JOB_SEARCH,
-                    showStartDate: false,
-                    endLabel: 'Date de fin de recherche',
-                    largeLabel: true
-                  })}
-                  <RadioGroup
-                    row
-                    aria-label="motif d'arrêt de recherche d'emploi"
-                    name="search"
-                    value={this.state.jobSearchStopMotive}
-                    onChange={this.onJobSearchStopMotive}
-                    style={{ marginTop: '1rem' }}
-                  >
-                    <FormControlLabel
-                      value={jobSearchEndMotive.WORK}
-                      control={<Radio color="primary" />}
-                      label="Reprise du travail"
-                    />
-                    <FormControlLabel
-                      value={jobSearchEndMotive.RETIREMENT}
-                      control={<Radio color="primary" />}
-                      label="Retraite"
-                    />
-                    <FormControlLabel
-                      value={jobSearchEndMotive.OTHER}
-                      control={<Radio color="primary" />}
-                      label="Autre"
-                    />
-                  </RadioGroup>
-                </DeclarationQuestion>
-              )}
             </StyledList>
           </StyledPaper>
+
+          {!this.state.hasTrained && (<StyledPaper>
+            <StyledList>
+              <DeclarationQuestion
+                verticalLayout={useVerticalLayoutForQuestions}
+                label="Souhaitez-vous rester inscrit à Pôle emploi ?"
+                name="isLookingForJob"
+                value={this.state.isLookingForJob}
+                onAnswer={this.onAnswer}
+                withChildrenOnNo
+                className="force-border"
+              >
+                {this.renderDatePickerGroup({
+                  type: types.JOB_SEARCH,
+                  showStartDate: false,
+                  endLabel: 'Date de fin de recherche',
+                  largeLabel: true
+                })}
+                <RadioGroup
+                  row
+                  aria-label="motif d'arrêt de recherche d'emploi"
+                  name="search"
+                  value={this.state.jobSearchStopMotive}
+                  onChange={this.onJobSearchStopMotive}
+                  style={{ marginTop: '1rem' }}
+                >
+                  <FormControlLabel
+                    value={jobSearchEndMotive.WORK}
+                    control={<Radio color="primary" />}
+                    label="Reprise du travail"
+                  />
+                  <FormControlLabel
+                    value={jobSearchEndMotive.RETIREMENT}
+                    control={<Radio color="primary" />}
+                    label="Retraite"
+                  />
+                  <FormControlLabel
+                    value={jobSearchEndMotive.OTHER}
+                    control={<Radio color="primary" />}
+                    label="Autre"
+                  />
+                </RadioGroup>
+              </DeclarationQuestion>
+            </StyledList>
+          </StyledPaper>
+          )}
 
           <AlwaysVisibleContainer>
             {formError && <ErrorMessage>{formError}</ErrorMessage>}
