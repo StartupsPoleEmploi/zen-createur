@@ -20790,7 +20790,7 @@ const listAgences = [
     codeAgence: '84025',
     nomAgence: 'SUD VAUCLUSE',
   },
-]
+];
 
 export const departmentsSlugToName = {
   ain: 'AIN',
@@ -20876,7 +20876,7 @@ export const departmentsSlugToName = {
   'hautes-alpes': 'HAUTES-ALPES',
   var: 'VAR',
   vaucluse: 'VAUCLUSE',
-}
+};
 
 export const regionsSlugToName = {
   'auvergne-rhone-alpes': 'AUVERGNE RHONE-ALPES',
@@ -20891,66 +20891,70 @@ export const regionsSlugToName = {
   occitanie: 'OCCITANIE',
   'pays-de-la-loire': 'PAYS DE LA LOIRE',
   'provence-alpes-cote-dazur': "PROVENCE-ALPES-COTE D'AZUR",
-}
+};
 
-const tree = {}
+const tree = {};
 export function getHierarchicAgences() {
   // Cache
-  if (Object.keys(tree).length) return tree
+  if (Object.keys(tree).length) return tree;
 
   // Extract region
-  listAgences.forEach(({ region, departement, codeAgence, nomAgence }) => {
+  listAgences.forEach(({
+    region, departement, codeAgence, nomAgence,
+  }) => {
     // Create region if not exists
-    if (!tree[region]) tree[region] = {}
+    if (!tree[region]) tree[region] = {};
 
     // Create departement if not exists
-    if (!tree[region][departement]) tree[region][departement] = {}
+    if (!tree[region][departement]) tree[region][departement] = {};
 
     // Add agency
-    tree[region][departement][codeAgence] = `${codeAgence} - ${nomAgence}`
-  })
+    // eslint-disable-next-line no-irregular-whitespace
+    tree[region][departement][codeAgence] = `${codeAgence} - ${nomAgence}`;
+  });
 
-  return tree
+  return tree;
 }
 
-const departments = []
+const departments = [];
 export function getAllDepartments() {
   // Cache
-  if (Object.keys(departments).length) return departments
+  if (Object.keys(departments).length) return departments;
 
   listAgences.forEach(({ departement: department }) => {
     // Create departement if not exists
-    if (!departments[department]) departments[department] = department
-  })
+    if (!departments[department]) departments[department] = department;
+  });
 
-  return Object.keys(departments)
+  return Object.keys(departments);
 }
 
-const agencies = {}
+const agencies = {};
 export function getAllAgencies() {
   // Cache
-  if (Object.keys(agencies).length) return agencies
+  if (Object.keys(agencies).length) return agencies;
 
   listAgences.forEach(({ codeAgence, nomAgence }) => {
     // Create departement if not exists
-    const name = `${codeAgence} - ${nomAgence}`
+    // eslint-disable-next-line no-irregular-whitespace
+    const name = `${codeAgence} - ${nomAgence}`;
     if (!agencies[name]) {
-      agencies[name] = name
+      agencies[name] = name;
     }
-  })
-  return Object.keys(agencies)
+  });
+  return Object.keys(agencies);
 }
 
 // eslint-disable-next-line import/prefer-default-export
 export function getAgenceName(agencyCode) {
-  const elem = listAgences.find((e) => e.codeAgence === agencyCode)
+  const elem = listAgences.find((e) => e.codeAgence === agencyCode);
   return elem
     ? `${elem.nomAgence} dans ${elem.departement} en ${elem.region} (${agencyCode})`
-    : agencyCode
+    : agencyCode;
 }
 
 export function getAgence(agencyCode) {
   // Remove 0 char at the beggining => 02214 become 2214
-  const formatAgencyCode = Number(agencyCode).toString()
-  return listAgences.find((e) => e.codeAgence === formatAgencyCode)
+  const formatAgencyCode = Number(agencyCode).toString();
+  return listAgences.find((e) => e.codeAgence === formatAgencyCode);
 }

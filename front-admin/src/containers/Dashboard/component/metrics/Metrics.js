@@ -1,14 +1,14 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react'
-import superagent from 'superagent'
-import { Spin } from 'antd'
-import moment from 'moment'
+import React, { useEffect, useState } from 'react';
+import superagent from 'superagent';
+import { Spin } from 'antd';
+import moment from 'moment';
 
-import { ColumnChart } from 'react-chartkick'
-import 'chart.js'
+import { ColumnChart } from 'react-chartkick';
+import 'chart.js';
 
-import './metrics.css'
+import './metrics.css';
 
 
 // prettier-ignore
@@ -33,33 +33,35 @@ const TITLES = {
 };
 
 function formatDate(date) {
-  return moment(date).format('YYYY-MM-DD')
+  return moment(date).format('YYYY-MM-DD');
 }
 function formatFrenchDate(date) {
-  return moment(date).format('DD-MM-YYYY')
+  return moment(date).format('DD-MM-YYYY');
 }
 
-function Metrics({ firstPeriodStart, secondPeriodStart, duration, data }) {
-  const [values, setValues] = useState(null)
+function Metrics({
+  firstPeriodStart, secondPeriodStart, duration, data,
+}) {
+  const [values, setValues] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
-      let url = `${URLS[data]}?first=${formatDate(firstPeriodStart)}&second=${formatDate(secondPeriodStart)}&duration=${duration}`
-      if (data.startsWith('total')) url += '&accumulate=true'
+      let url = `${URLS[data]}?first=${formatDate(firstPeriodStart)}&second=${formatDate(secondPeriodStart)}&duration=${duration}`;
+      if (data.startsWith('total')) url += '&accumulate=true';
 
-      const { body } = await superagent.get(url)
-      setValues(body)
+      const { body } = await superagent.get(url);
+      setValues(body);
     }
-    fetchData()
-  }, [firstPeriodStart, secondPeriodStart, duration, data])
+    fetchData();
+  }, [firstPeriodStart, secondPeriodStart, duration, data]);
 
-  if (!values) return <Spin />
+  if (!values) return <Spin />;
 
   // Format data
   const graphData = [
     { name: `Depuis le ${formatFrenchDate(firstPeriodStart)}`, data: values.firstPeriod },
     { name: `Depuis le ${formatFrenchDate(secondPeriodStart)}`, data: values.secondPeriod },
-  ]
+  ];
 
   return (
     <>
@@ -67,7 +69,7 @@ function Metrics({ firstPeriodStart, secondPeriodStart, duration, data }) {
         <ColumnChart title={TITLES[data]} data={graphData} download={`${data}-${formatFrenchDate(new Date())}`} />
       </div>
     </>
-  )
+  );
 }
 
-export default Metrics
+export default Metrics;

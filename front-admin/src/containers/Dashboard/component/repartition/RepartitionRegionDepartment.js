@@ -1,94 +1,99 @@
-/* eslint-disable react/jsx-one-expression-per-line */
-import React, { useEffect, useState } from 'react'
-import superagent from 'superagent'
-import slug from 'slug'
-import { Spin } from 'antd'
-import { getAgence } from '../../../../common/agencesInfos'
+// @flow
 
-import './Repartition.css'
+/* eslint-disable react/jsx-one-expression-per-line */
+import React, { useEffect, useState } from 'react';
+import superagent from 'superagent';
+import slug from 'slug';
+import { Spin } from 'antd';
+import { getAgence } from '../../../../common/agencesInfos';
+
+import './Repartition.css';
 
 function extractAgencyCode(agencyLabel) {
-  return agencyLabel.split('-')[0].trim()
+  return agencyLabel.split('-')[0].trim();
 }
 
-const numberFormatter = Intl.NumberFormat('fr-Fr')
+const numberFormatter = Intl.NumberFormat('fr-Fr');
 function formatNb(nb) {
-  return numberFormatter.format(nb)
+  return numberFormatter.format(nb);
+}
+
+type Props = {
+  usersGlobalRepartition: Object,
+  region: string,
+  department: string,
+  declarationMonth: Object,
+  selectRegion: Function,
+  selectDepartment: Function,
+  selectAgency: Function,
 }
 
 function RepartitionRegionDepartment({
-  usersGlobalRepartition,
-
-  region,
-  department,
-  declarationMonth,
-
-  selectRegion,
-  selectDepartment,
-  selectAgency,
-}) {
-  const [isLoading, setIsLoading] = useState(true)
-  const [franceTotal, setFranceTotal] = useState(0)
-  const [byRegionTotal, setByRegion] = useState({})
-  const [byDepartmentTotal, setByDepartment] = useState({})
-  const [byAgencyTotal, setByAgency] = useState({})
+  usersGlobalRepartition, region, department, declarationMonth,
+  selectRegion, selectDepartment, selectAgency,
+}: Props) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [franceTotal, setFranceTotal] = useState(0);
+  const [byRegionTotal, setByRegion] = useState({});
+  const [byDepartmentTotal, setByDepartment] = useState({});
+  const [byAgencyTotal, setByAgency] = useState({});
 
   function computeDeclarationHierarchy(declarations) {
-    const regionsTotal = {}
-    const departmentsTotal = {}
-    const agencyTotal = {}
+    const regionsTotal = {};
+    const departmentsTotal = {};
+    const agencyTotal = {};
 
     declarations.forEach(({ user }) => {
       const { region: reg, departement: dep, nomAgence } = getAgence(
         user.agencyCode,
-      )
+      );
 
       // Region
-      if (!regionsTotal[reg]) regionsTotal[reg] = 0
-      regionsTotal[reg] += 1
+      if (!regionsTotal[reg]) regionsTotal[reg] = 0;
+      regionsTotal[reg] += 1;
 
       // Department
-      if (!departmentsTotal[dep]) departmentsTotal[dep] = 0
-      departmentsTotal[dep] += 1
+      if (!departmentsTotal[dep]) departmentsTotal[dep] = 0;
+      departmentsTotal[dep] += 1;
 
       // Agency
-      const name = `${user.agencyCode} - ${nomAgence}` // The '-' is important
-      if (!agencyTotal[name]) agencyTotal[name] = 0
-      agencyTotal[name] += 1
-    })
+      const name = `${user.agencyCode} - ${nomAgence}`; // The '-' is important
+      if (!agencyTotal[name]) agencyTotal[name] = 0;
+      agencyTotal[name] += 1;
+    });
 
-    setFranceTotal(declarations.length)
-    setByRegion(regionsTotal)
-    setByDepartment(departmentsTotal)
-    setByAgency(agencyTotal)
-    setTimeout(() => setIsLoading(false), 500)
+    setFranceTotal(declarations.length);
+    setByRegion(regionsTotal);
+    setByDepartment(departmentsTotal);
+    setByAgency(agencyTotal);
+    setTimeout(() => setIsLoading(false), 500);
   }
 
   function doSelectRegion(e) {
-    selectRegion(e.target.getAttribute('data-region'))
+    selectRegion(e.target.getAttribute('data-region'));
   }
   function doSelectDepartment(e) {
-    selectDepartment(e.target.getAttribute('data-department'))
+    selectDepartment(e.target.getAttribute('data-department'));
   }
   function doSelectAgency(e) {
-    selectAgency(e.target.getAttribute('data-agency'))
+    selectAgency(e.target.getAttribute('data-agency'));
   }
 
   useEffect(() => {
     // prettier-ignore
     async function fetchData() {
-      setIsLoading(true)
-      let url = `/zen-admin-api/declarations?monthId=${declarationMonth.id}`
-      if (department) url = `/zen-admin-api/repartition/department?department=${slug(department, { lower: true })}&monthId=${declarationMonth.id}`
-      else if (region) url = `/zen-admin-api/repartition/region?region=${slug(region, { lower: true })}&monthId=${declarationMonth.id}`
+      setIsLoading(true);
+      let url = `/zen-admin-api/declarations?monthId=${declarationMonth.id}`;
+      if (department) url = `/zen-admin-api/repartition/department?department=${slug(department, { lower: true })}&monthId=${declarationMonth.id}`;
+      else if (region) url = `/zen-admin-api/repartition/region?region=${slug(region, { lower: true })}&monthId=${declarationMonth.id}`;
 
-      const { body } = await superagent.get(url)
-      computeDeclarationHierarchy(body)
+      const { body } = await superagent.get(url);
+      computeDeclarationHierarchy(body);
     }
-    fetchData()
-  }, [region, department, declarationMonth])
+    fetchData();
+  }, [region, department, declarationMonth]);
 
-  if (isLoading) return <Spin />
+  if (isLoading) return <Spin />;
 
   return (
     <div>
@@ -124,8 +129,7 @@ function RepartitionRegionDepartment({
           </p>
           <ul className="ul">
             {Object.entries(byRegionTotal).map(([regionName, total]) => {
-              const totalUsersRegion =
-                usersGlobalRepartition.regions[regionName]
+              const totalUsersRegion = usersGlobalRepartition.regions[regionName];
               return (
                 <li key={regionName}>
                   <button
@@ -135,13 +139,12 @@ function RepartitionRegionDepartment({
                     title="En savoir plus pour cette région"
                   >
                     {regionName} : {formatNb(total)} actualisations
-                    <br /> sur {formatNb(totalUsersRegion)}
-                     assistantes maternelles (
+                    <br /> sur {formatNb(totalUsersRegion)} assistantes maternelles (
                     {((total / totalUsersRegion) * 100).toFixed(2)}% de la
                     région)
                   </button>
                 </li>
-              )
+              );
             })}
           </ul>
         </>
@@ -157,8 +160,7 @@ function RepartitionRegionDepartment({
           <ul className="ul">
             {Object.entries(byDepartmentTotal).map(
               ([departmentName, total]) => {
-                const totalUsersDepartments =
-                  usersGlobalRepartition.departments[departmentName]
+                const totalUsersDepartments = usersGlobalRepartition.departments[departmentName];
                 return (
                   <li key={departmentName}>
                     <button
@@ -174,7 +176,7 @@ function RepartitionRegionDepartment({
                       département)
                     </button>
                   </li>
-                )
+                );
               },
             )}
           </ul>
@@ -187,8 +189,7 @@ function RepartitionRegionDepartment({
       </p>
       <ul className="ul">
         {Object.entries(byAgencyTotal).map(([agenceName, total]) => {
-          const totalUsersAgency =
-            usersGlobalRepartition.agencies[extractAgencyCode(agenceName)]
+          const totalUsersAgency = usersGlobalRepartition.agencies[extractAgencyCode(agenceName)];
 
           return (
             <li key={agenceName}>
@@ -204,11 +205,11 @@ function RepartitionRegionDepartment({
                 l'agence)
               </button>
             </li>
-          )
+          );
         })}
       </ul>
     </div>
-  )
+  );
 }
 
-export default RepartitionRegionDepartment
+export default RepartitionRegionDepartment;

@@ -1,55 +1,68 @@
-import React, { useState, useEffect } from 'react'
-import { Spin } from 'antd'
-import superagent from 'superagent'
-import { ColumnChart } from 'react-chartkick'
-import moment from 'moment'
+import React, { useState, useEffect } from 'react';
+import { Spin } from 'antd';
+import superagent from 'superagent';
+import { ColumnChart } from 'react-chartkick';
+import moment from 'moment';
 
-import './global.css'
+import './global.css';
 
 function formatFrenchDate(date) {
-  return moment(date).format('DD-MM-YYYY')
+  return moment(date).format('DD-MM-YYYY');
 }
 function formatFrenchDateMonth(date) {
-  return moment(date).format('MMMM-YYYY')
+  return moment(date).format('MMMM-YYYY');
 }
 
 function Global() {
-  const [values, setValues] = useState(null)
+  const [values, setValues] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
-      const { body } = await superagent.get('/zen-admin-api/metrics/global')
-      setValues(body)
+      const { body } = await superagent.get('/zen-admin-api/metrics/global');
+      setValues(body);
     }
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
-  if (!values) return <Spin />
+  if (!values) return <Spin />;
 
   const declatationsByMonthData = values.declarationsDoneByMonth.map(
     ({ count, declarationMonth }) => [
       formatFrenchDateMonth(declarationMonth.month),
       count,
     ],
-  )
+  );
 
   const firstLoginByMonthData = values.userRegistedByMonth.map(
     ({ count, month }) => [formatFrenchDateMonth(month), count],
-  )
+  );
 
   return (
     <div id="admin-global">
       <section>
         <p>
-          Zen a actuellement{' '}
-          <strong>{values.globalUserRegistered} utilisateurs</strong>{' '}
+          Zen a actuellement
+          {' '}
+          <strong>
+            {values.globalUserRegistered}
+            {' '}
+utilisateurs
+          </strong>
+          {' '}
           enregistrés (au moins une connexion)
         </p>
       </section>
       <section>
         <p>
-          Depuis sa création, il y a eu{' '}
-          <strong>{values.globalDeclarationsDone} actualisations</strong> faites
+          Depuis sa création, il y a eu
+          {' '}
+          <strong>
+            {values.globalDeclarationsDone}
+            {' '}
+actualisations
+          </strong>
+          {' '}
+faites
           sur Zen
         </p>
       </section>
@@ -72,7 +85,7 @@ function Global() {
         />
       </section>
     </div>
-  )
+  );
 }
 
-export default Global
+export default Global;

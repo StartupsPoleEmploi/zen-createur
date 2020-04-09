@@ -1,14 +1,14 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react'
-import { DatePicker, InputNumber, Select } from 'antd'
-import Metrics from './Metrics'
+import React, { useState } from 'react';
+import { DatePicker, InputNumber, Select } from 'antd';
+import Metrics from './Metrics';
 
 function MetricsForm() {
-  const [firstPeriodStart, setFirstPeriodStart] = useState(null)
-  const [secondPeriodStart, setSecondPeriodStart] = useState(null)
-  const [duration, setDuration] = useState(1) // in weeks
-  const [data, setData] = useState('') // in weeks
+  const [firstPeriodStart, setFirstPeriodStart] = useState(null);
+  const [secondPeriodStart, setSecondPeriodStart] = useState(null);
+  const [duration, setDuration] = useState(1); // in weeks
+  const [data, setData] = useState(''); // in weeks
 
   return (
     <div>
@@ -109,7 +109,7 @@ function MetricsForm() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default MetricsForm
+export default MetricsForm;
