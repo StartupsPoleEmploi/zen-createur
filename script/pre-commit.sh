@@ -33,4 +33,5 @@ for folder in "${foldres[@]}"; do
   fi
 done
 
+cd ${ROOT_DIR}
 exit 0;
