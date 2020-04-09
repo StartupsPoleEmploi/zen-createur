@@ -20790,7 +20790,7 @@ const listAgences = [
     codeAgence: '84025',
     nomAgence: 'SUD VAUCLUSE',
   },
-]
+];
 
 const departmentsSlugToName = {
   ain: 'AIN',
@@ -20876,7 +20876,7 @@ const departmentsSlugToName = {
   'hautes-alpes': 'HAUTES-ALPES',
   var: 'VAR',
   vaucluse: 'VAUCLUSE',
-}
+};
 
 const regionsSlugToName = {
   'auvergne-rhone-alpes': 'AUVERGNE RHONE-ALPES',
@@ -20891,45 +20891,45 @@ const regionsSlugToName = {
   occitanie: 'OCCITANIE',
   'pays-de-la-loire': 'PAYS DE LA LOIRE',
   'provence-alpes-cote-dazur': "PROVENCE-ALPES-COTE D'AZUR",
-}
+};
 
-let agencyCodeToAgenceMap = null
+let agencyCodeToAgenceMap = null;
 function getAgencyCodeToAgenceMap() {
   if (!agencyCodeToAgenceMap) {
-    agencyCodeToAgenceMap = {}
+    agencyCodeToAgenceMap = {};
     listAgences.forEach((agency) => {
-      agencyCodeToAgenceMap[agency.codeAgence] = agency
-    })
+      agencyCodeToAgenceMap[agency.codeAgence] = agency;
+    });
   }
-  return agencyCodeToAgenceMap
+  return agencyCodeToAgenceMap;
 }
 
 function getAllCodeAgencyFromRegionSlug(slug) {
-  const reg = regionsSlugToName[slug]
-  if (!reg) throw new Error('Unknown region')
+  const reg = regionsSlugToName[slug];
+  if (!reg) throw new Error('Unknown region');
   return listAgences
     .filter((e) => e.region === reg)
-    .map((a) => Number(a.codeAgence))
+    .map((a) => Number(a.codeAgence));
 }
 
 function getAllCodeAgencyFromDepartmentSlug(slug) {
-  const dep = departmentsSlugToName[slug]
-  if (!dep) throw new Error('Unknown department')
+  const dep = departmentsSlugToName[slug];
+  if (!dep) throw new Error('Unknown department');
 
   return listAgences
     .filter((e) => e.departement === dep)
-    .map((a) => Number(a.codeAgence))
+    .map((a) => Number(a.codeAgence));
 }
 
 function getAgence(agencyCode) {
-  const agencyMap = getAgencyCodeToAgenceMap()
+  const agencyMap = getAgencyCodeToAgenceMap();
   // Remove 0 char at the beggining => 02214 become 2214
-  const formatAgencyCode = Number(agencyCode).toString()
-  return agencyMap[formatAgencyCode]
+  const formatAgencyCode = Number(agencyCode).toString();
+  return agencyMap[formatAgencyCode];
 }
 
 module.exports = {
   getAllCodeAgencyFromDepartmentSlug,
   getAllCodeAgencyFromRegionSlug,
   getAgence,
-}
+};

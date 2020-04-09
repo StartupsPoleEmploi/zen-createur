@@ -1,21 +1,21 @@
-const NodeMailjet = require('node-mailjet')
-const { addDays, format } = require('date-fns')
-const superagent = require('superagent')
-const { get } = require('lodash')
-const config = require('config')
+const NodeMailjet = require('node-mailjet');
+const { addDays, format } = require('date-fns');
+const superagent = require('superagent');
+const { get } = require('lodash');
+const config = require('config');
 
-const isProd = process.env.NODE_ENV === 'production'
-const LIST_ID = isProd ? 14703 : 10129294 // id of prod list / a test list with devs
+const isProd = process.env.NODE_ENV === 'production';
+const LIST_ID = isProd ? 14703 : 10129294; // id of prod list / a test list with devs
 
 if (!process.env.EMAIL_KEY || !process.env.EMAIL_KEY_SECRET) {
-  throw new Error('Mailjet info is not configured')
+  throw new Error('Mailjet info is not configured');
 }
 
 const mailjet = NodeMailjet.connect(
   process.env.EMAIL_KEY,
   process.env.EMAIL_KEY_SECRET,
   { version: 'v3.1' },
-)
+);
 
 // eslint-disable-next-line no-unused-vars
 async function sendMail(opts) {
@@ -27,7 +27,7 @@ async function sendMail(opts) {
       ...message,
       To: isProd ? message.To : [{ Email: config.get('testEmail') }],
     })),
-  })
+  });
 }
 
 async function manageContact({ email, name, properties }) {
@@ -39,15 +39,16 @@ async function manageContact({ email, name, properties }) {
       name,
       Properties: properties,
       Action: 'addnoforce',
-    })
+    });
 }
-  
+
 // eslint-disable-next-line no-unused-vars
 function formatDateForSegmentFilter(date) {
-  return parseInt(format(date, 'YYYYMM'), 10)
+  return parseInt(format(date, 'YYYYMM'), 10);
 }
 
 // https://dev.mailjet.com/reference/email/contacts/contact-list/
+// eslint-disable-next-line no-unused-vars
 async function deleteUser(email) {
   return mailjet.post('contactslist', { version: 'v3' })
     .id(LIST_ID)
@@ -55,7 +56,7 @@ async function deleteUser(email) {
     .request({
       Email: email,
       Action: 'remove',
-    })
+    });
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -63,13 +64,14 @@ async function getUser(email) {
   return mailjet.get('contact', { version: 'v3' })
     .id(email)
     .request()
-    .then(({body}) => {
+    .then(({ body }) => {
       if (body && body.Data.length) return body.Data[0];
       return null;
-    }).catch(error => {
+    })
+    .catch((error) => {
       if (error.statusCode === 404) return null;
       throw error;
-    })
+    });
 }
 
 // https://github.com/mailjet/api-documentation/blob/master/guides/_exclusionlist.md
@@ -78,12 +80,12 @@ async function setExcludedUserFromCampaigns(email, toExclude) {
   return mailjet.put('contact', { version: 'v3' })
     .id(email)
     .request({
-      IsExcludedFromCampaigns: toExclude ? "true" : "false",
+      IsExcludedFromCampaigns: toExclude ? 'true' : 'false',
     }).catch((error) => {
-      // Not Modified 
-      if (error.statusCode === 304) return true; 
+      // Not Modified
+      if (error.statusCode === 304) return true;
       throw error;
-    })
+    });
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -95,25 +97,25 @@ async function addUser(user) {
       nom: user.lastName,
       prenom: user.firstName,
     },
-  })
+  });
 }
 
 // eslint-disable-next-line no-unused-vars
 async function changeContactEmail({ oldEmail, newEmail }) {
   return mailjet.post('contactslist', { version: 'v3' })
-  .id(LIST_ID)
-  .action('managecontact')
-  .request({ Email: oldEmail, Action: 'remove' })
-  .then((res) => {
-    if (!res.body.Count === 1) throw new Error('No contact to remove')
-    const { Name: name, Properties: properties } = res.body.Data[0]
-    return manageContact({ email: newEmail, name, properties })
-  })
+    .id(LIST_ID)
+    .action('managecontact')
+    .request({ Email: oldEmail, Action: 'remove' })
+    .then((res) => {
+      if (!res.body.Count === 1) throw new Error('No contact to remove');
+      const { Name: name, Properties: properties } = res.body.Data[0];
+      return manageContact({ email: newEmail, name, properties });
+    });
 }
 
 // eslint-disable-next-line no-unused-vars
 async function createSegment(opts) {
-  return mailjet.post('contactfilter', { version: 'v3' }).request(opts)
+  return mailjet.post('contactfilter', { version: 'v3' }).request(opts);
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -125,7 +127,7 @@ async function createCampaignDraft(opts) {
     SenderEmail: 'no-reply@zen.pole-emploi.fr',
     ContactsListID: LIST_ID,
     ...opts,
-  })
+  });
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -135,15 +137,15 @@ async function getTemplate(id) {
     .action('detailcontent')
     .request();
 
-  const { 
-    'Html-part': html, 
-    'Text-part': text 
-  } = get( result, 'body.Data.0', {})
+  const {
+    'Html-part': html,
+    'Text-part': text,
+  } = get(result, 'body.Data.0', {});
   if (!html || !text) {
-    throw new Error(`No HTML or text part for template ${id}`)
+    throw new Error(`No HTML or text part for template ${id}`);
   }
 
-  return { html, text }
+  return { html, text };
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -151,7 +153,7 @@ async function setTemplate(id, opts) {
   return mailjet.post('campaigndraft', { version: 'v3' })
     .id(id)
     .action('detailcontent')
-    .request(opts)
+    .request(opts);
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -166,12 +168,12 @@ async function sendCampaignTest(id) {
           Name: 'Hugo Agbonon (Test Dev)',
         },
       ],
-    })
+    });
 }
 
 // eslint-disable-next-line no-unused-vars
 async function scheduleCampaign(id, opts = {}) {
-  const scheduledDate = opts.Date || addDays(new Date(), 1)
+  const scheduledDate = opts.Date || addDays(new Date(), 1);
   return mailjet
     .post('campaigndraft', { version: 'v3' })
     .id(id)
@@ -184,24 +186,23 @@ async function scheduleCampaign(id, opts = {}) {
       mailjet
         .get('campaigndraft', { version: 'v3' })
         .id(id)
-        .request(),
-    )
+        .request())
     .then((response) => {
-      const campaignInfos = get(response, 'body.Data.0', {})
+      const campaignInfos = get(response, 'body.Data.0', {});
 
-      if (!process.env.SLACK_WEBHOOK_SU_ZEN) return
+      if (!process.env.SLACK_WEBHOOK_SU_ZEN) return;
 
       const message = `L'envoi de la campagne e-mail *${
         campaignInfos.Title
       }* est programmé et sera effectué le *${format(
         scheduledDate,
         'DD/MM/YYYY à HH:mm',
-      )}*. Merci d'en vérifier les détails à l'adresse https://app.mailjet.com/campaigns`
+      )}*. Merci d'en vérifier les détails à l'adresse https://app.mailjet.com/campaigns`;
 
       return superagent.post(process.env.SLACK_WEBHOOK_SU_ZEN, {
         text: message,
-      })
-    })
+      });
+    });
 }
 
 module.exports = {
@@ -222,4 +223,4 @@ module.exports = {
   sendCampaignTest: async () => {},
   scheduleCampaign: async () => {},
   formatDateForSegmentFilter: async () => {},
-}
+};

@@ -2,7 +2,7 @@ const {
   BelongsToOneRelation,
   HasManyRelation,
   HasOneRelation,
-  ValidationError
+  ValidationError,
 } = require('objection');
 
 const BaseModel = require('./BaseModel');
@@ -18,10 +18,10 @@ class Declaration extends BaseModel {
     const objectToValidate = { ...opt.old, ...json };
     const { isLookingForJob, jobSearchStopMotive } = objectToValidate;
 
-    const throwValidationError = label => {
+    const throwValidationError = (label) => {
       throw new ValidationError({
         message: label,
-        type: 'DeclarationValidationError'
+        type: 'DeclarationValidationError',
       });
     };
 
@@ -47,7 +47,7 @@ class Declaration extends BaseModel {
         'hasInvalidity',
         'isLookingForJob',
         'hasFinishedDeclaringEmployers',
-        'taxeDue'
+        'taxeDue',
       ],
 
       properties: {
@@ -66,28 +66,28 @@ class Declaration extends BaseModel {
         jobSearchStopMotive: { type: ['string', 'null'] },
         hasFinishedDeclaringEmployers: {
           default: false,
-          type: 'boolean'
+          type: 'boolean',
         },
         isFinished: {
           default: false,
-          type: 'boolean'
+          type: 'boolean',
         },
         isEmailSent: {
           default: false,
-          type: 'boolean'
+          type: 'boolean',
         },
         isDocEmailSent: {
           default: false,
-          type: 'boolean'
+          type: 'boolean',
         },
         isCleanedUp: {
           default: false,
-          type: 'boolean'
+          type: 'boolean',
         },
         metadata: { type: 'object' },
         transmittedAt: { type: ['string', 'object', 'null'] },
-        taxeDue: { type: ['string', 'null'], enum: [null, 'monthly', 'quaterly'] }
-      }
+        taxeDue: { type: ['string', 'null'], enum: [null, 'monthly', 'quaterly'] },
+      },
     };
   }
 
@@ -99,41 +99,41 @@ class Declaration extends BaseModel {
         modelClass: `${__dirname}/User`,
         join: {
           from: 'declarations.userId',
-          to: 'Users.id'
-        }
+          to: 'Users.id',
+        },
       },
       employers: {
         relation: HasManyRelation,
         modelClass: `${__dirname}/Employer`,
         join: {
           from: 'declarations.id',
-          to: 'employers.declarationId'
-        }
+          to: 'employers.declarationId',
+        },
       },
       declarationMonth: {
         relation: BelongsToOneRelation,
         modelClass: `${__dirname}/DeclarationMonth`,
         join: {
           from: 'declarations.monthId',
-          to: 'declaration_months.id'
-        }
+          to: 'declaration_months.id',
+        },
       },
       infos: {
         relation: HasManyRelation,
         modelClass: `${__dirname}/DeclarationInfo`,
         join: {
           from: 'declarations.id',
-          to: 'declaration_infos.declarationId'
-        }
+          to: 'declaration_infos.declarationId',
+        },
       },
       review: {
         relation: HasOneRelation,
         modelClass: `${__dirname}/DeclarationReview`,
         join: {
           from: 'declarations.id',
-          to: 'declaration_reviews.declarationId'
-        }
-      }
+          to: 'declaration_reviews.declarationId',
+        },
+      },
     };
   }
 
@@ -145,8 +145,8 @@ class Declaration extends BaseModel {
       'hasSickLeave',
       'hasMaternityLeave',
       'hasRetirement',
-      'hasInvalidity'
-    ].some(hasSomething => declaration[hasSomething]);
+      'hasInvalidity',
+    ].some((hasSomething) => declaration[hasSomething]);
   }
 }
 

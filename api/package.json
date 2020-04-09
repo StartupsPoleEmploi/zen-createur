@@ -6,7 +6,8 @@
     "production:api": "pm2-runtime start pm2Api.config.js",
     "start:api": "pm2 start --no-daemon pm2Api.config.js",
     "knex": "knex",
-    "test": "jest --runInBand --forceExit"
+    "test": "jest --runInBand --forceExit",
+    "lint": "eslint '**/*.js'"
   },
   "jest": {
     "setupFiles": [
@@ -61,7 +62,10 @@
     "winston": "^3.2.1",
     "winston-slack-webhook-transport": "^1.2.0"
   },
-  "devDependencies": {
+  "devDependencies": {    
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
     "jest": "^25.1.0",
     "knex-cleaner": "^1.3.0",
     "nock": "^10.0.6",
