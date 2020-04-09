@@ -42,6 +42,7 @@ import {
   MIN_SALARY,
   MIN_WORK_HOURS,
   SALARY,
+  TURNOVER,
   WORK_HOURS,
 } from '../../lib/salary'
 import { setNoNeedEmployerOnBoarding as setNoNeedEmployerOnBoardingAction } from '../../redux/actions/user'
@@ -143,8 +144,13 @@ const BoxPanel = styled.div`
 const Block = styled.div`
   border-radius: 15px;
   background-color: #FAFAFA;
-  padding: 20px;
+  padding: 20px 40px;
 `
+
+const StyleContainerBlock = styled.div`
+  display: inline-block;
+`
+
 
 const employerTemplate = {
   employerName: { value: '', error: null },
@@ -181,7 +187,7 @@ const getFieldError = ({ name, value }) => {
       return `Merci de corriger le nombre d'heures travaillées`
     }
   }
-  if (name === SALARY) {
+  if (name === SALARY || name === TURNOVER) {
     if (_isNaN(value)) {
       return `Merci de ne saisir que des chiffres`
     }
@@ -342,14 +348,14 @@ export class Employers extends Component {
     }))
   }
 
-  onRemove = (index) => {
+  onRemove = (index, from = 'employers') => {
     let selectedEmployer = index;
     if (this.state.selectedEmployer === index) {
       selectedEmployer = index - 1;
     }
 
-    this.setState(({ employers }) => ({
-      employers: employers.filter((e, key) => key !== index),
+    this.setState(({ [from]: employers }) => ({
+      [from]: employers.filter((e, key) => key !== index),
       selectedEmployer
     }))
   }
@@ -365,7 +371,6 @@ export class Employers extends Component {
   onSubmit = ({ ignoreErrors = false } = {}) => {
     this.setState({ isValidating: true })
 
-    console.log(this.state)
     return this.props
       .postEmployers({
         employers: getEmployersMapFromFormData(this.state.employers),
@@ -496,7 +501,7 @@ export class Employers extends Component {
       key={index}
       index={index}
       onChange={this.onChange}
-      onRemove={this.onRemove}
+      onRemove={() => this.onRemove(index, 'employers')}
       onCollapsed={() => this.onCollapsed(index)}
       defaultName={`Employeur ${index + 1}`}
       collapsed={this.state.selectedEmployer !== index}
@@ -536,8 +541,6 @@ export class Employers extends Component {
       key={index}
       index={index}
       onChange={this.onChange}
-      onRemove={this.onRemove}
-      onCollapsed={() => this.onCollapsed(index)}
       defaultName={`Entreprise ${index + 1}`}
       collapsed={this.state.selectedEnterprise !== index}
       showCollapsedTitle={this.state.enterprises.length > 1}
@@ -569,30 +572,32 @@ export class Employers extends Component {
     return (
       <StyledEmployers>
 
-        {this.props.declarations && this.props.declarations.length && <><Box display="flex">
-          {this.renderEmployerPanel()}
-          {this.renderCreatorPanel()}
-        </Box></>}
+        <StyleContainerBlock>
+          {this.props.declarations && this.props.declarations.length && <><Box display="inline-flex">
+            {this.renderEmployerPanel()}
+            {this.renderCreatorPanel()}
+          </Box></>}
 
-        <StyledAlwaysVisibleContainer
-          scrollButtonTopValue="0"
-          style={{ marginTop: '2rem', alignSelf: 'stretch' }}
-        >
-          {error && <ErrorMessage>{error}</ErrorMessage>}
+          <StyledAlwaysVisibleContainer
+            scrollButtonTopValue="0"
+            style={{ marginTop: '2rem', alignSelf: 'stretch' }}
+          >
+            {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <ButtonsContainer>
-            <StyledMainAction primary onClick={this.openDialog}>
-              Envoyer mon
+            <ButtonsContainer>
+              <StyledMainAction primary onClick={this.openDialog}>
+                Envoyer mon
                 <br />
                 actualisation
               </StyledMainAction>
-            <StyledMainAction primary={false} onClick={this.saveAndRedirect}>
-              Enregistrer
+              <StyledMainAction primary={false} onClick={this.saveAndRedirect}>
+                Enregistrer
                 <br />
                 et finir plus tard
               </StyledMainAction>
-          </ButtonsContainer>
-        </StyledAlwaysVisibleContainer>
+            </ButtonsContainer>
+          </StyledAlwaysVisibleContainer>
+        </StyleContainerBlock>
 
         <DeclarationDialogsHandler
           isLoading={this.state.isValidating}

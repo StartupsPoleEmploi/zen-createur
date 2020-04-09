@@ -47,13 +47,15 @@ const StyledRadio = styled(Radio)`
 const getFormValue = (value) => (value === null ? '' : value ? YES : NO)
 
 export class YesNoRadioGroup extends Component {
-  onChange = (event) =>
+  onChange = (event) => {
+    console.log(event, event.target, event.target.value, YES)
     this.props.onAnswer({
       target: {
         value: event.target.value === YES,
         name: this.props.name,
       },
     })
+  }
 
   render() {
     const { name, value, yesTooltipContent } = this.props
@@ -72,31 +74,6 @@ export class YesNoRadioGroup extends Component {
       />
     )
 
-    const yesFormLabelAndRadio = (
-      <FirstFormControlLabel
-        value={YES}
-        control={
-          yesTooltipContent ? (
-            <TooltipOnFocus content={yesTooltipContent}>
-              {yesRadio}
-            </TooltipOnFocus>
-          ) : (
-            yesRadio
-          )
-        }
-        label={
-          <span
-            style={{
-              color: '##000000de',
-              fontWeight: isYesChecked ? 'bold' : null,
-            }}
-          >
-            oui
-          </span>
-        }
-      />
-    )
-
     return (
       <StyledRadioGroup
         row
@@ -104,7 +81,27 @@ export class YesNoRadioGroup extends Component {
         value={getFormValue(value)}
         onChange={this.onChange}
       >
-        {yesFormLabelAndRadio}
+        <FirstFormControlLabel
+          value={YES}
+          control={
+            yesTooltipContent ?
+              <TooltipOnFocus content={yesTooltipContent}>
+                {yesRadio}
+              </TooltipOnFocus>
+              :
+              yesRadio
+          }
+          label={
+            <span
+              style={{
+                color: '#000000',
+                fontWeight: isYesChecked ? 'bold' : null,
+              }}
+            >
+              oui
+          </span>
+          }
+        />
 
         <SecondFormControlLabel
           value={NO}
@@ -118,7 +115,7 @@ export class YesNoRadioGroup extends Component {
           label={
             <span
               style={{
-                color: '##000000de',
+                color: '#000000',
                 fontWeight: isNoChecked ? 'bold' : null,
               }}
             >

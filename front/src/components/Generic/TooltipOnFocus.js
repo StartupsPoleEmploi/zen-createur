@@ -112,7 +112,6 @@ class TooltipOnFocus extends Component {
     super(props)
     this.state = {
       arrowRef: null,
-      tooltipIsOpen: false,
     }
   }
 
@@ -121,11 +120,6 @@ class TooltipOnFocus extends Component {
       arrowRef,
     })
 
-  setTooltipIsOpen = (state, event) => {
-    if (event) { event.stopPropagation(); }
-    this.setState({ tooltipIsOpen: state });
-  }
-
   render() {
     const { children, classes, content, tooltipId, ...props } = this.props
 
@@ -133,11 +127,10 @@ class TooltipOnFocus extends Component {
       <Tooltip
         id={tooltipId}
         placement="bottom"
-        open={this.state.tooltipIsOpen}
-        // onOpen={() => this.setTooltipIsOpen(true)}
-        // onClose={() => this.setTooltipIsOpen(false)}
+        aria-hidden="false"
+        enterTouchDelay={0}
         title={
-          <div>
+          <>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <TooltipTitle>
                 <InfoImg src={info} alt="" />
@@ -146,7 +139,7 @@ class TooltipOnFocus extends Component {
             </div>
             <TooltipText>{content}</TooltipText>
             <span className={classes.arrowArrow} ref={this.handleArrowRef} />
-          </div>
+          </>
         }
         classes={{ popper: classes.arrowPopper, tooltip: classes.tooltip }}
         PopperProps={{
@@ -161,11 +154,7 @@ class TooltipOnFocus extends Component {
         }}
         {...props}
       >
-        {/* eslint-disable */}
-        <div onClick={event => this.setTooltipIsOpen(!this.state.tooltipIsOpen, event)}>
-          {children}
-        </div>
-        {/* eslint-enable */}
+        {children}
       </Tooltip>
     )
   }

@@ -48,6 +48,7 @@ export class DeclarationQuestion extends Component {
     verticalLayout: PropTypes.bool,
     withChildrenOnNo: PropTypes.bool,
     style: PropTypes.object, // eslint-disable-line
+    className: PropTypes.string,
   }
 
   handleChange = ({ target: { value } }) => {
@@ -66,9 +67,10 @@ export class DeclarationQuestion extends Component {
       style = {},
       verticalLayout,
       withChildrenOnNo,
+      className,
     } = this.props
     return (
-      <Container style={style} id={name}>
+      <Container style={style} id={name} className={className}>
         <MainQuestionContainer
           style={{
             flexDirection: verticalLayout ? 'column' : 'row',
