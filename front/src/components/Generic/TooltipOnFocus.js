@@ -114,22 +114,6 @@ class TooltipOnFocus extends Component {
       arrowRef: null,
       tooltipIsOpen: false,
     }
-
-    document.body.onclick = () => {
-      this.setTooltipIsOpen(false);
-    }
-  }
-
-  componentDidMount = () => {
-    document.body.addEventListener('click', this.myHandler);
-  }
-
-  componentWillUnmount = () => {
-    document.body.removeEventListener('click', this.myHandler);
-  }
-
-  myHandler = () => {
-    this.setTooltipIsOpen(false);
   }
 
   handleArrowRef = (arrowRef) =>
@@ -150,10 +134,10 @@ class TooltipOnFocus extends Component {
         id={tooltipId}
         placement="bottom"
         open={this.state.tooltipIsOpen}
-        // onOpen={() => this.setTooltipIsOpen(true)}
-        // onClose={() => this.setTooltipIsOpen(false)}
+        onOpen={() => this.setTooltipIsOpen(true)}
+        onClose={() => this.setTooltipIsOpen(false)}
         title={
-          <div>
+          <>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <TooltipTitle>
                 <InfoImg src={info} alt="" />
@@ -162,7 +146,7 @@ class TooltipOnFocus extends Component {
             </div>
             <TooltipText>{content}</TooltipText>
             <span className={classes.arrowArrow} ref={this.handleArrowRef} />
-          </div>
+          </>
         }
         classes={{ popper: classes.arrowPopper, tooltip: classes.tooltip }}
         PopperProps={{
@@ -177,11 +161,7 @@ class TooltipOnFocus extends Component {
         }}
         {...props}
       >
-        {/* eslint-disable */}
-        <div onClick={event => this.setTooltipIsOpen(!this.state.tooltipIsOpen, event)}>
-          {children}
-        </div>
-        {/* eslint-enable */}
+        {children}
       </Tooltip>
     )
   }

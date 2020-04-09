@@ -86,11 +86,11 @@ const StyledTextField = styled(TextField)`
 `
 
 const InfoImg = styled.img`
-  width: 2rem;
-  position: absolute;
-  margin-left: 3px;
-  cursor: pointer;
-  z-index: 2;
+width: 2rem;
+position: absolute;
+margin-left: 3px;
+cursor: pointer;
+z-index: 2;
 `
 
 const CollapsedTitle = styled.div`
@@ -121,14 +121,12 @@ export class EmployerQuestion extends PureComponent {
 
   onRemove = () => this.props.onRemove(this.props.index)
 
-  renderLabel = ({ id, label, content, showTooltip }) => (
+  renderLabel = ({ id, label, content }) => (
     <div>
       {label}
-      {showTooltip && (
-        <TooltipOnFocus tooltipId={id} content={content}>
-          <InfoImg src={warn} alt="Informations" />
-        </TooltipOnFocus>
-      )}
+      <TooltipOnFocus tooltipId={id} content={content}>
+        <InfoImg src={warn} alt="Informations" />
+      </TooltipOnFocus>
     </div>
   )
 
@@ -147,7 +145,6 @@ export class EmployerQuestion extends PureComponent {
       showCollapsedTitle,
     } = this.props
 
-    const showTooltip = true
     const hasFormError = workHours.error || employerName.error || salary.error;
 
     return (
@@ -173,7 +170,6 @@ export class EmployerQuestion extends PureComponent {
               label: 'Nom employeur',
               content:
                 'Si vous avez plusieurs employeurs, cliquez sur "Ajouter un employeur"',
-              showTooltip,
             })}
             name={`employerName[${index}]`}
             value={employerName.value}
@@ -197,7 +193,6 @@ export class EmployerQuestion extends PureComponent {
                   label: "Nombre d'heures",
                   content:
                     'Inscrivez les heures qui sont inscrites sur votre fiche de paie.',
-                  showTooltip,
                 })}
                 name={`workHours[${index}]`}
                 value={workHours.value}
@@ -224,7 +219,6 @@ export class EmployerQuestion extends PureComponent {
                   id: `salary[${index}]`,
                   label: 'Salaire € brut',
                   content: 'Déclarez le salaire brut pour cet employeur',
-                  showTooltip,
                 })}
                 name={`salary[${index}]`}
                 value={salary.value}
