@@ -144,8 +144,13 @@ const BoxPanel = styled.div`
 const Block = styled.div`
   border-radius: 15px;
   background-color: #FAFAFA;
-  padding: 20px;
+  padding: 20px 40px;
 `
+
+const StyleContainerBlock = styled.div`
+  display: inline-block;
+`
+
 
 const employerTemplate = {
   employerName: { value: '', error: null },
@@ -567,30 +572,32 @@ export class Employers extends Component {
     return (
       <StyledEmployers>
 
-        {this.props.declarations && this.props.declarations.length && <><Box display="flex">
-          {this.renderEmployerPanel()}
-          {this.renderCreatorPanel()}
-        </Box></>}
+        <StyleContainerBlock>
+          {this.props.declarations && this.props.declarations.length && <><Box display="inline-flex">
+            {this.renderEmployerPanel()}
+            {this.renderCreatorPanel()}
+          </Box></>}
 
-        <StyledAlwaysVisibleContainer
-          scrollButtonTopValue="0"
-          style={{ marginTop: '2rem', alignSelf: 'stretch' }}
-        >
-          {error && <ErrorMessage>{error}</ErrorMessage>}
+          <StyledAlwaysVisibleContainer
+            scrollButtonTopValue="0"
+            style={{ marginTop: '2rem', alignSelf: 'stretch' }}
+          >
+            {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <ButtonsContainer>
-            <StyledMainAction primary onClick={this.openDialog}>
-              Envoyer mon
+            <ButtonsContainer>
+              <StyledMainAction primary onClick={this.openDialog}>
+                Envoyer mon
                 <br />
                 actualisation
               </StyledMainAction>
-            <StyledMainAction primary={false} onClick={this.saveAndRedirect}>
-              Enregistrer
+              <StyledMainAction primary={false} onClick={this.saveAndRedirect}>
+                Enregistrer
                 <br />
                 et finir plus tard
               </StyledMainAction>
-          </ButtonsContainer>
-        </StyledAlwaysVisibleContainer>
+            </ButtonsContainer>
+          </StyledAlwaysVisibleContainer>
+        </StyleContainerBlock>
 
         <DeclarationDialogsHandler
           isLoading={this.state.isValidating}
