@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
-import { Typography } from '@material-ui/core'
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
-import { Link } from 'react-router-dom'
-import superagent from 'superagent'
-import moment from 'moment'
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { Typography } from '@material-ui/core';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import { Link } from 'react-router-dom';
+import superagent from 'superagent';
+import moment from 'moment';
 
-import MainActionButton from '../MainActionButton'
-import catchMaintenance from '../../../lib/catchMaintenance'
+import MainActionButton from '../MainActionButton';
+import catchMaintenance from '../../../lib/catchMaintenance';
 
 const StyledArrowForwardIcon = styled(ArrowForwardIcon)`
   && {
     margin-left: 1rem;
   }
-`
+`;
 
 const DeclarationNotStarted = () => {
-  const [actuEndDate, setActuEndDate] = useState(null)
+  const [actuEndDate, setActuEndDate] = useState(null);
 
   useEffect(() => {
     superagent
@@ -28,10 +28,10 @@ const DeclarationNotStarted = () => {
           moment(endDate)
             .subtract(1, 'day')
             .format('DD MMMM YYYY'),
-        )
+        );
       })
-      .catch(catchMaintenance)
-  }, [])
+      .catch(catchMaintenance);
+  }, []);
 
   return (
     <div>
@@ -45,7 +45,11 @@ const DeclarationNotStarted = () => {
       {actuEndDate && (
         <div>
           <Typography>
-            Vous avez jusqu'au <strong>{actuEndDate}</strong> pour vous
+            Vous avez jusqu'au
+            {' '}
+            <strong>{actuEndDate}</strong>
+            {' '}
+            pour vous
             actualiser.
           </Typography>
         </div>
@@ -65,7 +69,7 @@ const DeclarationNotStarted = () => {
         <StyledArrowForwardIcon />
       </MainActionButton>
     </div>
-  )
-}
+  );
+};
 
-export default DeclarationNotStarted
+export default DeclarationNotStarted;

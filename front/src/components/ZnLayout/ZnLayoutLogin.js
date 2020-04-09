@@ -1,21 +1,21 @@
-import PropTypes from 'prop-types'
-import React, { useState } from 'react'
-import { withRouter } from 'react-router-dom'
-import styled from 'styled-components'
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { withRouter } from 'react-router-dom';
+import styled from 'styled-components';
 
-import Button from '@material-ui/core/Button'
-import ClickAwayListener from '@material-ui/core/ClickAwayListener'
-import { makeStyles } from '@material-ui/core/styles'
-import Tooltip from '@material-ui/core/Tooltip'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
-import ExpandLess from '@material-ui/icons/ExpandLess'
-import ExpandMore from '@material-ui/icons/ExpandMore'
-import Person from '@material-ui/icons/PersonOutline'
+import Button from '@material-ui/core/Button';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import Person from '@material-ui/icons/PersonOutline';
 
-import AppTitle from '../Generic/AppTitle'
-import ZnNavLogin from './ZnNavLogin'
-import { primaryBlue, mobileBreakpoint } from '../../constants'
-import dashboardBg from '../../images/dashboard-bg.svg'
+import AppTitle from '../Generic/AppTitle';
+import ZnNavLogin from './ZnNavLogin';
+import { primaryBlue, mobileBreakpoint } from '../../constants';
+import dashboardBg from '../../images/dashboard-bg.svg';
 
 const routesWithDisplayedNav = [
   '/actu',
@@ -25,8 +25,8 @@ const routesWithDisplayedNav = [
   '/thanks',
   '/history',
   '/cgu',
-]
-const [, , , dashboardRoute] = routesWithDisplayedNav
+];
+const [, , , dashboardRoute] = routesWithDisplayedNav;
 
 const useStyles = makeStyles((theme) => ({
   lightTooltip: {
@@ -35,11 +35,11 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[1],
     fontSize: 11,
   },
-}))
+}));
 
 const StyledLayout = styled.div`
   margin: auto;
-`
+`;
 
 const Header = styled.header.attrs({ role: 'banner' })`
   display: flex;
@@ -48,7 +48,7 @@ const Header = styled.header.attrs({ role: 'banner' })`
   @media (max-width: ${mobileBreakpoint}) {
     justify-content: space-between;
   }
-`
+`;
 
 const UserButton = styled(Button)`
   && {
@@ -73,27 +73,26 @@ const UserButton = styled(Button)`
       padding-left: 6rem;
     }
   }
-`
+`;
 
 const PersonIcon = styled(Person)`
   && {
     margin-right: 1rem;
     font-size: 2rem;
   }
-`
+`;
 
 const Container = styled.div`
   display: flex;
   width: 100%;
-`
+`;
 
 const Main = styled.main.attrs({ role: 'main' })`
   padding: 7rem 1rem;
   flex-grow: 1;
   overflow: hidden;
 
-  background: ${({ addBackground }) =>
-    addBackground ? `url(${dashboardBg}) no-repeat 0 100%` : null};
+  background: ${({ addBackground }) => (addBackground ? `url(${dashboardBg}) no-repeat 0 100%` : null)};
 
   @media (max-height: 1000px) {
     background: none;
@@ -105,12 +104,12 @@ const Main = styled.main.attrs({ role: 'main' })`
   @media (max-width: ${mobileBreakpoint}) {
     padding-top: 2rem;
   }
-`
+`;
 
 const AppTitleMobileContainer = styled.div`
   padding-left: 2rem;
   padding-top: 0.5rem;
-`
+`;
 
 export const Layout = ({
   activeMonth,
@@ -121,13 +120,13 @@ export const Layout = ({
   location: { pathname },
   history: { push },
 }) => {
-  const classes = useStyles()
-  const [isTooltipOpened, setTooltipOpened] = useState(false)
-  const toggleTooltip = () => setTooltipOpened(!isTooltipOpened)
+  const classes = useStyles();
+  const [isTooltipOpened, setTooltipOpened] = useState(false);
+  const toggleTooltip = () => setTooltipOpened(!isTooltipOpened);
 
-  const isNavVisible = routesWithDisplayedNav.includes(pathname)
+  const isNavVisible = routesWithDisplayedNav.includes(pathname);
 
-  const useMobileVersion = useMediaQuery(`(max-width:${mobileBreakpoint})`)
+  const useMobileVersion = useMediaQuery(`(max-width:${mobileBreakpoint})`);
 
   const NavComponent = () => (
     <ZnNavLogin
@@ -138,7 +137,7 @@ export const Layout = ({
       activeMonth={activeMonth}
       activeDeclaration={activeDeclaration}
     />
-  )
+  );
 
   return (
     <StyledLayout>
@@ -157,7 +156,7 @@ export const Layout = ({
               disableTouchListener
               open={isTooltipOpened}
               placement="bottom"
-              title={
+              title={(
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <Button
                     href="/cgu"
@@ -177,7 +176,7 @@ export const Layout = ({
                     Déconnexion
                   </Button>
                 </div>
-              }
+              )}
             >
               <UserButton onClick={toggleTooltip} disableRipple>
                 <PersonIcon />
@@ -195,8 +194,8 @@ export const Layout = ({
         <Main addBackground={pathname === dashboardRoute}>{children}</Main>
       </Container>
     </StyledLayout>
-  )
-}
+  );
+};
 
 Layout.propTypes = {
   children: PropTypes.node,
@@ -212,6 +211,6 @@ Layout.propTypes = {
     .isRequired,
   activeMonth: PropTypes.instanceOf(Date),
   activeDeclaration: PropTypes.object,
-}
+};
 
-export default withRouter(Layout)
+export default withRouter(Layout);

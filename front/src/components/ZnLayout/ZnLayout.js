@@ -1,9 +1,9 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import ZnLayoutLogin from './ZnLayoutLogin'
-import ZnLayoutLogout from './ZnLayoutLogout'
-import HelpLink from './HelpLink'
+import ZnLayoutLogin from './ZnLayoutLogin';
+import ZnLayoutLogout from './ZnLayoutLogout';
+import HelpLink from './HelpLink';
 
 export const ZnLayout = ({
   activeMonth,
@@ -13,7 +13,7 @@ export const ZnLayout = ({
   user,
 }) => {
   if (!user) {
-    return <ZnLayoutLogout>{children}</ZnLayoutLogout>
+    return <ZnLayoutLogout>{children}</ZnLayoutLogout>;
   }
 
   return (
@@ -27,8 +27,8 @@ export const ZnLayout = ({
 
       <HelpLink />
     </ZnLayoutLogin>
-  )
-}
+  );
+};
 
 ZnLayout.propTypes = {
   children: PropTypes.node,
@@ -38,6 +38,6 @@ ZnLayout.propTypes = {
   isFilesServiceUp: PropTypes.bool,
   activeMonth: PropTypes.instanceOf(Date),
   activeDeclaration: PropTypes.object,
-}
+};
 
-export default ZnLayout
+export default ZnLayout;

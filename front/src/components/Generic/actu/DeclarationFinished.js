@@ -1,16 +1,16 @@
-import React, { useState, useRef } from 'react'
-import PropTypes from 'prop-types'
-import styled from 'styled-components'
-import { Typography } from '@material-ui/core'
-import DoneIcon from '@material-ui/icons/Done'
-import PrintIcon from '@material-ui/icons/Print'
-import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
+import React, { useState, useRef } from 'react';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import { Typography } from '@material-ui/core';
+import DoneIcon from '@material-ui/icons/Done';
+import PrintIcon from '@material-ui/icons/Print';
+import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
 
 import {
   primaryBlue,
   darkBlue,
   intermediaryBreakpoint,
-} from '../../../constants'
+} from '../../../constants';
 
 const StyledDoneIcon = styled(DoneIcon)`
   && {
@@ -18,7 +18,7 @@ const StyledDoneIcon = styled(DoneIcon)`
     vertical-align: bottom;
     color: green;
   }
-`
+`;
 
 const Dot = styled.span`
   color: ${primaryBlue};
@@ -28,18 +28,18 @@ const Dot = styled.span`
   margin-right: 2.5rem;
   position: relative;
   top: -5px;
-`
+`;
 
 const Section = styled.div`
   text-transform: uppercase;
   display: flex;
-`
+`;
 
 const UlEmployers = styled.ul`
   margin: 0;
   list-style: none;
   padding-left: 3.5rem;
-`
+`;
 
 const UlFiles = styled.ul`
   border-top: solid 1px lightgray;
@@ -51,7 +51,7 @@ const UlFiles = styled.ul`
   @media (max-width: ${intermediaryBreakpoint}) {
     width: 100%;
   }
-`
+`;
 
 const FileLink = styled.a`
   display: flex;
@@ -62,39 +62,39 @@ const FileLink = styled.a`
     text-decoration: underline;
     color: ${primaryBlue};
   }
-`
+`;
 
-const DECLARATION_FILE_URL = '/api/declarations/summary-file'
+const DECLARATION_FILE_URL = '/api/declarations/summary-file';
 
 const DeclarationFinished = ({ declaration }) => {
-  const [showPrintIframe, setShowPrintIframe] = useState(false)
-  const iframeEl = useRef(null)
+  const [showPrintIframe, setShowPrintIframe] = useState(false);
+  const iframeEl = useRef(null);
 
   const salary = Math.round(
     declaration.employers.reduce((prev, emp) => prev + emp.salary, 0),
-  )
+  );
 
   function printDeclaration(e) {
-    e.preventDefault()
+    e.preventDefault();
 
     if (showPrintIframe) {
       try {
-        iframeEl.current.contentWindow.print()
+        iframeEl.current.contentWindow.print();
       } catch (err) {
         // Some browser, like firefox, can't print an iframe content, so we open a new tab for the PDF
         // For more information : https://bugzilla.mozilla.org/show_bug.cgi?id=874200
-        window.open(DECLARATION_FILE_URL, '_blank')
+        window.open(DECLARATION_FILE_URL, '_blank');
       }
-    } else setShowPrintIframe(true)
+    } else setShowPrintIframe(true);
   }
 
   function printIframeContent(e) {
     try {
-      e.target.contentWindow.print()
+      e.target.contentWindow.print();
     } catch (err) {
       // Some browser, like firefox, can't print an iframe content, so we open a new tab for the PDF
       // For more information : https://bugzilla.mozilla.org/show_bug.cgi?id=874200
-      window.open(DECLARATION_FILE_URL, '_blank')
+      window.open(DECLARATION_FILE_URL, '_blank');
     }
   }
 
@@ -138,7 +138,11 @@ const DeclarationFinished = ({ declaration }) => {
               <br />
             </Typography>
             <Typography style={{ marginLeft: '3.5rem' }}>
-              <strong>{salary} €</strong>
+              <strong>
+                {salary}
+                {' '}
+                €
+              </strong>
             </Typography>
           </div>
         </div>
@@ -177,11 +181,11 @@ const DeclarationFinished = ({ declaration }) => {
         />
       )}
     </>
-  )
-}
+  );
+};
 
 DeclarationFinished.propTypes = {
   declaration: PropTypes.object.isRequired,
-}
+};
 
-export default DeclarationFinished
+export default DeclarationFinished;

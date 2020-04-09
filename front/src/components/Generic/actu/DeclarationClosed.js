@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import styled from 'styled-components'
-import { Typography } from '@material-ui/core'
-import superagent from 'superagent'
-import moment from 'moment'
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import { Typography } from '@material-ui/core';
+import superagent from 'superagent';
+import moment from 'moment';
 
-import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined'
-import { primaryBlue, darkBlue } from '../../../constants'
-import catchMaintenance from '../../../lib/catchMaintenance'
+import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
+import { primaryBlue, darkBlue } from '../../../constants';
+import catchMaintenance from '../../../lib/catchMaintenance';
 
 const Container = styled.div`
   display: flex;
   margin: 2rem 0 1.5rem 0;
-`
+`;
 
 const StyledCloseIcon = styled(CloseOutlinedIcon)`
   && {
@@ -21,42 +21,42 @@ const StyledCloseIcon = styled(CloseOutlinedIcon)`
     vertical-align: bottom;
     color: gray;
   }
-`
+`;
 const Dot = styled.span`
   color: ${primaryBlue};
   font-family: serif;
   font-size: 3.5rem;
   font-weight: bold;
   margin-right: 2.2rem;
-`
+`;
 
 const EmployerSection = styled.div`
   text-transform: uppercase;
-`
+`;
 
 const UlEmployers = styled.ul`
   margin: 0;
   list-style: none;
   padding-left: 3.2rem;
-`
+`;
 
 const DeclarationClosed = ({ previousDeclaration }) => {
-  const [actuStartdDate, setActuStartdDate] = useState(null)
+  const [actuStartdDate, setActuStartdDate] = useState(null);
 
-  const relevantPreviousEmployers = previousDeclaration
-    ? previousDeclaration.employers.filter(
-        (employer) => !employer.hasEndedThisMonth,
-      )
-    : []
+  const relevantPreviousEmployers = previousDeclaration ?
+    previousDeclaration.employers.filter(
+      (employer) => !employer.hasEndedThisMonth,
+    ) :
+    [];
 
   useEffect(() => {
     superagent
       .get('/api/declarationMonths/next-declaration-month')
       .then(({ body: { startDate } }) => {
-        setActuStartdDate(moment(new Date(startDate)).format('DD MMMM YYYY'))
+        setActuStartdDate(moment(new Date(startDate)).format('DD MMMM YYYY'));
       })
-      .catch(catchMaintenance)
-  }, [])
+      .catch(catchMaintenance);
+  }, []);
 
   return (
     <div>
@@ -72,7 +72,8 @@ const DeclarationClosed = ({ previousDeclaration }) => {
 
           {actuStartdDate && (
             <Typography>
-              Vous pourrez vous actualiser à partir du{' '}
+              Vous pourrez vous actualiser à partir du
+              {' '}
               <strong>{actuStartdDate}</strong>
             </Typography>
           )}
@@ -104,11 +105,11 @@ const DeclarationClosed = ({ previousDeclaration }) => {
         </EmployerSection>
       )}
     </div>
-  )
-}
+  );
+};
 
 DeclarationClosed.propTypes = {
   previousDeclaration: PropTypes.object.isRequired,
-}
+};
 
-export default DeclarationClosed
+export default DeclarationClosed;

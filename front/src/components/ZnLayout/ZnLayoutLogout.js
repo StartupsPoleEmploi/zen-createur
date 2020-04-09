@@ -1,24 +1,24 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles'
-import Link from '@material-ui/core/Link'
-import Typography from '@material-ui/core/Typography'
-import Grid from '@material-ui/core/Grid'
-import Button from '@material-ui/core/Button'
-import AccountIcon from '@material-ui/icons/AccountCircleOutlined'
+import { makeStyles } from '@material-ui/core/styles';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import AccountIcon from '@material-ui/icons/AccountCircleOutlined';
 
-import AppTitle from '../Generic/AppTitle'
-import { secondaryBlue } from '../../constants'
+import AppTitle from '../Generic/AppTitle';
+import { secondaryBlue } from '../../constants';
 
-import logoPEMono from '../../images/logoPE-mono.png'
+import logoPEMono from '../../images/logoPE-mono.png';
 
 const windowWidthElement = {
   width: '100vw',
   left: '50%',
   marginLeft: ' -50vw',
   position: 'relative',
-}
+};
 const useStyles = makeStyles((theme) => ({
   header: {
     backgroundColor: '#f3f4f5',
@@ -65,10 +65,10 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     ...windowWidthElement,
   },
-}))
+}));
 
 export default function ZnLayoutLogout({ children }) {
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <div>
       <header className={classes.header} role="banner">
@@ -129,9 +129,9 @@ export default function ZnLayoutLogout({ children }) {
         </Grid>
       </footer>
     </div>
-  )
+  );
 }
 
 ZnLayoutLogout.propTypes = {
   children: PropTypes.node,
-}
+};

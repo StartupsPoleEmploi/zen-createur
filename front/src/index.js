@@ -24,8 +24,8 @@ if (environment !== 'development') {
     'https://a1844e1ab4404bf9b6b63fe127874cdf@sentry.io/1216087',
     {
       release: version,
-      environment
-    }
+      environment,
+    },
   ).install();
 }
 
@@ -38,54 +38,54 @@ const theme = createMuiTheme({
     // Tell Material-UI what's the font-size on the html element is.
     htmlFontSize: 10,
     fontFamily: ['"Open sans"', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(
-      ','
+      ',',
     ),
     h1: {
       fontSize: '4.5rem',
       fontWeight: 'bold',
-      textTransform: 'uppercase'
+      textTransform: 'uppercase',
     },
     h2: {
       fontSize: '3.5rem',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
     h3: {
       fontSize: '3rem',
-      fontWeight: 'bold'
+      fontWeight: 'bold',
     },
     h4: {
       fontSize: '2.5rem',
-      fontWeight: 'bold'
-    }
+      fontWeight: 'bold',
+    },
   },
   palette: {
     primary: {
-      main: '#0065DB'
+      main: '#0065DB',
     },
     secondary: {
-      main: '#262C65'
+      main: '#262C65',
     },
     background: {
-      default: '#fff'
-    }
+      default: '#fff',
+    },
   },
   overrides: {
     MuiButton: {
       root: {
         fontSize: '1.6rem',
-        textTransform: 'none'
+        textTransform: 'none',
       },
       contained: {
-        boxShadow: 'unset'
-      }
+        boxShadow: 'unset',
+      },
     },
     MuiTooltip: {
       popper: {
         // default value is pointer-events none, which breaks logout in tooltip
-        pointerEvents: 'auto'
-      }
-    }
-  }
+        pointerEvents: 'auto',
+      },
+    },
+  },
 });
 
 ReactDOM.render(
@@ -94,12 +94,13 @@ ReactDOM.render(
     <MuiThemeProvider theme={theme}>
       {/* The following modal must never be displayed out of dev mode, modify with extreme caution */
       (process.env.REACT_APP_ZEN_ENV === 'development' ||
-        process.env.REACT_APP_ZEN_ENV === 'qa') && <DeveloperDialog />}
+        process.env.REACT_APP_ZEN_ENV === 'qa') && <DeveloperDialog />
+      }
       <BrowserRouter>
         <App />
       </BrowserRouter>
     </MuiThemeProvider>
     <CookiePolicy />
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );

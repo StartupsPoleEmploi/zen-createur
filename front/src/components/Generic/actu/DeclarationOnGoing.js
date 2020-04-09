@@ -1,28 +1,28 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import moment from 'moment'
-import styled from 'styled-components'
-import { Typography } from '@material-ui/core'
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import styled from 'styled-components';
+import { Typography } from '@material-ui/core';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import { Link } from 'react-router-dom';
 
-import MainActionButton from '../MainActionButton'
-import CircleJauge from '../../../pages/dashboard/CircleJauge'
-import { darkBlue } from '../../../constants'
+import MainActionButton from '../MainActionButton';
+import CircleJauge from '../../../pages/dashboard/CircleJauge';
+import { darkBlue } from '../../../constants';
 
 const FlexContainer = styled.div`
   display: flex;
-`
+`;
 
 const JaugeContainer = styled.div`
   margin-right: 2.5rem;
-`
+`;
 
 const StyledArrowForwardIcon = styled(ArrowForwardIcon)`
   && {
     margin-left: 1rem;
   }
-`
+`;
 
 const DeclarationOnGoing = ({ declaration }) => (
   <div>
@@ -43,7 +43,8 @@ const DeclarationOnGoing = ({ declaration }) => (
           Avancement de l'actualisation
         </Typography>
         <Typography>
-          À terminer avant le{' '}
+          À terminer avant le
+          {' '}
           <strong>
             {moment(declaration.declarationMonth.endDate).format(
               'DD MMMM YYYY',
@@ -67,10 +68,10 @@ const DeclarationOnGoing = ({ declaration }) => (
       <StyledArrowForwardIcon />
     </MainActionButton>
   </div>
-)
+);
 
 DeclarationOnGoing.propTypes = {
   declaration: PropTypes.object.isRequired,
-}
+};
 
-export default DeclarationOnGoing
+export default DeclarationOnGoing;

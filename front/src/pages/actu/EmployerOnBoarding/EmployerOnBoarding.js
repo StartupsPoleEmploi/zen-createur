@@ -1,7 +1,7 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { Typography } from '@material-ui/core'
-import TooltipsDemo from '../../../components/Generic/TooltipsDemo'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Typography } from '@material-ui/core';
+import TooltipsDemo from '../../../components/Generic/TooltipsDemo';
 
 const EMPLOYER_SLIDES = [
   {
@@ -35,14 +35,14 @@ const EMPLOYER_SLIDES = [
       </Typography>
     ),
   },
-]
+];
 
 function EmployerOnBoarding({ onFinish }) {
-  return <TooltipsDemo slides={EMPLOYER_SLIDES} onFinish={onFinish} />
+  return <TooltipsDemo slides={EMPLOYER_SLIDES} onFinish={onFinish} />;
 }
 
 EmployerOnBoarding.propTypes = {
   onFinish: PropTypes.func.isRequired,
-}
+};
 
-export default EmployerOnBoarding
+export default EmployerOnBoarding;

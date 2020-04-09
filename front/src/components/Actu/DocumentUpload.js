@@ -1,23 +1,23 @@
-import React, { Component } from 'react'
-import Button from '@material-ui/core/Button'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import FormLabel from '@material-ui/core/FormLabel'
-import Typography from '@material-ui/core/Typography'
-import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank'
-import Check from '@material-ui/icons/Check'
-import PropTypes from 'prop-types'
-import styled from 'styled-components'
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
-import { withWidth } from '@material-ui/core'
+import React, { Component } from 'react';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import FormLabel from '@material-ui/core/FormLabel';
+import Typography from '@material-ui/core/Typography';
+import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
+import Check from '@material-ui/icons/Check';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { withWidth } from '@material-ui/core';
 
-import TooltipOnFocus from '../Generic/TooltipOnFocus'
+import TooltipOnFocus from '../Generic/TooltipOnFocus';
 import {
   helpColor,
   darkBlue,
   primaryBlue,
   intermediaryBreakpoint,
   mobileBreakpoint,
-} from '../../constants'
+} from '../../constants';
 
 const StyledContainer = styled.div`
   display: flex;
@@ -27,7 +27,7 @@ const StyledContainer = styled.div`
   &:not(:last-child) {
     padding-bottom: 2rem;
   }
-`
+`;
 
 const StyledFormLabel = styled(FormLabel)`
   display: flex;
@@ -43,7 +43,7 @@ const StyledFormLabel = styled(FormLabel)`
     justify-content: flex-start;
     padding: 1rem 0;
   }
-`
+`;
 
 const LabelsContainer = styled.div`
   flex: 0 1 auto;
@@ -53,7 +53,7 @@ const LabelsContainer = styled.div`
   @media (max-width: 1000px) {
     width: auto;
   }
-`
+`;
 
 const ActionsContainer = styled.div`
   display: flex;
@@ -65,7 +65,7 @@ const ActionsContainer = styled.div`
     align-self: flex-start;
     padding: 1rem 0;
   }
-`
+`;
 
 const ActionButton = styled(Button).attrs({
   variant: 'contained',
@@ -74,29 +74,29 @@ const ActionButton = styled(Button).attrs({
     border-radius: 9rem;
     padding: 1rem 3rem;
   }
-`
+`;
 
 const CheckBoxOutlineBlankIcon = styled(CheckBoxOutlineBlank)`
   color: ${primaryBlue};
   margin-right: 1rem;
   vertical-align: sub;
-`
+`;
 
 const CheckIcon = styled(Check)`
   margin-right: 0.5rem;
-`
+`;
 
 const ErrorTypography = styled(Typography).attrs({ variant: 'caption' })`
   && {
     color: red;
     padding-right: 1rem;
   }
-`
+`;
 
 const Upper = styled.span`
   text-transform: uppercase;
   white-space: pre;
-`
+`;
 
 const SecondBloc = styled.div`
   display: flex;
@@ -111,7 +111,7 @@ const SecondBloc = styled.div`
   @media (max-width: ${mobileBreakpoint}) {
     justify-content: flex-start;
   }
-`
+`;
 
 const Or = styled(Typography)`
   && {
@@ -125,7 +125,7 @@ const Or = styled(Typography)`
       margin-right: 0;
     }
   }
-`
+`;
 
 const InfoImg = styled(InfoOutlinedIcon)`
   && {
@@ -133,7 +133,7 @@ const InfoImg = styled(InfoOutlinedIcon)`
     vertical-align: sub;
     margin-left: 0.5rem;
   }
-`
+`;
 const DocumentZone = styled.div`
   display: flex;
   flex: 3;
@@ -143,7 +143,7 @@ const DocumentZone = styled.div`
   @media (max-width: 1000px) {
     flex-direction: column;
   }
-`
+`;
 
 const SkipFileSection = styled.div`
   display: flex;
@@ -153,7 +153,7 @@ const SkipFileSection = styled.div`
   @media (max-width: ${mobileBreakpoint}) {
     justify-content: flex-start;
   }
-`
+`;
 
 const Dot = styled.span`
   color: ${primaryBlue};
@@ -161,16 +161,33 @@ const Dot = styled.span`
   font-size: 2.5rem;
   font-weight: bold;
   margin-right: 0;
-`
+`;
 
-const employerType = 'employer'
-const infosType = 'info'
+const employerType = 'employer';
+const infosType = 'info';
 
 export class DocumentUpload extends Component {
   static types = { employer: employerType, info: infosType }
 
+  submitFile = (file) => this.props.submitFile({
+    file,
+    documentId: this.props.id,
+    type: this.props.type,
+    employerId: this.props.employerId,
+    employerDocType: this.props.employerDocType,
+  })
+
+  showPreview = () => this.props.showPreview(this.props.id)
+
+  skipFile = () => this.props.skipFile({
+    type: this.props.type,
+    documentId: this.props.id,
+    employerId: this.props.employerId,
+    employerDocType: this.props.employerDocType,
+  })
+
   renderFileField(fileInput, showTooltip, id) {
-    if (!showTooltip) return fileInput
+    if (!showTooltip) return fileInput;
 
     return (
       <TooltipOnFocus
@@ -179,27 +196,8 @@ export class DocumentUpload extends Component {
       >
         {fileInput}
       </TooltipOnFocus>
-    )
+    );
   }
-
-  submitFile = (file) =>
-    this.props.submitFile({
-      file,
-      documentId: this.props.id,
-      type: this.props.type,
-      employerId: this.props.employerId,
-      employerDocType: this.props.employerDocType,
-    })
-
-  showPreview = () => this.props.showPreview(this.props.id)
-
-  skipFile = () =>
-    this.props.skipFile({
-      type: this.props.type,
-      documentId: this.props.id,
-      employerId: this.props.employerId,
-      employerDocType: this.props.employerDocType,
-    })
 
   render() {
     const {
@@ -215,7 +213,7 @@ export class DocumentUpload extends Component {
       type,
       useLightVersion,
       width,
-    } = this.props
+    } = this.props;
 
     const hiddenInput = (
       <input
@@ -228,7 +226,7 @@ export class DocumentUpload extends Component {
           },
         }) => this.submitFile(file)}
       />
-    )
+    );
 
     const viewDocumentButton = (
       <ActionButton
@@ -238,7 +236,7 @@ export class DocumentUpload extends Component {
       >
         Voir, modifier ou valider
       </ActionButton>
-    )
+    );
 
     const uploadInput = (
       <ActionButton
@@ -248,7 +246,7 @@ export class DocumentUpload extends Component {
       >
         Transmettre à Pôle emploi
       </ActionButton>
-    )
+    );
 
     return (
       <StyledContainer
@@ -260,7 +258,9 @@ export class DocumentUpload extends Component {
       >
         <LabelsContainer>
           <Typography style={{ marginBottom: '1.5rem' }}>
-            {width === 'xs' && <Dot>.</Dot>} <b>{label}</b>
+            {width === 'xs' && <Dot>.</Dot>}
+            {' '}
+            <b>{label}</b>
           </Typography>
           {caption && (
             <Typography
@@ -298,7 +298,9 @@ export class DocumentUpload extends Component {
                   disabled
                   style={{ backgroundColor: '#039C6D', color: 'white' }}
                 >
-                  <CheckIcon /> Envoyé
+                  <CheckIcon />
+                  {' '}
+                  Envoyé
                 </ActionButton>
               ) : !fileExistsOnServer ? (
                 <StyledFormLabel
@@ -340,7 +342,9 @@ export class DocumentUpload extends Component {
                       >
                         <CheckBoxOutlineBlankIcon style={{ width: '3rem' }} />
                         <div>
-                          Pôle emploi <Upper>a déjà ce justificatif</Upper>
+                          Pôle emploi
+                          {' '}
+                          <Upper>a déjà ce justificatif</Upper>
                         </div>
                       </Typography>
                     </>
@@ -354,7 +358,7 @@ export class DocumentUpload extends Component {
           </DocumentZone>
         )}
       </StyledContainer>
-    )
+    );
   }
 }
 
@@ -375,10 +379,10 @@ DocumentUpload.propTypes = {
   showTooltip: PropTypes.bool,
   useLightVersion: PropTypes.bool.isRequired,
   width: PropTypes.string.isRequired,
-}
+};
 
 DocumentUpload.defaultProps = {
   showTooltip: false,
-}
+};
 
-export default withWidth()(DocumentUpload)
+export default withWidth()(DocumentUpload);

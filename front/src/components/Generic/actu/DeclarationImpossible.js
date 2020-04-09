@@ -1,7 +1,7 @@
-import React from 'react'
-import styled from 'styled-components'
-import { Typography } from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
+import React from 'react';
+import styled from 'styled-components';
+import { Typography } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 
 const StyledCloseIcon = styled(CloseIcon)`
   && {
@@ -9,12 +9,12 @@ const StyledCloseIcon = styled(CloseIcon)`
     vertical-align: bottom;
     color: red;
   }
-`
+`;
 
 const Section = styled.div`
   text-transform: uppercase;
   display: flex;
-`
+`;
 
 const DeclarationImpossible = () => (
   <>
@@ -31,13 +31,14 @@ const DeclarationImpossible = () => (
       informations de votre statut de demandeur d'emploi.
     </Typography>
     <Typography style={{ marginTop: '2rem' }}>
-      Vous pouvez réessayer ultérieurement ou effectuer vos opérations sur{' '}
+      Vous pouvez réessayer ultérieurement ou effectuer vos opérations sur
+      {' '}
       <a href="https://www.pole-emploi.fr" style={{ whiteSpace: 'nowrap' }}>
         pole-emploi.fr
       </a>
       .
     </Typography>
   </>
-)
+);
 
-export default DeclarationImpossible
+export default DeclarationImpossible;

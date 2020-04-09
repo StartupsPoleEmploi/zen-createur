@@ -1,8 +1,8 @@
-import React from 'react'
-import styled from 'styled-components'
-import HelpOutlineOutlined from '@material-ui/icons/HelpOutlineOutlined'
+import React from 'react';
+import styled from 'styled-components';
+import HelpOutlineOutlined from '@material-ui/icons/HelpOutlineOutlined';
 
-import { mobileBreakpoint, helpColor } from '../../constants'
+import { mobileBreakpoint, helpColor } from '../../constants';
 
 const A = styled.a`
   position: fixed;
@@ -29,7 +29,7 @@ const A = styled.a`
     width: 45px;
     height: 45px;
   }
-`
+`;
 
 const HelpText = styled.span`
   @media (max-width: ${mobileBreakpoint}) {
@@ -37,7 +37,7 @@ const HelpText = styled.span`
     left: -10000px;
     top: -10000px;
   }
-`
+`;
 
 const Help = styled(HelpOutlineOutlined)`
   margin-right: 0.5rem;
@@ -46,7 +46,7 @@ const Help = styled(HelpOutlineOutlined)`
   @media (max-width: ${mobileBreakpoint}) {
     margin: 0;
   }
-`
+`;
 
 function HelpLink() {
   return (
@@ -59,7 +59,7 @@ function HelpLink() {
       <Help />
       <HelpText>Aide</HelpText>
     </A>
-  )
+  );
 }
 
-export default HelpLink
+export default HelpLink;

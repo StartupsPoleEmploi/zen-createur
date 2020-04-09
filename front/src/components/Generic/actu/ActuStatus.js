@@ -1,16 +1,16 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import styled from 'styled-components'
-import moment from 'moment'
-import DoneIcon from '@material-ui/icons/Done'
-import { Typography } from '@material-ui/core'
+import React from 'react';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import moment from 'moment';
+import DoneIcon from '@material-ui/icons/Done';
+import { Typography } from '@material-ui/core';
 
-import DeclarationFinished from './DeclarationFinished'
-import DeclarationNotStarted from './DeclarationNotStarted'
-import DeclarationClosed from './DeclarationClosed'
-import DeclarationOnGoing from './DeclarationOnGoing'
-import DeclarationImpossible from './DeclarationImpossible'
-import { intermediaryBreakpoint } from '../../../constants'
+import DeclarationFinished from './DeclarationFinished';
+import DeclarationNotStarted from './DeclarationNotStarted';
+import DeclarationClosed from './DeclarationClosed';
+import DeclarationOnGoing from './DeclarationOnGoing';
+import DeclarationImpossible from './DeclarationImpossible';
+import { intermediaryBreakpoint } from '../../../constants';
 
 const StyledActuStatus = styled.div`
   width: 100%;
@@ -21,7 +21,7 @@ const StyledActuStatus = styled.div`
     padding: 3rem 2rem;
     width: 100%;
   }
-`
+`;
 
 const StyledDoneIcon = styled(DoneIcon)`
   && {
@@ -29,7 +29,7 @@ const StyledDoneIcon = styled(DoneIcon)`
     vertical-align: bottom;
     color: green;
   }
-`
+`;
 
 const SubTitle = styled(Typography).attrs({ variant: 'h5', component: 'h2' })`
   && {
@@ -45,11 +45,11 @@ const SubTitle = styled(Typography).attrs({ variant: 'h5', component: 'h2' })`
       width: 100%;
     }
   }
-`
+`;
 
 const Upper = styled.span`
   text-transform: uppercase;
-`
+`;
 
 function ActuStatus({
   activeMonth,
@@ -58,11 +58,11 @@ function ActuStatus({
   declarations: allDeclarations,
   declaration: activeDeclaration,
 }) {
-  const activeMonthMoment = activeMonth ? moment(activeMonth) : null
+  const activeMonthMoment = activeMonth ? moment(activeMonth) : null;
 
   function renderActuStatus() {
     if (!activeMonth) {
-      return <DeclarationClosed previousDeclaration={allDeclarations[0]} />
+      return <DeclarationClosed previousDeclaration={allDeclarations[0]} />;
     }
 
     if (user.hasAlreadySentDeclaration) {
@@ -72,23 +72,25 @@ function ActuStatus({
             style={{ textTransform: 'uppercase', margin: '2rem 0 1.5rem 0' }}
           >
             <strong>
-              <StyledDoneIcon /> Actualisation déjà envoyée via pole-emploi.fr
+              <StyledDoneIcon />
+              {' '}
+              Actualisation déjà envoyée via pole-emploi.fr
             </strong>
           </Typography>
         </div>
-      )
+      );
     }
 
     if (activeMonth && !activeDeclaration && user.canSendDeclaration) {
-      return <DeclarationNotStarted activeMonth={activeMonth} />
+      return <DeclarationNotStarted activeMonth={activeMonth} />;
     }
 
     if (!user.canSendDeclaration) {
-      return <DeclarationImpossible />
+      return <DeclarationImpossible />;
     }
 
     if (activeDeclaration.hasFinishedDeclaringEmployers) {
-      return <DeclarationFinished declaration={activeDeclaration} />
+      return <DeclarationFinished declaration={activeDeclaration} />;
     }
 
     if (activeDeclaration) {
@@ -97,7 +99,7 @@ function ActuStatus({
           declaration={activeDeclaration}
           activeMonth={activeMonth}
         />
-      )
+      );
     }
   }
 
@@ -114,7 +116,7 @@ function ActuStatus({
       )}
       {renderActuStatus(user, allDeclarations, activeDeclaration, activeMonth)}
     </StyledActuStatus>
-  )
+  );
 }
 
 ActuStatus.propTypes = {
@@ -131,6 +133,6 @@ ActuStatus.propTypes = {
   declaration: PropTypes.object,
   showTitle: PropTypes.bool,
   declarations: PropTypes.arrayOf(PropTypes.object),
-}
+};
 
-export default ActuStatus
+export default ActuStatus;

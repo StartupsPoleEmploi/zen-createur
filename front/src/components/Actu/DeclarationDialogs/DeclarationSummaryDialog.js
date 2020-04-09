@@ -1,27 +1,27 @@
-import React from 'react'
-import NumberFormat from 'react-number-format'
-import PropTypes from 'prop-types'
-import { isNaN as _isNaN } from 'lodash'
-import styled from 'styled-components'
+import React from 'react';
+import NumberFormat from 'react-number-format';
+import PropTypes from 'prop-types';
+import { isNaN as _isNaN } from 'lodash';
+import styled from 'styled-components';
 
-import { Typography } from '@material-ui/core'
-import DialogContentText from '@material-ui/core/DialogContentText'
+import { Typography } from '@material-ui/core';
+import DialogContentText from '@material-ui/core/DialogContentText';
 
-import MainActionButton from '../../Generic/MainActionButton'
-import CustomDialog from '../../Generic/CustomDialog'
+import MainActionButton from '../../Generic/MainActionButton';
+import CustomDialog from '../../Generic/CustomDialog';
 
 import {
   formattedDeclarationMonth,
   formatIntervalDates,
   formatDate,
-} from '../../../lib/date'
-import { ActuTypes as types, jobSearchEndMotive } from '../../../constants'
+} from '../../../lib/date';
+import { ActuTypes as types, jobSearchEndMotive } from '../../../constants';
 import {
   MIN_SALARY,
   SALARY,
   MAX_SALARY,
   calculateTotal,
-} from '../../../lib/salary'
+} from '../../../lib/salary';
 
 const StyledDialogContentText = styled(DialogContentText)`
   && {
@@ -29,7 +29,7 @@ const StyledDialogContentText = styled(DialogContentText)`
     padding: 0 2rem 2rem;
     color: black;
   }
-`
+`;
 
 const DeclarationContent = styled(DialogContentText).attrs({
   component: 'div',
@@ -40,32 +40,32 @@ const DeclarationContent = styled(DialogContentText).attrs({
     text-align: left;
     padding-bottom: 3rem;
   }
-`
+`;
 
 const DeclarationHeader = styled.div`
   font-weight: bold;
   color: black;
   margin-top: 2rem;
   text-transform: uppercase;
-`
+`;
 
 const DeclarationValues = styled(Typography).attrs({ color: 'secondary' })`
   && {
     font-weight: bold;
     font-size: 1.6rem;
   }
-`
+`;
 
 const DeclarationUl = styled.ul`
   padding: 0;
   margin: 0;
   list-style: none;
   font-weight: bold;
-`
+`;
 
 const DeclarationLi = styled(DeclarationValues).attrs({
   component: 'li',
-})``
+})``;
 
 const ButtonsContainer = styled.div`
   display: flex;
@@ -74,7 +74,7 @@ const ButtonsContainer = styled.div`
   width: 100%;
   max-width: 40rem;
   padding: 0.5rem 0 1rem 0;
-`
+`;
 
 const DeclarationSummaryDialog = ({
   declaration,
@@ -85,32 +85,32 @@ const DeclarationSummaryDialog = ({
 }) => {
   const sickLeaves = declaration.infos.filter(
     (info) => info.type === types.SICK_LEAVE,
-  )
+  );
   const maternityLeave = declaration.infos.find(
     (info) => info.type === types.MATERNITY_LEAVE,
-  )
+  );
   const interships = declaration.infos.filter(
     (info) => info.type === types.INTERNSHIP,
-  )
+  );
 
   const jobSearch = declaration.infos.find(
     (info) => info.type === types.JOB_SEARCH,
-  )
+  );
 
   const invalidity = declaration.infos.find(
     (info) => info.type === types.INVALIDITY,
-  )
+  );
   const retirement = declaration.infos.find(
     (info) => info.type === types.RETIREMENT,
-  )
+  );
 
-  const totalSalary = employers.length
-    ? calculateTotal(employers, SALARY, MIN_SALARY, MAX_SALARY)
-    : 0
+  const totalSalary = employers.length ?
+    calculateTotal(employers, SALARY, MIN_SALARY, MAX_SALARY) :
+    0;
 
   return (
     <CustomDialog
-      content={
+      content={(
         <>
           <StyledDialogContentText>
             Votre actualisation
@@ -118,7 +118,9 @@ const DeclarationSummaryDialog = ({
               // FIXME this is a quickfix for the Actu page, but we should always have the month.
               <>
                 {' '}
-                de <br />
+                de
+                {' '}
+                <br />
                 <b>
                   {formattedDeclarationMonth(
                     declaration.declarationMonth.month,
@@ -135,17 +137,18 @@ const DeclarationSummaryDialog = ({
               <>
                 <div>
                   <DeclarationHeader>
-                    {employers.length}{' '}
+                    {employers.length}
+                    {' '}
                     {employers.length >= 2 ? 'employeurs' : 'employeur'}
                   </DeclarationHeader>
                   <DeclarationUl className="employer-declared-list">
                     {employers.map((employer, i) => {
-                      const key = `${i}-${employer.employerName.value}`
+                      const key = `${i}-${employer.employerName.value}`;
                       return (
                         <DeclarationLi key={key}>
                           {employer.employerName.value}
                         </DeclarationLi>
-                      )
+                      );
                     })}
                   </DeclarationUl>
                 </div>
@@ -158,16 +161,16 @@ const DeclarationSummaryDialog = ({
                     {_isNaN(totalSalary) || totalSalary === 0 ? (
                       '-'
                     ) : (
-                        <NumberFormat
-                          thousandSeparator=" "
-                          decimalSeparator=","
-                          decimalScale={0}
-                          fixedDecimalScale
-                          displayType="text"
-                          suffix=" €"
-                          value={totalSalary}
-                        />
-                      )}
+                      <NumberFormat
+                        thousandSeparator=" "
+                        decimalSeparator=","
+                        decimalScale={0}
+                        fixedDecimalScale
+                        displayType="text"
+                        suffix=" €"
+                        value={totalSalary}
+                      />
+                    )}
                   </DeclarationValues>
                 </div>
               </>
@@ -185,7 +188,8 @@ const DeclarationSummaryDialog = ({
             {declaration.hasInternship && (
               <div>
                 <DeclarationHeader>
-                  {interships.length}{' '}
+                  {interships.length}
+                  {' '}
                   {interships.length >= 2 ? 'stages' : 'stage'}
                 </DeclarationHeader>
                 <DeclarationUl>
@@ -204,7 +208,8 @@ const DeclarationSummaryDialog = ({
             {declaration.hasSickLeave && (
               <div>
                 <DeclarationHeader>
-                  {sickLeaves.length}{' '}
+                  {sickLeaves.length}
+                  {' '}
                   {sickLeaves.length >= 2 ? 'arrêts maladie' : 'arrêt maladie'}
                 </DeclarationHeader>
                 <DeclarationUl>
@@ -224,7 +229,9 @@ const DeclarationSummaryDialog = ({
               <div>
                 <DeclarationHeader>Congé maternité</DeclarationHeader>
                 <DeclarationValues>
-                  Depuis le {formatDate(maternityLeave.startDate)}
+                  Depuis le
+                  {' '}
+                  {formatDate(maternityLeave.startDate)}
                 </DeclarationValues>
               </div>
             )}
@@ -233,7 +240,9 @@ const DeclarationSummaryDialog = ({
               <div>
                 <DeclarationHeader>Invalidité</DeclarationHeader>
                 <DeclarationValues>
-                  Depuis le {formatDate(invalidity.startDate)}
+                  Depuis le
+                  {' '}
+                  {formatDate(invalidity.startDate)}
                 </DeclarationValues>
               </div>
             )}
@@ -242,7 +251,9 @@ const DeclarationSummaryDialog = ({
               <div>
                 <DeclarationHeader>Retraite</DeclarationHeader>
                 <DeclarationValues>
-                  Départ le {formatDate(retirement.startDate)}
+                  Départ le
+                  {' '}
+                  {formatDate(retirement.startDate)}
                 </DeclarationValues>
               </div>
             )}
@@ -254,30 +265,33 @@ const DeclarationSummaryDialog = ({
                   Oui, je souhaite rester inscrit à Pôle emploi
                 </DeclarationValues>
               ) : (
-                  <>
-                    <DeclarationValues>
-                      Non, je ne souhaite pas rester inscrit à Pôle emploi
+                <>
+                  <DeclarationValues>
+                    Non, je ne souhaite pas rester inscrit à Pôle emploi
                   </DeclarationValues>
 
-                    <DeclarationValues>
-                      Date de fin : {formatDate(jobSearch.endDate)}
-                    </DeclarationValues>
-                    <DeclarationValues>
-                      Motif :{' '}
-                      {declaration.jobSearchStopMotive ===
+                  <DeclarationValues>
+                    Date de fin :
+                    {' '}
+                    {formatDate(jobSearch.endDate)}
+                  </DeclarationValues>
+                  <DeclarationValues>
+                    Motif :
+                    {' '}
+                    {declaration.jobSearchStopMotive ===
                         jobSearchEndMotive.WORK && 'Reprise du travail'}
-                      {declaration.jobSearchStopMotive ===
+                    {declaration.jobSearchStopMotive ===
                         jobSearchEndMotive.RETIREMENT && 'Retraite'}
-                      {declaration.jobSearchStopMotive ===
+                    {declaration.jobSearchStopMotive ===
                         jobSearchEndMotive.OTHER && 'Autre'}
-                    </DeclarationValues>
-                  </>
-                )}
+                  </DeclarationValues>
+                </>
+              )}
             </div>
           </DeclarationContent>
         </>
-      }
-      actions={
+      )}
+      actions={(
         <ButtonsContainer>
           <MainActionButton
             variant="contained"
@@ -291,17 +305,17 @@ const DeclarationSummaryDialog = ({
             Non, je modifie
           </MainActionButton>
         </ButtonsContainer>
-      }
+      )}
       {...props}
     />
-  )
-}
+  );
+};
 
 DeclarationSummaryDialog.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onConfirm: PropTypes.func.isRequired,
   declaration: PropTypes.object.isRequired,
   employers: PropTypes.arrayOf(PropTypes.object),
-}
+};
 
-export default DeclarationSummaryDialog
+export default DeclarationSummaryDialog;

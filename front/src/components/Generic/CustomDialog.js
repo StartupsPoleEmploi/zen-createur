@@ -1,13 +1,13 @@
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import withWidth from '@material-ui/core/withWidth'
-import PropTypes from 'prop-types'
-import React from 'react'
-import styled from 'styled-components'
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import withWidth from '@material-ui/core/withWidth';
+import PropTypes from 'prop-types';
+import React from 'react';
+import styled from 'styled-components';
 
-import { muiBreakpoints } from '../../constants'
+import { muiBreakpoints } from '../../constants';
 
 const StyledDialogContent = styled(DialogContent)`
   && {
@@ -15,18 +15,18 @@ const StyledDialogContent = styled(DialogContent)`
     flex-direction: column;
     text-align: center;
   }
-`
+`;
 
 const StyledDialogTitle = styled(DialogTitle)`
   text-align: center;
-`
+`;
 
 const StyledDialogActions = styled(DialogActions)`
   && {
     justify-content: space-around;
     flex-wrap: wrap;
   }
-`
+`;
 
 /*
  * This base Dialog structure is used for most of the dialogs of the app
@@ -46,7 +46,7 @@ export const CustomDialog = ({
   paperProps,
   ...rest
 }) => {
-  const useMobileStyling = width === muiBreakpoints.xs
+  const useMobileStyling = width === muiBreakpoints.xs;
 
   return (
     <Dialog
@@ -81,8 +81,8 @@ export const CustomDialog = ({
         </StyledDialogActions>
       )}
     </Dialog>
-  )
-}
+  );
+};
 
 CustomDialog.propTypes = {
   actions: PropTypes.node,
@@ -95,11 +95,11 @@ CustomDialog.propTypes = {
   forceConstantHeight: PropTypes.bool,
   width: PropTypes.string,
   paperProps: PropTypes.shape(),
-}
+};
 
 CustomDialog.defaultProps = {
   onCancel: () => {},
   paperProps: {},
-}
+};
 
-export default withWidth()(CustomDialog)
+export default withWidth()(CustomDialog);

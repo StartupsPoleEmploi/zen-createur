@@ -1,22 +1,22 @@
-import { get } from 'lodash'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { Link, withRouter } from 'react-router-dom'
-import styled from 'styled-components'
+import { get } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import styled from 'styled-components';
 
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
-import Typography from '@material-ui/core/Typography'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
-import Check from '@material-ui/icons/Check'
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Check from '@material-ui/icons/Check';
 
 // import RestoreIcon from '@material-ui/icons/Restore'
-import HomeOutlined from '@material-ui/icons/HomeOutlined'
-import DnsOutlined from '@material-ui/icons/DnsOutlined'
-import DescriptionOutlined from '@material-ui/icons/DescriptionOutlined'
+import HomeOutlined from '@material-ui/icons/HomeOutlined';
+import DnsOutlined from '@material-ui/icons/DnsOutlined';
+import DescriptionOutlined from '@material-ui/icons/DescriptionOutlined';
 
-import AppTitle from '../Generic/AppTitle'
-import { primaryBlue, mobileBreakpoint } from '../../constants'
+import AppTitle from '../Generic/AppTitle';
+import { primaryBlue, mobileBreakpoint } from '../../constants';
 
 const stepperRoutes = [
   '/actu',
@@ -24,15 +24,15 @@ const stepperRoutes = [
   '/files',
   '/dashboard',
   '/history',
-]
+];
 const [
   declarationRoute,
   employersRoute,
   filesRoute,
   dashboardRoute,
   // historyRoute,
-] = stepperRoutes
-const routesWithDisplayedNav = stepperRoutes.concat('/thanks')
+] = stepperRoutes;
+const routesWithDisplayedNav = stepperRoutes.concat('/thanks');
 
 const StyledTabs = styled(Tabs).attrs({ component: 'nav', role: 'navigation' })`
   && {
@@ -52,7 +52,7 @@ const StyledTabs = styled(Tabs).attrs({ component: 'nav', role: 'navigation' })`
       top: 0;
     }
   }
-`
+`;
 
 const Nav = styled.nav.attrs({ role: 'navigation' })`
   flex-shrink: 0
@@ -60,13 +60,13 @@ const Nav = styled.nav.attrs({ role: 'navigation' })`
   width: 25rem;
   border-right: 1px #ddd solid;
   min-height: 100vh;
-`
+`;
 
 const AppTitleContainer = styled.div`
   text-align: center;
   border-bottom: 1px #ddd solid;
   padding: 2rem;
-`
+`;
 
 const UlStepper = styled.ul`
   display: flex;
@@ -77,7 +77,7 @@ const UlStepper = styled.ul`
   > li {
     margin-top: 3rem;
   }
-`
+`;
 
 const LiStep = styled(Typography).attrs({ component: 'li' })`
   && {
@@ -96,7 +96,7 @@ const LiStep = styled(Typography).attrs({ component: 'li' })`
       border-left: ${primaryBlue} 0.5rem solid;
     }
   }
-`
+`;
 
 const DesktopLink = styled(Link)`
   display: flex;
@@ -116,7 +116,7 @@ const DesktopLink = styled(Link)`
   &&.Stepper__Active__Link {
     color: ${primaryBlue};
   }
-`
+`;
 
 const StyledTab = styled(Tab)`
   && {
@@ -137,7 +137,7 @@ const StyledTab = styled(Tab)`
       }
     }
   }
-`
+`;
 
 const HomeTab = styled(StyledTab)`
   && {
@@ -147,7 +147,7 @@ const HomeTab = styled(StyledTab)`
       width: 100px;
     }
   }
-`
+`;
 
 const FileIcon = styled(DescriptionOutlined)`
   font-size: 1.5rem;
@@ -159,7 +159,7 @@ const FileIcon = styled(DescriptionOutlined)`
   @media (max-width: ${mobileBreakpoint}) {
     margin-right: 0;
   }
-`
+`;
 const HomeIcon = styled(HomeOutlined)`
   font-size: 1.5rem;
   margin-right: 1rem;
@@ -168,7 +168,7 @@ const HomeIcon = styled(HomeOutlined)`
   @media (max-width: ${mobileBreakpoint}) {
     margin-right: 0;
   }
-`
+`;
 
 const ListIcon = styled(DnsOutlined)`
   font-size: 1.5rem;
@@ -178,7 +178,7 @@ const ListIcon = styled(DnsOutlined)`
   @media (max-width: ${mobileBreakpoint}) {
     margin-right: 0;
   }
-`
+`;
 
 /* const RestoreIconImg = styled(RestoreIcon)`
   width: 2.5rem;
@@ -196,7 +196,7 @@ const CheckIcon = styled(Check)`
   @media (max-width: ${mobileBreakpoint}) {
     margin-right: 0;
   }
-`
+`;
 
 const SmallGreenCheckIcon = styled(Check)`
   && {
@@ -204,20 +204,22 @@ const SmallGreenCheckIcon = styled(Check)`
     font-size: 2rem;
     margin-right: 0.5rem;
   }
-`
+`;
 
 const SubLabel = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`
+`;
 
-// eslint-disable-next-line react/prop-types
-const StepperItem = ({ label, link, shouldActivateLink, isActive }) => {
+const StepperItem = ({
+  // eslint-disable-next-line react/prop-types
+  label, link, shouldActivateLink, isActive,
+}) => {
   const liProps = {
     className: isActive ? 'Stepper__Active' : '',
     'aria-current': isActive ? 'page' : null,
-  }
+  };
   if (shouldActivateLink) {
     return (
       <LiStep {...liProps}>
@@ -229,11 +231,11 @@ const StepperItem = ({ label, link, shouldActivateLink, isActive }) => {
           {label}
         </DesktopLink>
       </LiStep>
-    )
+    );
   }
 
-  return <LiStep {...liProps}>{label}</LiStep>
-}
+  return <LiStep {...liProps}>{label}</LiStep>;
+};
 
 export const NavLogin = ({
   activeMonth,
@@ -243,30 +245,26 @@ export const NavLogin = ({
   location: { pathname },
   history: { push },
 }) => {
-  const isNavVisible = routesWithDisplayedNav.includes(pathname)
+  const isNavVisible = routesWithDisplayedNav.includes(pathname);
 
-  const useMobileVersion = useMediaQuery(`(max-width:${mobileBreakpoint})`)
+  const useMobileVersion = useMediaQuery(`(max-width:${mobileBreakpoint})`);
 
-  const userCanDeclare =
-    !get(user, 'hasAlreadySentDeclaration') && get(user, 'canSendDeclaration')
+  const userCanDeclare = !get(user, 'hasAlreadySentDeclaration') && get(user, 'canSendDeclaration');
 
-  const shouldActivateDeclarationLink =
-    !!activeMonth &&
+  const shouldActivateDeclarationLink = !!activeMonth &&
     (!activeDeclaration || !activeDeclaration.hasFinishedDeclaringEmployers) &&
-    userCanDeclare
+    userCanDeclare;
 
-  const shouldActivateEmployersLink =
-    !!activeMonth &&
+  const shouldActivateEmployersLink = !!activeMonth &&
     !!activeDeclaration &&
     !activeDeclaration.hasFinishedDeclaringEmployers &&
-    userCanDeclare && pathname !== declarationRoute
+    userCanDeclare && pathname !== declarationRoute;
 
   // Mobile version
   if (useMobileVersion && isNavVisible) {
-    const actuRoute =
-      activeDeclaration && !activeDeclaration.hasFinishedDeclaringEmployers
-        ? employersRoute
-        : declarationRoute
+    const actuRoute = activeDeclaration && !activeDeclaration.hasFinishedDeclaringEmployers ?
+      employersRoute :
+      declarationRoute;
 
     return (
       <StyledTabs
@@ -276,36 +274,36 @@ export const NavLogin = ({
         in
       >
         <HomeTab
-          label={
+          label={(
             <>
               <HomeIcon alt="" />
               Accueil
             </>
-          }
+          )}
           disabled={false}
           value={dashboardRoute}
           onClick={() => push(dashboardRoute)}
           role="link"
         />
         <StyledTab
-          label={
+          label={(
             <>
               <ListIcon alt="" />
               Actualisation
             </>
-          }
+          )}
           disabled={!shouldActivateDeclarationLink}
           value={actuRoute}
           onClick={() => push(actuRoute)}
           role="link"
         />
         <StyledTab
-          label={
+          label={(
             <>
               <FileIcon alt="" />
               Justificatifs
             </>
-          }
+          )}
           value={filesRoute}
           disabled={!isFilesServiceUp}
           onClick={() => push(filesRoute)}
@@ -324,7 +322,7 @@ export const NavLogin = ({
           role="link"
         /> */}
       </StyledTabs>
-    )
+    );
   }
 
   // Desktop version
@@ -335,18 +333,20 @@ export const NavLogin = ({
       </AppTitleContainer>
       <UlStepper>
         <StepperItem
-          label={
+          label={(
             <>
-              <HomeIcon alt="" /> Accueil
+              <HomeIcon alt="" />
+              {' '}
+              Accueil
             </>
-          }
+          )}
           link={dashboardRoute}
           shouldActivateLink={!user.needOnBoarding}
           isActive={pathname === dashboardRoute}
         />
         {!user.isBlocked && (
           <StepperItem
-            label={
+            label={(
               <>
                 {activeDeclaration &&
                   activeDeclaration.hasFinishedDeclaringEmployers ? (
@@ -356,7 +356,7 @@ export const NavLogin = ({
                   )}
                 Mon actualisation
               </>
-            }
+            )}
             link={declarationRoute}
             shouldActivateLink={
               (shouldActivateDeclarationLink || shouldActivateEmployersLink) &&
@@ -368,7 +368,7 @@ export const NavLogin = ({
         {(pathname === declarationRoute || pathname === employersRoute) && (
           <>
             <StepperItem
-              label={
+              label={(
                 <SubLabel
                   style={{
                     paddingLeft: activeDeclaration ? '3rem' : '5.5rem',
@@ -377,7 +377,7 @@ export const NavLogin = ({
                   {activeDeclaration && <SmallGreenCheckIcon />}
                   Ma situation
                 </SubLabel>
-              }
+              )}
               link={declarationRoute}
               shouldActivateLink={
                 shouldActivateDeclarationLink && !user.needOnBoarding
@@ -385,11 +385,11 @@ export const NavLogin = ({
               isActive={pathname === declarationRoute}
             />
             <StepperItem
-              label={
+              label={(
                 <SubLabel style={{ paddingLeft: '5.5rem' }}>
                   Mes activités
                 </SubLabel>
-              }
+              )}
               link={employersRoute}
               shouldActivateLink={
                 shouldActivateEmployersLink && !user.needOnBoarding
@@ -400,11 +400,13 @@ export const NavLogin = ({
         )}
 
         <StepperItem
-          label={
+          label={(
             <>
-              <FileIcon alt="" /> Mes justificatifs
+              <FileIcon alt="" />
+              {' '}
+              Mes justificatifs
             </>
-          }
+          )}
           link={filesRoute}
           shouldActivateLink={isFilesServiceUp && !user.needOnBoarding}
           isActive={pathname === filesRoute && isFilesServiceUp}
@@ -422,8 +424,8 @@ export const NavLogin = ({
         /> */}
       </UlStepper>
     </Nav>
-  )
-}
+  );
+};
 
 NavLogin.propTypes = {
   user: PropTypes.shape({
@@ -442,10 +444,10 @@ NavLogin.propTypes = {
     .isRequired,
   activeMonth: PropTypes.instanceOf(Date),
   activeDeclaration: PropTypes.object,
-}
+};
 
 NavLogin.defaultProps = {
   isFilesServiceUp: false,
-}
+};
 
-export default withRouter(NavLogin)
+export default withRouter(NavLogin);
