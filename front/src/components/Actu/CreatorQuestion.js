@@ -126,6 +126,7 @@ export class CreatorQuestion extends PureComponent {
     if (type === 'blur' && fieldName.startsWith('employerName')) {
       value = (_value || '').trim();
     }
+
     // The input 'name' attribute needs an array format
     // to avoid confusions (for example, browser autocompletions)
     // but the parent component here juste needs 'employerName'
@@ -170,7 +171,9 @@ export class CreatorQuestion extends PureComponent {
           index: this.props.index,
           from: 'enterprises',
         });
-        this.turnoverInput.current.focus();
+        if (this.turnoverInput.current) {
+          this.turnoverInput.current.focus();
+        }
         break;
       case 'alf':
         this.props.onChange({
@@ -201,7 +204,9 @@ export class CreatorQuestion extends PureComponent {
           from: 'enterprises',
           ignoreError: true,
         });
-        this.turnoverInput.current.focus();
+        if (this.turnoverInput.current) {
+          this.turnoverInput.current.focus();
+        }
         break;
       default: break;
     }
@@ -319,6 +324,7 @@ export class CreatorQuestion extends PureComponent {
                 />
               )}
 
+              {this.props.needTurnover && (
               <StyledTextField
                 id={`creator-turnover[${index}]`}
                 className="root-salary"
@@ -344,6 +350,7 @@ export class CreatorQuestion extends PureComponent {
                 fullWidth={verticalLayout}
                 inputRef={this.turnoverInput}
               />
+              )}
             </StyledMain>
           </>
         )}
@@ -367,6 +374,7 @@ CreatorQuestion.propTypes = {
   onCollapsed: PropTypes.func,
   canRemove: PropTypes.bool.isRequired,
   verticalLayout: PropTypes.bool,
+  needTurnover: PropTypes.bool.isRequired,
   showCollapsedTitle: PropTypes.bool.isRequired,
   defaultName: PropTypes.string.isRequired,
   collapsed: PropTypes.bool.isRequired,

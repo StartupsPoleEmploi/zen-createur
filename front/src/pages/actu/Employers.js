@@ -35,6 +35,7 @@ import {
   intermediaryBreakpoint,
   mobileBreakpoint,
   primaryBlue,
+  CREATORTAXRATE,
 } from '../../constants';
 import {
   MAX_SALARY,
@@ -330,7 +331,7 @@ export class Employers extends Component {
   }) => {
     let error = null;
 
-    if (!ignoreError) {
+    if (!ignoreError && value !== undefined) {
       error = getFieldError({ name, value });
     }
 
@@ -552,19 +553,24 @@ export class Employers extends Component {
     );
   }
 
-  renderCreatorQuestion = (data, index) => (
-    <CreatorQuestion
-      {...data}
-      key={index}
-      index={index}
-      onChange={this.onChange}
-      defaultName={`Entreprise ${index + 1}`}
-      collapsed={this.state.selectedEnterprise !== index}
-      showCollapsedTitle={this.state.enterprises.length > 1}
-      canRemove={this.state.enterprises.length > 1}
-      activeMonth={this.props.activeMonth}
-    />
-  )
+  renderCreatorQuestion = (data, index) => {
+    const needTurnover = this.props.declarations[0].taxeDue === CREATORTAXRATE.MONTHLY;
+
+    return (
+      <CreatorQuestion
+        {...data}
+        key={index}
+        index={index}
+        onChange={this.onChange}
+        defaultName={`Entreprise ${index + 1}`}
+        collapsed={this.state.selectedEnterprise !== index}
+        showCollapsedTitle={this.state.enterprises.length > 1}
+        needTurnover={needTurnover}
+        canRemove={this.state.enterprises.length > 1}
+        activeMonth={this.props.activeMonth}
+      />
+    );
+  }
 
   renderCreatorPanel = () => {
     const { enterprises } = this.state;

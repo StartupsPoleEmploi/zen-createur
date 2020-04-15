@@ -48,7 +48,7 @@ export const MAX_PDF_PAGE = 5;
 
 export const CREATORTAXRATE = {
   MONTHLY: 'monthly',
-  QUARTELY: 'quartely',
+  QUARTELY: 'quaterly',
   YEARLY: 'yearly',
 };
 
