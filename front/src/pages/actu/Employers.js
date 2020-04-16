@@ -700,6 +700,7 @@ export class Employers extends Component {
           onConfirm={this.onSubmit}
           declaration={this.state.currentDeclaration}
           employers={this.state.employers}
+          enterprises={this.state.enterprises}
           consistencyErrors={this.state.consistencyErrors}
           validationErrors={this.state.validationErrors}
         />

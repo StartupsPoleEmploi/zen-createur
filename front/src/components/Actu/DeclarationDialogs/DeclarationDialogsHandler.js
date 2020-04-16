@@ -16,6 +16,7 @@ class DeclarationDialogsHandler extends Component {
     validationErrors: PropTypes.arrayOf(PropTypes.string).isRequired,
     declaration: PropTypes.object,
     employers: PropTypes.arrayOf(PropTypes.object),
+    enterprises: PropTypes.arrayOf(PropTypes.object),
   }
 
   confirmAndIgnoreErrors = () => this.props.onConfirm({ ignoreErrors: true })
