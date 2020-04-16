@@ -48,8 +48,14 @@ export const MAX_PDF_PAGE = 5;
 
 export const CREATORTAXRATE = {
   MONTHLY: 'monthly',
-  QUARTELY: 'quartely',
+  QUATERLY: 'quaterly',
   YEARLY: 'yearly',
 };
 
 export const MAXHOURCANWORK = 151;
+
+export const TIMEWORKED = {
+  NO: 'no',
+  ALF: 'alf',
+  FULL: 'full',
+};

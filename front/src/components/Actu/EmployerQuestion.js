@@ -87,10 +87,8 @@ const StyledTextField = styled(TextField)`
 
 const InfoImg = styled.img`
 width: 2rem;
-position: absolute;
 margin-left: 3px;
 cursor: pointer;
-z-index: 2;
 `;
 
 const CollapsedTitle = styled.div`
@@ -150,140 +148,140 @@ export class EmployerQuestion extends PureComponent {
     return (
       <StyledContainer className="employer-question">
         {showCollapsedTitle && (
-        <CollapsedTitle onClick={this.props.onCollapsed}>
-          <Title variant="h6" component="h1">
-            {employerName.value || defaultName}
-            {' '}
-            {hasFormError && <Asterisk>*</Asterisk>}
-          </Title>
-          <p>{collapsed ? 'AFFICHER' : 'MASQUER'}</p>
-          <ArrowDropDown style={{ color: '#0065DB' }} />
-          {canRemove && (
-          <RemoveButton
-            onClick={(event) => { event.stopPropagation(); this.onRemove(); }}
-            type="button"
-            aria-label="Supprimer"
-          >
-            <DeleteIcon />
-          </RemoveButton>
-          )}
-        </CollapsedTitle>
+          <CollapsedTitle onClick={this.props.onCollapsed}>
+            <Title variant="h6" component="h1">
+              {employerName.value || defaultName}
+              {' '}
+              {hasFormError && <Asterisk>*</Asterisk>}
+            </Title>
+            <p>{collapsed ? 'AFFICHER' : 'MASQUER'}</p>
+            <ArrowDropDown style={{ color: '#0065DB' }} />
+            {canRemove && (
+              <RemoveButton
+                onClick={(event) => { event.stopPropagation(); this.onRemove(); }}
+                type="button"
+                aria-label="Supprimer"
+              >
+                <DeleteIcon />
+              </RemoveButton>
+            )}
+          </CollapsedTitle>
         )}
         {!collapsed && (
-        <>
-          <StyledMain>
-            <StyledTextField
-              id={`employerName[${index}]`}
-              className="root-employer"
-              label={this.renderLabel({
-                id: `employerName[${index}]`,
-                label: 'Nom employeur',
-                content:
-                'Si vous avez plusieurs employeurs, cliquez sur "Ajouter un employeur"',
-              })}
-              name={`employerName[${index}]`}
-              value={employerName.value}
-              onChange={this.onChange}
-              onBlur={this.onChange}
-              error={!!employerName.error}
-              helperText={employerName.error}
-              inputProps={{
-                'aria-describedby': `employerNameDescription[${index}]`,
-              }}
-              fullWidth={verticalLayout}
-            />
+          <>
+            <StyledMain>
+              <StyledTextField
+                id={`employerName[${index}]`}
+                className="root-employer"
+                label={this.renderLabel({
+                  id: `employerName[${index}]`,
+                  label: 'Nom employeur',
+                  content:
+                    'Si vous avez plusieurs employeurs, cliquez sur "Ajouter un employeur"',
+                })}
+                name={`employerName[${index}]`}
+                value={employerName.value}
+                onChange={this.onChange}
+                onBlur={this.onChange}
+                error={!!employerName.error}
+                helperText={employerName.error}
+                inputProps={{
+                  'aria-describedby': `employerNameDescription[${index}]`,
+                }}
+                fullWidth={verticalLayout}
+              />
 
-            <Box display="flex">
-              <Box flex={1}>
-                <StyledTextField
-                  id={`workHours[${index}]`}
-                  className="root-work-hours"
-                  label={this.renderLabel({
-                    id: `workHours[${index}]`,
-                    label: "Nombre d'heures",
-                    content:
-                    'Inscrivez les heures qui sont inscrites sur votre fiche de paie.',
-                  })}
-                  name={`workHours[${index}]`}
-                  value={workHours.value}
-                  onChange={this.onChange}
-                  error={!!workHours.error}
-                  helperText={workHours.error}
-                  InputProps={{
-                    inputComponent: HourInput,
-                  }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                  inputProps={{
-                    maxLength: 4,
-                    'aria-describedby': `workHoursDescription[${index}]`,
-                  }}
-                  fullWidth={verticalLayout}
-                />
-              </Box>
+              <Box display="flex">
+                <Box flex={1}>
+                  <StyledTextField
+                    id={`workHours[${index}]`}
+                    className="root-work-hours"
+                    label={this.renderLabel({
+                      id: `workHours[${index}]`,
+                      label: "Nombre d'heures",
+                      content:
+                        'Inscrivez les heures qui sont inscrites sur votre fiche de paie.',
+                    })}
+                    name={`workHours[${index}]`}
+                    value={workHours.value}
+                    onChange={this.onChange}
+                    error={!!workHours.error}
+                    helperText={workHours.error}
+                    InputProps={{
+                      inputComponent: HourInput,
+                    }}
+                    // eslint-disable-next-line react/jsx-no-duplicate-props
+                    inputProps={{
+                      maxLength: 4,
+                      'aria-describedby': `workHoursDescription[${index}]`,
+                    }}
+                    fullWidth={verticalLayout}
+                  />
+                </Box>
 
-              <Box flex={1} style={{ marginLeft: '20px' }}>
-                <StyledTextField
-                  id={`salary[${index}]`}
-                  className="root-salary"
-                  label={this.renderLabel({
-                    id: `salary[${index}]`,
-                    label: 'Salaire € brut',
-                    content: 'Déclarez le salaire brut pour cet employeur',
-                  })}
-                  name={`salary[${index}]`}
-                  value={salary.value}
-                  onChange={this.onChange}
-                  error={!!salary.error}
-                  helperText={salary.error}
-                  InputProps={{
-                    inputComponent: EuroInput,
-                  }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                  inputProps={{
-                    maxLength: 10,
-                    'aria-describedby': `salaryDescription[${index}]`,
-                  }}
-                  fullWidth={verticalLayout}
-                />
+                <Box flex={1} style={{ marginLeft: '20px' }}>
+                  <StyledTextField
+                    id={`salary[${index}]`}
+                    className="root-salary"
+                    label={this.renderLabel({
+                      id: `salary[${index}]`,
+                      label: 'Salaire € brut',
+                      content: 'Déclarez le salaire brut pour cet employeur',
+                    })}
+                    name={`salary[${index}]`}
+                    value={salary.value}
+                    onChange={this.onChange}
+                    error={!!salary.error}
+                    helperText={salary.error}
+                    InputProps={{
+                      inputComponent: EuroInput,
+                    }}
+                    // eslint-disable-next-line react/jsx-no-duplicate-props
+                    inputProps={{
+                      maxLength: 10,
+                      'aria-describedby': `salaryDescription[${index}]`,
+                    }}
+                    fullWidth={verticalLayout}
+                  />
+                </Box>
               </Box>
-            </Box>
-            <Box display="flex">
-              <Box flex={1}>
-                <StyledFormLabel
-                  style={{ paddingTop: '1rem', paddingBottom: '1rem' }}
-                >
-                  {width !== 'xs' ? (
-                    <>
-                      Contrat terminé en
-                      <br />
-                      {moment(this.props.activeMonth).format('MMMM YYYY')}
+              <Box display="flex">
+                <Box flex={1}>
+                  <StyledFormLabel
+                    style={{ paddingTop: '1rem', paddingBottom: '1rem' }}
+                  >
+                    {width !== 'xs' ? (
+                      <>
+                        Contrat terminé en
+                        <br />
+                        {moment(this.props.activeMonth).format('MMMM YYYY')}
                   &nbsp;?
-                    </>
-                  ) : (
-                    <>
-                      Terminé en
-                      {' '}
-                      {moment(this.props.activeMonth).format('MMMM')}
+                      </>
+                    ) : (
+                      <>
+                        Terminé en
+                        {' '}
+                        {moment(this.props.activeMonth).format('MMMM')}
                   &nbsp;?
-                    </>
-                  )}
-                  {hasEndedThisMonth.error && (
-                  <FormHelperText error>{hasEndedThisMonth.error}</FormHelperText>
-                  )}
-                </StyledFormLabel>
-              </Box>
-              <Box flex={1}>
-                <YesNoRadioGroup
-                  yesTooltipContent={`Si votre employeur vous a payé des congés, n’oubliez pas
+                      </>
+                    )}
+                    {hasEndedThisMonth.error && (
+                      <FormHelperText error>{hasEndedThisMonth.error}</FormHelperText>
+                    )}
+                  </StyledFormLabel>
+                </Box>
+                <Box flex={1}>
+                  <YesNoRadioGroup
+                    yesTooltipContent={`Si votre employeur vous a payé des congés, n’oubliez pas
                     d’inclure cette somme dans le salaire brut déclaré`}
-                  name={`hasEndedThisMonth[${index}]`}
-                  value={hasEndedThisMonth.value}
-                  onAnswer={this.onChange}
-                />
+                    name={`hasEndedThisMonth[${index}]`}
+                    value={hasEndedThisMonth.value}
+                    onAnswer={this.onChange}
+                  />
+                </Box>
               </Box>
-            </Box>
-          </StyledMain>
-        </>
+            </StyledMain>
+          </>
         )}
       </StyledContainer>
     );

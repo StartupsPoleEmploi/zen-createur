@@ -3,7 +3,7 @@ import { isObject } from 'lodash';
 export const WORK_HOURS = 'workHours';
 export const SALARY = 'salary';
 export const TURNOVER = 'turnover';
-export const MIN_SALARY = 1;
+export const MIN_SALARY = 0;
 export const MIN_WORK_HOURS = 1;
 export const MAX_SALARY = 99999;
 export const MAX_WORK_HOURS = 1000000; // Arbitrary high value so users aren't limited

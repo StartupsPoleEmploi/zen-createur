@@ -633,7 +633,7 @@ export class Actu extends Component {
               <Box display="flex" alignItems="center">
                 <Box flex={1}>
                   <FormControlLabel
-                    value={CREATORTAXRATE.QUARTELY}
+                    value={CREATORTAXRATE.QUATERLY}
                     control={<Radio color="primary" />}
                     label="Tous les trimestres"
                   />
