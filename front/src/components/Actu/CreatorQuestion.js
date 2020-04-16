@@ -17,7 +17,10 @@ import EuroInputWithoutTaxe from '../Generic/EuroInputWithoutTaxe';
 import HourInput from '../Generic/HourInput';
 import TooltipOnFocus from '../Generic/TooltipOnFocus';
 import warn from '../../images/warn.png';
-import { mobileBreakpoint, MAXHOURCANWORK, helpColor } from '../../constants';
+import {
+  mobileBreakpoint, MAXHOURCANWORK, helpColor, TIMEWORKED,
+} from '../../constants';
+import { MIN_WORK_HOURS } from '../../lib/salary';
 
 const Title = styled(Typography)`
   && {
@@ -110,17 +113,20 @@ const QuestionLabel = styled(Typography)`
   }
   `;
 
+const ErrorMessage = styled(Typography).attrs({
+  paragraph: true,
+})`
+    && {
+      color: red;
+      text-align: center;
+      margin: auto;
+      margin-bottom: 2rem;
+      max-width: 70rem;
+    }
+  `;
+
 
 export class CreatorQuestion extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.turnoverInput = React.createRef();
-  }
-
-  state = {
-    timeWorked: null,
-  }
-
   onChange = ({ target: { name: fieldName, value: _value }, type }) => {
     let value = _value;
     if (type === 'blur' && fieldName.startsWith('employerName')) {
@@ -131,7 +137,7 @@ export class CreatorQuestion extends PureComponent {
     // to avoid confusions (for example, browser autocompletions)
     // but the parent component here juste needs 'employerName'
     // for example.
-    const name = fieldName.substr(0, fieldName.indexOf('['));
+    const name = fieldName.substr(0, fieldName.indexOf('[')) || fieldName;
     this.props.onChange({
       name,
       value,
@@ -156,12 +162,11 @@ export class CreatorQuestion extends PureComponent {
   )
 
   updateTimeworked = (time) => {
-    this.setState({ timeWorked: time });
     switch (time) {
       case 'no':
         this.props.onChange({
           name: 'workHours',
-          value: 1,
+          value: MIN_WORK_HOURS,
           index: this.props.index,
           from: 'enterprises',
         });
@@ -171,9 +176,6 @@ export class CreatorQuestion extends PureComponent {
           index: this.props.index,
           from: 'enterprises',
         });
-        if (this.turnoverInput.current) {
-          this.turnoverInput.current.focus();
-        }
         break;
       case 'alf':
         this.props.onChange({
@@ -204,18 +206,23 @@ export class CreatorQuestion extends PureComponent {
           from: 'enterprises',
           ignoreError: true,
         });
-        if (this.turnoverInput.current) {
-          this.turnoverInput.current.focus();
-        }
         break;
       default: break;
     }
+
+    this.props.onChange({
+      name: 'timeWorked',
+      value: time,
+      index: this.props.index,
+      from: 'enterprises',
+    });
   }
 
   render() {
     const {
       index,
       workHours,
+      timeWorked,
       turnover,
       verticalLayout,
       canRemove,
@@ -255,14 +262,15 @@ export class CreatorQuestion extends PureComponent {
               <QuestionLabel>Avez-vous travaillé pour votre entreprise ?</QuestionLabel>
               <RadioGroup
                 aria-label="Avez-vous travaillé pour votre entreprise ?"
-                value={this.state.timeWorked}
+                value={timeWorked.value}
+                name="timeWorked"
                 onChange={(val) => this.updateTimeworked(val.target.value)}
                 style={{ marginBottom: '1.5rem' }}
               >
                 <Box display="flex" alignItems="center">
                   <Box flex={1}>
                     <FormControlLabel
-                      value="no"
+                      value={TIMEWORKED.NO}
                       control={<Radio color="primary" />}
                       label="Non, pas ce mois-ci"
                     />
@@ -274,7 +282,7 @@ export class CreatorQuestion extends PureComponent {
                 <Box display="flex" alignItems="center">
                   <Box flex={1}>
                     <FormControlLabel
-                      value="alf"
+                      value={TIMEWORKED.ALF}
                       control={<Radio color="primary" />}
                       label="Oui, à temps partiel"
                     />
@@ -286,7 +294,7 @@ export class CreatorQuestion extends PureComponent {
                 <Box display="flex" alignItems="center">
                   <Box flex={1}>
                     <FormControlLabel
-                      value="full"
+                      value={TIMEWORKED.FULL}
                       control={<Radio color="primary" />}
                       label="Oui, à temps plein"
                     />
@@ -296,7 +304,12 @@ export class CreatorQuestion extends PureComponent {
                   </TooltipOnFocus>
                 </Box>
               </RadioGroup>
-              {this.state.timeWorked === 'alf' && (
+              {timeWorked && timeWorked.error && (
+              <ErrorMessage>
+                {timeWorked.error}
+              </ErrorMessage>
+              )}
+              {timeWorked.value === TIMEWORKED.ALF && (
                 <StyledTextField
                   id={`creator-workHours[${index}]`}
                   className="root-work-hours"
@@ -366,6 +379,10 @@ CreatorQuestion.propTypes = {
   }).isRequired,
   turnover: PropTypes.shape({
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    error: PropTypes.string,
+  }).isRequired,
+  timeWorked: PropTypes.shape({
+    value: PropTypes.string,
     error: PropTypes.string,
   }).isRequired,
   index: PropTypes.number.isRequired,

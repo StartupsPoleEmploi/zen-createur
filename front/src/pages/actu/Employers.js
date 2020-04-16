@@ -36,6 +36,8 @@ import {
   mobileBreakpoint,
   primaryBlue,
   CREATORTAXRATE,
+  TIMEWORKED,
+  MAXHOURCANWORK,
 } from '../../constants';
 import {
   MAX_SALARY,
@@ -161,8 +163,9 @@ const employerTemplate = {
 };
 
 const enterpriseTemplate = {
-  workHours: { value: '', error: null },
+  workHours: { value: MIN_WORK_HOURS, error: null },
   turnover: { value: '', error: null },
+  timeWorked: { value: '', error: null },
 };
 
 const getEmployersMapFromFormData = (employers) =>
@@ -174,31 +177,6 @@ const getEmployersMapFromFormData = (employers) =>
       }),
       {},
     ));
-
-const getFieldError = ({ name, value }) => {
-  const isValid = !isNull(value) && !isUndefined(value) && value !== '';
-  if (!isValid) return 'Champ obligatoire';
-
-  if (name === WORK_HOURS) {
-    if (_isNaN(value)) {
-      return 'Merci de ne saisir que des chiffres';
-    }
-    if (value < MIN_WORK_HOURS || value > MAX_WORK_HOURS) {
-      return 'Merci de corriger le nombre d\'heures travaillées';
-    }
-  }
-  if (name === SALARY || name === TURNOVER) {
-    if (_isNaN(value)) {
-      return 'Merci de ne saisir que des chiffres';
-    }
-    if (value < MIN_SALARY || value > MAX_SALARY) {
-      return 'Merci de corriger votre salaire';
-    }
-  }
-  if (name === 'hasEndedThisMonth' && !isBoolean(value)) {
-    return 'Merci de répondre à la question';
-  }
-};
 
 // TODO refactor this, repeated almost exactly in WorkSummary
 const calculateTotal = (employers, field) => {
@@ -244,6 +222,7 @@ export class Employers extends Component {
     isLoggedOut: false,
     selectedEmployer: 0,
     selectedEnterprise: 0,
+    isFormValid: false,
   }
 
   componentDidMount() {
@@ -320,6 +299,43 @@ export class Employers extends Component {
     }
   }
 
+
+  getFieldError({ name, value, from }) {
+    const isValid = !isNull(value) && !isUndefined(value) && value !== '';
+
+    if (from === 'enterprises' && !isValid) {
+    // specific rules for entreprises
+      // const declaration =
+      switch (name) {
+        case TURNOVER:
+          break;
+        default: break;
+      }
+    }
+
+    if (!isValid) return 'Champ obligatoire';
+
+    if (name === WORK_HOURS) {
+      if (_isNaN(value)) {
+        return 'Merci de ne saisir que des chiffres';
+      }
+      if (value < MIN_WORK_HOURS || value > MAX_WORK_HOURS) {
+        return 'Merci de corriger le nombre d\'heures travaillées';
+      }
+    }
+    if (name === SALARY || name === TURNOVER) {
+      if (_isNaN(value)) {
+        return 'Merci de ne saisir que des chiffres';
+      }
+      if (value < MIN_SALARY || value > MAX_SALARY) {
+        return 'Merci de corriger votre salaire';
+      }
+    }
+    if (name === 'hasEndedThisMonth' && !isBoolean(value)) {
+      return 'Merci de répondre à la question';
+    }
+  }
+
   addEmployer = () => this.setState(({ employers }) => ({
     employers: employers.concat({ ...employerTemplate }),
     selectedEmployer: employers.length,
@@ -327,12 +343,14 @@ export class Employers extends Component {
 
   // onChange - let the user type whatever he wants, show errors
   onChange = ({
-    index, name, value, from, ignoreError = false,
+    index, name, value, from, ignoreError = false, ignoreUndefined = true,
   }) => {
     let error = null;
 
-    if (!ignoreError && value !== undefined) {
-      error = getFieldError({ name, value });
+    if (!ignoreError &&
+      ((value !== undefined && ignoreUndefined === true) ||
+      (value === undefined && ignoreUndefined === false))) {
+      error = this.getFieldError({ name, value, from });
     }
 
     this.updateValue({
@@ -342,13 +360,13 @@ export class Employers extends Component {
 
   updateValue = ({
     index, name, value, error, from,
-  }) => {
+  }) =>
     this.setState(({ [from]: prevEmployers }) => ({
       [from]: prevEmployers.map((employer, key) =>
         (key === index ? { ...employer, [name]: { value, error } } : employer)),
       error: null,
-    }));
-  }
+    }), () => { if (!error) this.checkFormValidity({ getErrorText: false }); });
+
 
   onRemove = (index, from = 'employers') => {
     let selectedEmployer = index;
@@ -414,7 +432,7 @@ export class Employers extends Component {
       });
   }
 
-  checkFormValidity = () => {
+  checkFormValidity = ({ getErrorText = true }) => {
     if (this.state.employers.length === 0) {
       this.setState({
         error: 'Merci d\'entrer les informations sur vos employeurs',
@@ -423,26 +441,57 @@ export class Employers extends Component {
     }
 
     let isFormValid = true;
-    const employersFormData = cloneDeep(this.state.employers);
+    const datas = {
+      employers: cloneDeep(this.state.employers),
+      enterprises: cloneDeep(this.state.enterprises),
+    };
 
-    this.state.employers.forEach((employer, index) => Object.keys(employer).forEach((fieldName) => {
-      const error = getFieldError({
-        name: fieldName,
-        value: employer[fieldName].value,
-      });
+    const formControl = (row, index, node) => Object.keys(row).forEach((fieldName) => {
+      let { value } = row[fieldName];
+      let checkError = true;
+
+      // doesn't check turnover with quaterly declartation
+      if (node === 'enterprises' && fieldName === TURNOVER && this.props.declarations && this.props.declarations.length && this.props.declarations[0].taxeDue === CREATORTAXRATE.QUATERLY) {
+        checkError = false;
+      }
+
+
+      // set min and max to no declaration hour
+      if (fieldName === WORK_HOURS && node === 'enterprises' && this.state.enterprises && this.state.enterprises.length) {
+        if (this.state.enterprises[0].timeWorked === TIMEWORKED.NO) {
+          value = MIN_WORK_HOURS;
+        }
+
+        if (this.state.enterprises[0].timeWorked === TIMEWORKED.FULL) {
+          value = MAXHOURCANWORK;
+        }
+      }
+
+
+      let error = null;
+      if (checkError) {
+        error = this.getFieldError({
+          name: fieldName,
+          value,
+          ignoreUndefined: false,
+          from: node,
+        });
+      }
 
       if (error) isFormValid = false;
 
-      employersFormData[index][fieldName] = {
-        value: employer[fieldName].value,
-        error,
+      datas[node][index][fieldName] = {
+        value: row[fieldName].value,
+        error: getErrorText ? error : null,
       };
-    }));
+    });
+    this.state.employers.forEach((row, index) => formControl(row, index, 'employers'));
+    this.state.enterprises.forEach((row, index) => formControl(row, index, 'enterprises'));
 
     let error = 'Merci de corriger les erreurs du formulaire. ';
 
     if (isFormValid) {
-      const salaryTotal = calculateTotal(employersFormData, SALARY);
+      const salaryTotal = calculateTotal(datas.employers, SALARY);
 
       if (salaryTotal > MAX_SALARY) {
         error += `Vous ne pouvez pas déclarer plus de ${MAX_SALARY}€ total de salaire. `;
@@ -450,18 +499,17 @@ export class Employers extends Component {
       }
     }
 
-    if (!isFormValid) {
-      this.setState({
-        employers: employersFormData,
-        error: isFormValid ? null : error,
-      });
-    }
+    this.setState({
+      ...datas,
+      isFormValid,
+      error: !isFormValid && getErrorText ? error : null,
+    });
 
     return isFormValid;
   }
 
   openDialog = () => {
-    const isValid = this.checkFormValidity();
+    const isValid = this.checkFormValidity({ getErrorText: true });
     if (isValid) {
       this.setState({ isDialogOpened: true });
     }
@@ -598,7 +646,7 @@ export class Employers extends Component {
   }
 
   render() {
-    const { error, isLoading } = this.state;
+    const { error, isLoading, isFormValid } = this.state;
 
     if (isLoading) {
       return (
@@ -627,12 +675,16 @@ export class Employers extends Component {
             {error && <ErrorMessage>{error}</ErrorMessage>}
 
             <ButtonsContainer>
-              <StyledMainAction primary onClick={this.openDialog}>
+              <StyledMainAction primary onClick={this.openDialog} disabled={!isFormValid}>
                 Envoyer mon
                 <br />
                 actualisation
               </StyledMainAction>
-              <StyledMainAction primary={false} onClick={this.saveAndRedirect}>
+              <StyledMainAction
+                primary={false}
+                onClick={this.saveAndRedirect}
+                disabled={!isFormValid}
+              >
                 Enregistrer
                 <br />
                 et finir plus tard
