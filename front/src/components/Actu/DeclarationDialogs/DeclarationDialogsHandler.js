@@ -30,10 +30,11 @@ class DeclarationDialogsHandler extends Component {
       onCancel,
       declaration,
       employers,
+      enterprises,
     } = this.props;
 
     const defaultProps = {
-      title: "Envoi de l'actualisation",
+      title: "Confirmation de l'actualisation",
       titleId: 'ActuDialogContentText',
       isOpened,
       onCancel,
@@ -64,6 +65,7 @@ class DeclarationDialogsHandler extends Component {
         <DeclarationSummaryDialog
           declaration={declaration}
           employers={employers}
+          enterprises={enterprises}
           onConfirm={this.props.onConfirm}
           {...defaultProps}
         />
