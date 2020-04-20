@@ -16,6 +16,7 @@ class DeclarationDialogsHandler extends Component {
     validationErrors: PropTypes.arrayOf(PropTypes.string).isRequired,
     declaration: PropTypes.object,
     employers: PropTypes.arrayOf(PropTypes.object),
+    enterprises: PropTypes.arrayOf(PropTypes.object),
   }
 
   confirmAndIgnoreErrors = () => this.props.onConfirm({ ignoreErrors: true })
@@ -29,10 +30,11 @@ class DeclarationDialogsHandler extends Component {
       onCancel,
       declaration,
       employers,
+      enterprises,
     } = this.props;
 
     const defaultProps = {
-      title: "Envoi de l'actualisation",
+      title: "Confirmation de l'actualisation",
       titleId: 'ActuDialogContentText',
       isOpened,
       onCancel,
@@ -63,6 +65,7 @@ class DeclarationDialogsHandler extends Component {
         <DeclarationSummaryDialog
           declaration={declaration}
           employers={employers}
+          enterprises={enterprises}
           onConfirm={this.props.onConfirm}
           {...defaultProps}
         />

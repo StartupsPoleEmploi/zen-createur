@@ -165,7 +165,7 @@ export class CreatorQuestion extends PureComponent {
     switch (time) {
       case 'no':
         this.props.onChange({
-          name: 'workHours',
+          name: 'workHoursCreator',
           value: MIN_WORK_HOURS,
           index: this.props.index,
           from: 'enterprises',
@@ -179,7 +179,7 @@ export class CreatorQuestion extends PureComponent {
         break;
       case 'alf':
         this.props.onChange({
-          name: 'workHours',
+          name: 'workHoursCreator',
           value: '',
           index: this.props.index,
           from: 'enterprises',
@@ -194,7 +194,7 @@ export class CreatorQuestion extends PureComponent {
         break;
       case 'full':
         this.props.onChange({
-          name: 'workHours',
+          name: 'workHoursCreator',
           value: MAXHOURCANWORK,
           index: this.props.index,
           from: 'enterprises',
@@ -221,7 +221,7 @@ export class CreatorQuestion extends PureComponent {
   render() {
     const {
       index,
-      workHours,
+      workHoursCreator,
       timeWorked,
       turnover,
       verticalLayout,
@@ -232,7 +232,7 @@ export class CreatorQuestion extends PureComponent {
     } = this.props;
 
     const showTooltip = index === 0;
-    const hasFormError = workHours.error || turnover.error;
+    const hasFormError = workHoursCreator.error || turnover.error;
 
     return (
       <StyledContainer className="employer-question">
@@ -311,19 +311,19 @@ export class CreatorQuestion extends PureComponent {
               )}
               {timeWorked.value === TIMEWORKED.ALF && (
                 <StyledTextField
-                  id={`creator-workHours[${index}]`}
+                  id={`creator-workHoursCreator[${index}]`}
                   className="root-work-hours"
                   label={this.renderLabel({
-                    id: `creator-workHours[${index}]`,
+                    id: `creator-workHoursCreator[${index}]`,
                     label: "Estimation du nombre d'heures travaillées",
                     content:
                       "Indiquez une estimation du nombre d'heures travaillés.",
                   })}
-                  name={`workHours[${index}]`}
-                  value={workHours.value}
+                  name={`workHoursCreator[${index}]`}
+                  value={workHoursCreator.value}
                   onChange={this.onChange}
-                  error={!!workHours.error}
-                  helperText={workHours.error}
+                  error={!!workHoursCreator.error}
+                  helperText={workHoursCreator.error}
                   InputProps={{
                     inputComponent: HourInput,
                     autoFocus: true,
@@ -331,7 +331,7 @@ export class CreatorQuestion extends PureComponent {
                   // eslint-disable-next-line react/jsx-no-duplicate-props
                   inputProps={{
                     maxLength: 4,
-                    'aria-describedby': `workHoursDescription[${index}]`,
+                    'aria-describedby': `workHoursCreatorDescription[${index}]`,
                   }}
                   fullWidth={verticalLayout}
                 />
@@ -373,7 +373,7 @@ export class CreatorQuestion extends PureComponent {
 }
 
 CreatorQuestion.propTypes = {
-  workHours: PropTypes.shape({
+  workHoursCreator: PropTypes.shape({
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     error: PropTypes.string,
   }).isRequired,

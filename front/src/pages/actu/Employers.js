@@ -47,6 +47,11 @@ import {
   SALARY,
   TURNOVER,
   WORK_HOURS,
+  WORK_HOURS_CREATOR,
+  MIN_WORK_HOURS_CREATOR,
+  MAX_WORK_HOURS_CREATOR,
+  MIN_TURNOVER,
+  MAX_TURNOVER,
 } from '../../lib/salary';
 import { setNoNeedEmployerOnBoarding as setNoNeedEmployerOnBoardingAction } from '../../redux/actions/user';
 import { ucfirst } from '../../utils/utils.tool';
@@ -163,7 +168,7 @@ const employerTemplate = {
 };
 
 const enterpriseTemplate = {
-  workHours: { value: MIN_WORK_HOURS, error: null },
+  workHoursCreator: { value: MIN_WORK_HOURS, error: null },
   turnover: { value: '', error: null },
   timeWorked: { value: '', error: null },
 };
@@ -323,7 +328,26 @@ export class Employers extends Component {
         return 'Merci de corriger le nombre d\'heures travaillées';
       }
     }
-    if (name === SALARY || name === TURNOVER) {
+
+    if (name === WORK_HOURS_CREATOR) {
+      if (_isNaN(value)) {
+        return 'Merci de ne saisir que des chiffres';
+      }
+      if (value < MIN_WORK_HOURS_CREATOR || value > MAX_WORK_HOURS_CREATOR) {
+        return 'Merci de corriger le nombre d\'heures travaillées';
+      }
+    }
+
+    if (name === TURNOVER) {
+      if (_isNaN(value)) {
+        return 'Merci de ne saisir que des chiffres';
+      }
+      if (value < MIN_TURNOVER || value > MAX_TURNOVER) {
+        return 'Merci de corriger votre chiffre d\'affaire';
+      }
+    }
+
+    if (name === SALARY) {
       if (_isNaN(value)) {
         return 'Merci de ne saisir que des chiffres';
       }
@@ -331,6 +355,7 @@ export class Employers extends Component {
         return 'Merci de corriger votre salaire';
       }
     }
+
     if (name === 'hasEndedThisMonth' && !isBoolean(value)) {
       return 'Merci de répondre à la question';
     }
@@ -563,10 +588,11 @@ export class Employers extends Component {
         {this.props.declarations[0].hasEmployers && (
         <Box flex={1}>
           <BoxPanel style={{ marginTop: '70px' }}>
-            <Title variant="h6" component="h1" style={{ marginLeft: '20px' }}>
+            <Title variant="h6" component="h1" style={{ marginLeft: '40px' }}>
               <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b>
               {' '}
               -
+              {' '}
               {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}
             </Title>
             <Block style={{ backgroundColor: 'transparent' }}>
@@ -575,6 +601,7 @@ export class Employers extends Component {
                 Pour quel employeur avez-vous travaillé
                 <br />
                 en
+                {' '}
                 {moment(this.props.activeMonth).format('MMMM YYYY')}
                 {' '}
                 ?
@@ -634,6 +661,7 @@ export class Employers extends Component {
                 <b>{enterprises.length > 1 ? 'MES ENTREPRISES' : 'MON ENTREPRISE'}</b>
                 {' '}
                 -
+                {' '}
                 {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}
               </Title>
               {enterprises.map(this.renderCreatorQuestion)}
@@ -700,6 +728,7 @@ export class Employers extends Component {
           onConfirm={this.onSubmit}
           declaration={this.state.currentDeclaration}
           employers={this.state.employers}
+          enterprises={this.state.enterprises}
           consistencyErrors={this.state.consistencyErrors}
           validationErrors={this.state.validationErrors}
         />

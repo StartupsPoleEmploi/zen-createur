@@ -1,7 +1,6 @@
 import React from 'react';
 import NumberFormat from 'react-number-format';
 import PropTypes from 'prop-types';
-import { isNaN as _isNaN } from 'lodash';
 import styled from 'styled-components';
 
 import { Typography } from '@material-ui/core';
@@ -15,13 +14,10 @@ import {
   formatIntervalDates,
   formatDate,
 } from '../../../lib/date';
-import { ActuTypes as types, jobSearchEndMotive } from '../../../constants';
 import {
-  MIN_SALARY,
-  SALARY,
-  MAX_SALARY,
-  calculateTotal,
-} from '../../../lib/salary';
+  ActuTypes as types, jobSearchEndMotive, TIMEWORKED, CREATORTAXRATE,
+} from '../../../constants';
+import { ucfirst } from '../../../utils/utils.tool';
 
 const StyledDialogContentText = styled(DialogContentText)`
   && {
@@ -35,8 +31,7 @@ const DeclarationContent = styled(DialogContentText).attrs({
   component: 'div',
 })`
   && {
-    margin: auto;
-    max-width: 29rem;
+    margin: 0 64px;
     text-align: left;
     padding-bottom: 3rem;
   }
@@ -79,6 +74,7 @@ const ButtonsContainer = styled.div`
 const DeclarationSummaryDialog = ({
   declaration,
   employers = [],
+  enterprises = [],
   onCancel,
   onConfirm,
   ...props
@@ -104,12 +100,9 @@ const DeclarationSummaryDialog = ({
     (info) => info.type === types.RETIREMENT,
   );
 
-  const totalSalary = employers.length ?
-    calculateTotal(employers, SALARY, MIN_SALARY, MAX_SALARY) :
-    0;
-
   return (
     <CustomDialog
+      fullWidth
       content={(
         <>
           <StyledDialogContentText>
@@ -120,11 +113,10 @@ const DeclarationSummaryDialog = ({
                 {' '}
                 de
                 {' '}
-                <br />
                 <b>
-                  {formattedDeclarationMonth(
+                  {ucfirst(formattedDeclarationMonth(
                     declaration.declarationMonth.month,
-                  )}
+                  ))}
                 </b>
                 <br />
                 est-elle exacte et complète ?
@@ -135,10 +127,9 @@ const DeclarationSummaryDialog = ({
           <DeclarationContent>
             {declaration.hasWorked && employers.length && (
               <>
+                {employers.length && (
                 <div>
                   <DeclarationHeader>
-                    {employers.length}
-                    {' '}
                     {employers.length >= 2 ? 'employeurs' : 'employeur'}
                   </DeclarationHeader>
                   <DeclarationUl className="employer-declared-list">
@@ -147,32 +138,100 @@ const DeclarationSummaryDialog = ({
                       return (
                         <DeclarationLi key={key}>
                           {employer.employerName.value}
+                          {' '}
+                          -
+                          {' '}
+                          <NumberFormat
+                            thousandSeparator=" "
+                            decimalSeparator=","
+                            decimalScale={0}
+                            fixedDecimalScale
+                            displayType="text"
+                            suffix="€ HT"
+                            value={employer.salary.value}
+                          />
                         </DeclarationLi>
                       );
                     })}
                   </DeclarationUl>
                 </div>
+                )}
 
+                {enterprises.length && (
                 <div>
                   <DeclarationHeader>
-                    Salaire(s) brut déclaré(s)
+                    {enterprises.length >= 2 ? 'entreprises' : 'entreprise'}
                   </DeclarationHeader>
-                  <DeclarationValues className="total-salary-declared">
-                    {_isNaN(totalSalary) || totalSalary === 0 ? (
-                      '-'
-                    ) : (
-                      <NumberFormat
-                        thousandSeparator=" "
-                        decimalSeparator=","
-                        decimalScale={0}
-                        fixedDecimalScale
-                        displayType="text"
-                        suffix=" €"
-                        value={totalSalary}
-                      />
-                    )}
-                  </DeclarationValues>
+                  <DeclarationUl className="employer-declared-list">
+                    {enterprises.map((enterprise, i) => {
+                      const key = `${i}-${enterprise.workHoursCreator.value}`;
+
+                      let leftPart = null;
+                      let rightPart = null;
+
+                      switch (enterprise.timeWorked.value) {
+                        case TIMEWORKED.NO:
+                          leftPart = "Je n'ai pas travaillé pour mon entreprise ce mois-ci";
+                          break;
+                        case TIMEWORKED.FULL:
+                          leftPart = "J'ai travaillé à temps pleins pour mon entreprise";
+                          break;
+                        default:
+                          leftPart = (
+                            <NumberFormat
+                              decimalScale={0}
+                              fixedDecimalScale
+                              displayType="text"
+                              suffix={enterprise.workHoursCreator.value > 1 ? ' heures' : ' heure'}
+                              value={enterprise.workHoursCreator.value}
+                            />
+                          );
+                          break;
+                      }
+
+                      if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
+                        rightPart = (
+                          <>
+                            <b>Déclaration Urssaf tous les mois</b>
+                            {' '}
+                            -
+                            {' '}
+                            <NumberFormat
+                              thousandSeparator=" "
+                              decimalSeparator=","
+                              decimalScale={0}
+                              fixedDecimalScale
+                              displayType="text"
+                              suffix="€"
+                              value={enterprise.turnover.value}
+                            />
+                          </>
+                        );
+                      } else {
+                        rightPart = (
+                          <b>
+                            Déclaration Urssaf tous les trismestres
+                          </b>
+                        );
+                      }
+
+                      return (
+                        <DeclarationLi key={key}>
+                          {leftPart}
+                          {leftPart && rightPart && (
+                          <>
+                            {' '}
+                            -
+                            {' '}
+                          </>
+                          )}
+                          {rightPart}
+                        </DeclarationLi>
+                      );
+                    })}
+                  </DeclarationUl>
                 </div>
+                )}
               </>
             )}
 
@@ -316,6 +375,7 @@ DeclarationSummaryDialog.propTypes = {
   onConfirm: PropTypes.func.isRequired,
   declaration: PropTypes.object.isRequired,
   employers: PropTypes.arrayOf(PropTypes.object),
+  enterprises: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default DeclarationSummaryDialog;
