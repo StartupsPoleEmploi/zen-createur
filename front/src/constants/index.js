@@ -59,3 +59,5 @@ export const TIMEWORKED = {
   ALF: 'alf',
   FULL: 'full',
 };
+
+export const DELAYBEFOREQUITACTUALISATION = 3000;

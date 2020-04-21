@@ -29,8 +29,15 @@ const Title = styled(Typography)`
   }
 `;
 
+const DialogContentTextLabel = styled(Typography)`
+  && {
+    color: black;
+  }
+`;
+
 const StyledContainer = styled.div`
   position: relative;
+  margin-top: 16px;
 `;
 
 const Asterisk = styled.span`
@@ -59,7 +66,7 @@ const RemoveButton = styled.button`
   padding-left: 20px;
   position: absolute;
   left: 100%;
-  top: 14px;
+  top: 3px;
   opacity: 0.7;
   &::-moz-focus-inner {
     border: 0;
@@ -154,7 +161,7 @@ export class EmployerQuestion extends PureComponent {
               {' '}
               {hasFormError && <Asterisk>*</Asterisk>}
             </Title>
-            <p>{collapsed ? 'AFFICHER' : 'MASQUER'}</p>
+            <DialogContentTextLabel>{collapsed ? 'AFFICHER' : 'MASQUER'}</DialogContentTextLabel>
             <ArrowDropDown style={{ color: '#0065DB' }} />
             {canRemove && (
               <RemoveButton
