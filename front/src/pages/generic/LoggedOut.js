@@ -1,6 +1,7 @@
 import Button from '@material-ui/core/Button';
 import React from 'react';
 import styled from 'styled-components';
+import { DialogContentText } from '@material-ui/core';
 
 const StyledDiv = styled.div`
   text-align: center;
@@ -8,7 +9,7 @@ const StyledDiv = styled.div`
 
 export const LoggedOut = () => (
   <StyledDiv>
-    <p>Vous avez été déconnecté</p>
+    <DialogContentText>Vous avez été déconnecté</DialogContentText>
     <Button href="/" role="link" variant="contained">
       Retour à la page d'accueil
     </Button>

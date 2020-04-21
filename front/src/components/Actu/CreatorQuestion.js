@@ -33,6 +33,12 @@ const Title = styled(Typography)`
   }
 `;
 
+const DialogContentTextLabel = styled(Typography)`
+  && {
+    color: black;
+  }
+`;
+
 const StyledContainer = styled.div`
   position: relative;
 `;
@@ -243,7 +249,7 @@ export class CreatorQuestion extends PureComponent {
               {' '}
               {hasFormError && <Asterisk>*</Asterisk>}
             </Title>
-            <p>{collapsed ? 'AFFICHER' : 'MASQUER'}</p>
+            <DialogContentTextLabel>{collapsed ? 'AFFICHER' : 'MASQUER'}</DialogContentTextLabel>
             <ArrowDropDown style={{ color: '#0065DB' }} />
             {canRemove && (
               <RemoveButton

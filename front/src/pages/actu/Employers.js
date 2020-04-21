@@ -20,7 +20,7 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 import superagent from 'superagent';
 
-import { Box } from '@material-ui/core';
+import { Box, DialogContentText } from '@material-ui/core';
 import {
   fetchDeclarations as fetchDeclarationsAction,
   postEmployers as postEmployersAction,
@@ -38,6 +38,7 @@ import {
   CREATORTAXRATE,
   TIMEWORKED,
   MAXHOURCANWORK,
+  DELAYBEFOREQUITACTUALISATION,
 } from '../../constants';
 import {
   MAX_SALARY,
@@ -220,6 +221,7 @@ export class Employers extends Component {
     isLoading: true,
     error: null,
     isDialogOpened: false,
+    isActuRequesting: false,
     showPreviousEmployersModal: false,
     consistencyErrors: [],
     validationErrors: [],
@@ -401,7 +403,7 @@ export class Employers extends Component {
 
     this.setState(({ [from]: employers }) => ({
       [from]: employers.filter((e, key) => key !== index),
-      selectedEmployer,
+      selectedEmployer: selectedEmployer < 0 ? selectedEmployer : 0,
     }));
   }
 
@@ -412,7 +414,7 @@ export class Employers extends Component {
   saveAndRedirect = () => this.onSave().then(() => this.props.history.push('/thanks?later'))
 
   onSubmit = ({ ignoreErrors = false } = {}) => {
-    this.setState({ isValidating: true });
+    this.setState({ isValidating: true, isActuRequesting: true });
 
     return this.props
       .postEmployers({
@@ -422,7 +424,11 @@ export class Employers extends Component {
       })
       .then(() => {
         this.hasSubmittedAndFinished = true; // used to cancel cWU actions
-        this.props.history.push('/files');
+        this.setState({ isLoading: false, isActuRequesting: false });
+
+        setTimeout(() => {
+          this.props.history.push('/files');
+        }, DELAYBEFOREQUITACTUALISATION);
       })
       .catch((err) => {
         if (
@@ -435,6 +441,7 @@ export class Employers extends Component {
             consistencyErrors: err.response.body.consistencyErrors,
             validationErrors: err.response.body.validationErrors,
             isValidating: false,
+            isActuRequesting: false,
           });
         }
 
@@ -546,6 +553,7 @@ export class Employers extends Component {
       validationErrors: [],
       isDialogOpened: false,
       isValidating: false,
+      isActuRequesting: false,
     });
   }
 
@@ -597,7 +605,7 @@ export class Employers extends Component {
             </Title>
             <Block style={{ backgroundColor: 'transparent' }}>
               {employers.length <= 1 && (
-              <p>
+              <Typography>
                 Pour quel employeur avez-vous travaillé
                 <br />
                 en
@@ -605,7 +613,7 @@ export class Employers extends Component {
                 {moment(this.props.activeMonth).format('MMMM YYYY')}
                 {' '}
                 ?
-              </p>
+              </Typography>
               )}
               {employers.map(this.renderEmployerQuestion)}
             </Block>
@@ -723,6 +731,7 @@ export class Employers extends Component {
 
         <DeclarationDialogsHandler
           isLoading={this.state.isValidating}
+          isFormLoading={this.state.isActuRequesting}
           isOpened={this.state.isDialogOpened}
           onCancel={this.closeDialog}
           onConfirm={this.onSubmit}
