@@ -36,10 +36,10 @@ const LoadingDialog = ({ isSent, ...rest }) => (
     content={(
       <>
         {isSent && (
-        <BoxRelative>
-          <Progress variant="static" value={100} style={{ color: success }} />
-          <DoneIcon style={{ color: success }} />
-        </BoxRelative>
+          <BoxRelative>
+            <Progress variant="static" value={100} style={{ color: success }} />
+            <DoneIcon style={{ color: success }} />
+          </BoxRelative>
         )}
         {!isSent && <Progress />}
       </>
@@ -51,7 +51,7 @@ const LoadingDialog = ({ isSent, ...rest }) => (
 );
 
 LoadingDialog.propTypes = {
-  isSent: PropTypes.bool.isRequired,
+  isSent: PropTypes.bool,
 };
 
 export default LoadingDialog;

@@ -125,76 +125,21 @@ const DeclarationSummaryDialog = ({
           </StyledDialogContentText>
 
           <DeclarationContent>
-            {declaration.hasWorked && employers.length && (
+            {declaration.hasWorked && (
               <>
-                {employers.length && (
-                <div>
-                  <DeclarationHeader>
-                    {employers.length >= 2 ? 'employeurs' : 'employeur'}
-                  </DeclarationHeader>
-                  <DeclarationUl className="employer-declared-list">
-                    {employers.map((employer, i) => {
-                      const key = `${i}-${employer.employerName.value}`;
-                      return (
-                        <DeclarationLi key={key}>
-                          {employer.employerName.value}
-                          {' '}
-                          -
-                          {' '}
-                          <NumberFormat
-                            thousandSeparator=" "
-                            decimalSeparator=","
-                            decimalScale={0}
-                            fixedDecimalScale
-                            displayType="text"
-                            suffix="€ HT"
-                            value={employer.salary.value}
-                          />
-                        </DeclarationLi>
-                      );
-                    })}
-                  </DeclarationUl>
-                </div>
-                )}
-
-                {enterprises.length && (
-                <div>
-                  <DeclarationHeader>
-                    {enterprises.length >= 2 ? 'entreprises' : 'entreprise'}
-                  </DeclarationHeader>
-                  <DeclarationUl className="employer-declared-list">
-                    {enterprises.map((enterprise, i) => {
-                      const key = `${i}-${enterprise.workHoursCreator.value}`;
-
-                      let leftPart = null;
-                      let rightPart = null;
-
-                      switch (enterprise.timeWorked.value) {
-                        case TIMEWORKED.NO:
-                          leftPart = "Je n'ai pas travaillé pour mon entreprise ce mois-ci";
-                          break;
-                        case TIMEWORKED.FULL:
-                          leftPart = "J'ai travaillé à temps pleins pour mon entreprise";
-                          break;
-                        default:
-                          leftPart = (
-                            <NumberFormat
-                              decimalScale={0}
-                              fixedDecimalScale
-                              displayType="text"
-                              suffix={enterprise.workHoursCreator.value > 1 ? ' heures' : ' heure'}
-                              value={enterprise.workHoursCreator.value}
-                            />
-                          );
-                          break;
-                      }
-
-                      if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
-                        rightPart = (
-                          <>
-                            <b>Déclaration Urssaf tous les mois</b>
+                {employers.length !== 0 && (
+                  <div>
+                    <DeclarationHeader>
+                      {employers.length >= 2 ? 'employeurs' : 'employeur'}
+                    </DeclarationHeader>
+                    <DeclarationUl className="employer-declared-list">
+                      {employers.map((employer, i) => {
+                        const key = `${i}-${employer.employerName.value}`;
+                        return (
+                          <DeclarationLi key={key}>
+                            {employer.employerName.value}
                             {' '}
-                            -
+                          -
                             {' '}
                             <NumberFormat
                               thousandSeparator=" "
@@ -202,35 +147,90 @@ const DeclarationSummaryDialog = ({
                               decimalScale={0}
                               fixedDecimalScale
                               displayType="text"
-                              suffix="€"
-                              value={enterprise.turnover.value}
+                              suffix="€ HT"
+                              value={employer.salary.value}
                             />
-                          </>
+                          </DeclarationLi>
                         );
-                      } else {
-                        rightPart = (
-                          <b>
-                            Déclaration Urssaf tous les trismestres
-                          </b>
-                        );
-                      }
+                      })}
+                    </DeclarationUl>
+                  </div>
+                )}
 
-                      return (
-                        <DeclarationLi key={key}>
-                          {leftPart}
-                          {leftPart && rightPart && (
-                          <>
-                            {' '}
+                {enterprises.length !== 0 && (
+                  <div>
+                    <DeclarationHeader>
+                      {enterprises.length >= 2 ? 'entreprises' : 'entreprise'}
+                    </DeclarationHeader>
+                    <DeclarationUl className="employer-declared-list">
+                      {enterprises.map((enterprise, i) => {
+                        const key = `${i}-${enterprise.workHoursCreator.value}`;
+
+                        let leftPart = null;
+                        let rightPart = null;
+
+                        switch (enterprise.timeWorked.value) {
+                          case TIMEWORKED.NO:
+                            leftPart = "Je n'ai pas travaillé pour mon entreprise ce mois-ci";
+                            break;
+                          case TIMEWORKED.FULL:
+                            leftPart = "J'ai travaillé à temps pleins pour mon entreprise";
+                            break;
+                          default:
+                            leftPart = (
+                              <NumberFormat
+                                decimalScale={0}
+                                fixedDecimalScale
+                                displayType="text"
+                                suffix={enterprise.workHoursCreator.value > 1 ? ' heures' : ' heure'}
+                                value={enterprise.workHoursCreator.value}
+                              />
+                            );
+                            break;
+                        }
+
+                        if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
+                          rightPart = (
+                            <>
+                              <b>Déclaration Urssaf tous les mois</b>
+                              {' '}
                             -
                             {' '}
-                          </>
-                          )}
-                          {rightPart}
-                        </DeclarationLi>
-                      );
-                    })}
-                  </DeclarationUl>
-                </div>
+                              <NumberFormat
+                                thousandSeparator=" "
+                                decimalSeparator=","
+                                decimalScale={0}
+                                fixedDecimalScale
+                                displayType="text"
+                                suffix="€"
+                                value={enterprise.turnover.value}
+                              />
+                            </>
+                          );
+                        } else {
+                          rightPart = (
+                            <b>
+                              Déclaration Urssaf tous les trismestres
+                            </b>
+                          );
+                        }
+
+                        return (
+                          <DeclarationLi key={key}>
+                            {leftPart}
+                            {leftPart && rightPart && (
+                              <>
+                                {' '}
+                            -
+                                {' '}
+                              </>
+                            )}
+                            {rightPart}
+                          </DeclarationLi>
+                        );
+                      })}
+                    </DeclarationUl>
+                  </div>
                 )}
               </>
             )}
@@ -324,28 +324,28 @@ const DeclarationSummaryDialog = ({
                   Oui, je souhaite rester inscrit à Pôle emploi
                 </DeclarationValues>
               ) : (
-                <>
-                  <DeclarationValues>
-                    Non, je ne souhaite pas rester inscrit à Pôle emploi
+                  <>
+                    <DeclarationValues>
+                      Non, je ne souhaite pas rester inscrit à Pôle emploi
                   </DeclarationValues>
 
-                  <DeclarationValues>
-                    Date de fin :
+                    <DeclarationValues>
+                      Date de fin :
                     {' '}
-                    {formatDate(jobSearch.endDate)}
-                  </DeclarationValues>
-                  <DeclarationValues>
-                    Motif :
+                      {formatDate(jobSearch.endDate)}
+                    </DeclarationValues>
+                    <DeclarationValues>
+                      Motif :
                     {' '}
-                    {declaration.jobSearchStopMotive ===
+                      {declaration.jobSearchStopMotive ===
                         jobSearchEndMotive.WORK && 'Reprise du travail'}
-                    {declaration.jobSearchStopMotive ===
+                      {declaration.jobSearchStopMotive ===
                         jobSearchEndMotive.RETIREMENT && 'Retraite'}
-                    {declaration.jobSearchStopMotive ===
+                      {declaration.jobSearchStopMotive ===
                         jobSearchEndMotive.OTHER && 'Autre'}
-                  </DeclarationValues>
-                </>
-              )}
+                    </DeclarationValues>
+                  </>
+                )}
             </div>
           </DeclarationContent>
         </>

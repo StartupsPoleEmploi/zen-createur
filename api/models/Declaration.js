@@ -110,6 +110,14 @@ class Declaration extends BaseModel {
           to: 'employers.declarationId',
         },
       },
+      revenues: {
+        relation: HasManyRelation,
+        modelClass: `${__dirname}/DeclarationRevenue`,
+        join: {
+          from: 'declarations.id',
+          to: 'declaration_revenues.declarationId',
+        },
+      },
       declarationMonth: {
         relation: BelongsToOneRelation,
         modelClass: `${__dirname}/DeclarationMonth`,
