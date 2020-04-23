@@ -41,15 +41,52 @@ const {
 const getSanitizedEmployer = ({ employer, declaration, user }) => {
   const workHours = parseFloat(employer.workHours);
   const salary = parseFloat(employer.salary);
-
-  return {
+  const object = {
     ...employer,
+    id: employer.id || null,
     userId: user.id,
     declarationId: declaration.id,
     // Save temp data as much as possible
     workHours: !Number.isNaN(workHours) ? workHours : null,
     salary: !Number.isNaN(salary) ? salary : null,
   };
+
+  if (object.id === null) {
+    delete object.id
+  }
+
+  return object;
+};
+
+const getSanitizedEnterprise = ({ enterprise, declaration, user }) => {
+  const workHours = parseFloat(enterprise.workHoursCreator);
+  const turnover = parseFloat(enterprise.turnover);
+  const object = {
+    id: enterprise.id || null,
+    userId: user.id,
+    declarationId: declaration.id,
+    // Save temp data as much as possible
+    workHours: !Number.isNaN(workHours) ? workHours : null,
+    turnover: !Number.isNaN(turnover) ? turnover : null,
+  };
+
+  if (object.id === null) {
+    delete object.id
+  }
+
+  return object;
+};
+
+const checkValidityOfDeclaration = ({ declaration }) => {
+  let isValid = true;
+
+  declaration.employers.map(employer => {
+    if (employer.employerName.length === 0) {
+      isValid = false;
+    }
+  })
+
+  return isValid;
 };
 
 router.post('/remove-file-page', (req, res, next) => {
@@ -115,25 +152,24 @@ router.post('/remove-file-page', (req, res, next) => {
 
 router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
   const sentEmployers = req.body.employers || [];
-  if (!sentEmployers.length) return res.status(400).json('No data');
+  const sentEnterprises = req.body.enterprises || [];
 
   return Declaration.query()
-    .eager('[employers, infos]')
+    .eager('[employers, revenues, infos]')
     .findOne({
       userId: req.session.user.id,
       monthId: req.activeMonth.id,
     })
-    .then((declaration) => {
+    .then(async (declaration) => {
       if (!declaration) {
         return res.status(400).json('Please send declaration first');
       }
 
-      const newEmployers = sentEmployers.filter((employer) => !employer.id);
+      // employer
       const updatedEmployers = sentEmployers.filter(({ id }) =>
-        declaration.employers.some((employer) => employer.id === id));
+        !id || declaration.employers.some((employer) => employer.id === id));
 
-      declaration.employers = newEmployers
-        .concat(updatedEmployers)
+      declaration.employers = updatedEmployers
         .map((employer) =>
           getSanitizedEmployer({
             employer,
@@ -141,35 +177,38 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
             declaration,
           }));
 
-      const shouldLog = req.body.isFinished && !declaration.hasFinishedDeclaringEmployers;
+      // creator with enterprise
+      const updatedEnterprises = sentEnterprises.filter(({ id }) =>
+        !id || declaration.revenues.some((enterprise) => enterprise.id === id));
 
-      if (!req.body.isFinished) {
-        // Temp saving for the user to come back later
-        return declaration
-          .$query()
-          .upsertGraph()
-          .then(() => res.json(declaration));
-      }
+      declaration.revenues = updatedEnterprises
+        .map((enterprise) =>
+          getSanitizedEnterprise({
+            enterprise,
+            user: req.session.user,
+            declaration,
+          }));
+
+      const shouldLog = req.body.isFinished && !declaration.hasFinishedDeclaringEmployers;
 
       // Additional check: Employers declaration is finished and all should be filled
       if (
-        declaration.employers.some(
-          (employer) =>
-            !isString(employer.employerName)
-            || employer.employerName.length === 0
-            || !isInteger(employer.workHours)
-            || !isNumber(employer.salary)
-            || !isBoolean(employer.hasEndedThisMonth),
-        )
+        !checkValidityOfDeclaration({ declaration })
       ) {
-        return res.status(400).json('Invalid employers declaration');
+        return res.status(400).json('Invalid declaration');
       }
 
       if (!isUserTokenValid(req.user.tokenExpirationDate)) {
-        return declaration
-          .$query()
-          .upsertGraph()
-          .then(() => res.status(401).json('Expired token'));
+        return res.status(401).json('Expired token');
+      }
+
+      // save declaration
+      declaration = await declaration
+        .$query()
+        .upsertGraph()
+
+      if (!req.body.isFinished) {
+        return declaration;
       }
 
       // Sending declaration to pe.fr
@@ -181,21 +220,17 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
       })
         .then(({ body }) => {
           if (body.statut !== DECLARATION_STATUSES.SAVED) {
-            return declaration
-              .$query()
-              .upsertGraph()
-              .then(() =>
-                // This is a custom error, we want to show a different feedback to users
-                res
-                  .status(
-                    body.statut === DECLARATION_STATUSES.TECH_ERROR ? 503 : 400,
-                  )
-                  .json({
-                    consistencyErrors: body.erreursIncoherence || [],
-                    validationErrors: Object.values(
-                      body.erreursValidation || {},
-                    ),
-                  }));
+            // This is a custom error, we want to show a different feedback to users
+            return res
+              .status(
+                body.statut === DECLARATION_STATUSES.TECH_ERROR ? 503 : 400,
+              )
+              .json({
+                consistencyErrors: body.erreursIncoherence || [],
+                validationErrors: Object.values(
+                  body.erreursValidation || {},
+                ),
+              });
           }
 
           winston.info(`Sent declaration for user ${req.session.user.id} to PE`);
@@ -214,19 +249,11 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
                     declarationId: declaration.id,
                   }),
                 })
-                : Promise.resolve(),
-            ])).then(() => res.json(declaration));
+                : Promise.resolve(declaration),
+            ])).then(() => declaration);
         })
-        .catch((err) =>
-          // If we could not save the declaration on pe.fr
-          // We still save the data the user sent us
-          declaration
-            .$query()
-            .upsertGraph()
-            .then(() => {
-              throw err;
-            }));
     })
+    .then(val => res.json(val))
     .catch(next);
 });
 

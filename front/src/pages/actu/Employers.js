@@ -215,8 +215,8 @@ export class Employers extends Component {
   }
 
   state = {
-    employers: [{ ...employerTemplate }],
-    enterprises: [{ ...enterpriseTemplate }],
+    employers: [],
+    enterprises: [],
     previousEmployers: [],
     isLoading: true,
     error: null,
@@ -240,53 +240,73 @@ export class Employers extends Component {
           currentDeclaration,
           previousDeclaration,
         ] = this.props.declarations;
+        const enterprises = [];
+        let employers = [];
+        const optionToState = {}
 
         if (currentDeclaration.hasFinishedDeclaringEmployers) {
           return this.props.history.replace('/files');
         }
 
+        console.log(currentDeclaration, currentDeclaration.entreprises, ((!currentDeclaration.entreprises || currentDeclaration.entreprises.length === 0) && currentDeclaration.taxeDue !== null));
+
         this.setState({ currentDeclaration });
 
-        if (currentDeclaration.employers.length === 0) {
-          if (!previousDeclaration) return;
 
-          const relevantPreviousEmployers = previousDeclaration.employers.filter(
-            (employer) => !employer.hasEndedThisMonth,
-          );
-          if (relevantPreviousEmployers.length === 0) return;
 
-          return this.setState({
-            employers: relevantPreviousEmployers.map((employer) => ({
-              ...employerTemplate,
-              employerName: {
-                value: employer.employerName,
-                error: null,
-              },
-            })),
-            previousEmployers: relevantPreviousEmployers,
-            showPreviousEmployersModal: true,
-          });
+        if ((!currentDeclaration.entreprises || currentDeclaration.entreprises.length === 0) && currentDeclaration.taxeDue !== null) {
+          enterprises.push({ ...enterpriseTemplate });
+        }
+
+        if (currentDeclaration.hasEmployers) {
+          if (currentDeclaration.employers.length === 0) {
+
+            let relevantPreviousEmployers = [];
+            if (previousDeclaration) {
+              relevantPreviousEmployers = previousDeclaration.employers.filter(
+                (employer) => !employer.hasEndedThisMonth,
+              );
+            }
+
+            if (relevantPreviousEmployers.length === 0) {
+              employers.push({ ...employerTemplate })
+            } else {
+              employers = relevantPreviousEmployers.map((employer) => ({
+                ...employerTemplate,
+                employerName: {
+                  value: employer.employerName,
+                  error: null,
+                },
+              }))
+              optionToState.previousEmployers = relevantPreviousEmployers;
+              optionToState.showPreviousEmployersModal = true;
+            }
+          } else {
+            employers = currentDeclaration.employers.map((employer) => Object.keys(
+              pick(employer, [
+                'employerName',
+                'workHours',
+                'salary',
+                'hasEndedThisMonth',
+                'id',
+              ]),
+            ).reduce(
+              (obj, fieldName) => ({
+                ...obj,
+                [fieldName]: {
+                  value: employer[fieldName],
+                  error: null,
+                },
+              }),
+              {},
+            ))
+          }
         }
 
         this.setState({
-          employers: currentDeclaration.employers.map((employer) => Object.keys(
-            pick(employer, [
-              'employerName',
-              'workHours',
-              'salary',
-              'hasEndedThisMonth',
-              'id',
-            ]),
-          ).reduce(
-            (obj, fieldName) => ({
-              ...obj,
-              [fieldName]: {
-                value: employer[fieldName],
-                error: null,
-              },
-            }),
-            {},
-          )),
+          employers,
+          enterprises,
+          ...optionToState
         });
       })
       .then(() => this.setState({ isLoading: false }));
@@ -311,7 +331,7 @@ export class Employers extends Component {
     const isValid = !isNull(value) && !isUndefined(value) && value !== '';
 
     if (from === 'enterprises' && !isValid) {
-    // specific rules for entreprises
+      // specific rules for entreprises
       // const declaration =
       switch (name) {
         case TURNOVER:
@@ -376,7 +396,7 @@ export class Employers extends Component {
 
     if (!ignoreError &&
       ((value !== undefined && ignoreUndefined === true) ||
-      (value === undefined && ignoreUndefined === false))) {
+        (value === undefined && ignoreUndefined === false))) {
       error = this.getFieldError({ name, value, from });
     }
 
@@ -409,26 +429,24 @@ export class Employers extends Component {
 
   onSave = () => this.props.postEmployers({
     employers: getEmployersMapFromFormData(this.state.employers),
+    enterprises: getEmployersMapFromFormData(this.state.enterprises),
   })
 
   saveAndRedirect = () => this.onSave().then(() => this.props.history.push('/thanks?later'))
 
   onSubmit = ({ ignoreErrors = false } = {}) => {
-    this.setState({ isValidating: true, isActuRequesting: true });
+    this.setState({ isValidating: true });
 
     return this.props
       .postEmployers({
         employers: getEmployersMapFromFormData(this.state.employers),
+        enterprises: getEmployersMapFromFormData(this.state.enterprises),
         isFinished: true,
         ignoreErrors,
       })
       .then(() => {
         this.hasSubmittedAndFinished = true; // used to cancel cWU actions
-        this.setState({ isLoading: false, isActuRequesting: false });
-
-        setTimeout(() => {
-          this.props.history.push('/files');
-        }, DELAYBEFOREQUITACTUALISATION);
+        this.props.history.push('/files');
       })
       .catch((err) => {
         if (
@@ -441,7 +459,6 @@ export class Employers extends Component {
             consistencyErrors: err.response.body.consistencyErrors,
             validationErrors: err.response.body.validationErrors,
             isValidating: false,
-            isActuRequesting: false,
           });
         }
 
@@ -465,13 +482,6 @@ export class Employers extends Component {
   }
 
   checkFormValidity = ({ getErrorText = true }) => {
-    if (this.state.employers.length === 0) {
-      this.setState({
-        error: 'Merci d\'entrer les informations sur vos employeurs',
-      });
-      return false;
-    }
-
     let isFormValid = true;
     const datas = {
       employers: cloneDeep(this.state.employers),
@@ -553,7 +563,6 @@ export class Employers extends Component {
       validationErrors: [],
       isDialogOpened: false,
       isValidating: false,
-      isActuRequesting: false,
     });
   }
 
@@ -594,43 +603,43 @@ export class Employers extends Component {
     return (
       <>
         {this.props.declarations[0].hasEmployers && (
-        <Box flex={1}>
-          <BoxPanel style={{ marginTop: '70px' }}>
-            <Title variant="h6" component="h1" style={{ marginLeft: '40px' }}>
-              <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b>
-              {' '}
+          <Box flex={1}>
+            <BoxPanel style={{ marginTop: '70px' }}>
+              <Title variant="h6" component="h1" style={{ marginLeft: '40px' }}>
+                <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b>
+                {' '}
               -
               {' '}
-              {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}
-            </Title>
-            <Block style={{ backgroundColor: 'transparent' }}>
-              {employers.length <= 1 && (
-              <Typography>
-                Pour quel employeur avez-vous travaillé
-                <br />
+                {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}
+              </Title>
+              <Block style={{ backgroundColor: 'transparent' }}>
+                {employers.length <= 1 && (
+                  <Typography>
+                    Pour quel employeur avez-vous travaillé
+                    <br />
                 en
-                {' '}
-                {moment(this.props.activeMonth).format('MMMM YYYY')}
-                {' '}
+                    {' '}
+                    {moment(this.props.activeMonth).format('MMMM YYYY')}
+                    {' '}
                 ?
-              </Typography>
-              )}
-              {employers.map(this.renderEmployerQuestion)}
-            </Block>
-            <AddEmployersButtonContainer>
-              <LineDiv />
-              <AddEmployersButton
-                variant="outlined"
-                color="primary"
-                onClick={this.addEmployer}
-              >
-                <Add style={{ marginRight: '1rem', color: primaryBlue }} />
+                  </Typography>
+                )}
+                {employers.map(this.renderEmployerQuestion)}
+              </Block>
+              <AddEmployersButtonContainer>
+                <LineDiv />
+                <AddEmployersButton
+                  variant="outlined"
+                  color="primary"
+                  onClick={this.addEmployer}
+                >
+                  <Add style={{ marginRight: '1rem', color: primaryBlue }} />
                 Ajouter un employeur
               </AddEmployersButton>
-              <LineDiv />
-            </AddEmployersButtonContainer>
-          </BoxPanel>
-        </Box>
+                <LineDiv />
+              </AddEmployersButtonContainer>
+            </BoxPanel>
+          </Box>
         )}
       </>
     );
@@ -662,20 +671,20 @@ export class Employers extends Component {
     return (
       <>
         {this.props.declarations[0].taxeDue && (
-        <Box flex={1}>
-          <BoxPanel>
-            <Block style={{ paddingTop: '50px' }}>
-              <Title variant="h6" component="h1">
-                <b>{enterprises.length > 1 ? 'MES ENTREPRISES' : 'MON ENTREPRISE'}</b>
-                {' '}
+          <Box flex={1}>
+            <BoxPanel>
+              <Block style={{ paddingTop: '50px' }}>
+                <Title variant="h6" component="h1">
+                  <b>{enterprises.length > 1 ? 'MES ENTREPRISES' : 'MON ENTREPRISE'}</b>
+                  {' '}
                 -
                 {' '}
-                {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}
-              </Title>
-              {enterprises.map(this.renderCreatorQuestion)}
-            </Block>
-          </BoxPanel>
-        </Box>
+                  {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}
+                </Title>
+                {enterprises.map(this.renderCreatorQuestion)}
+              </Block>
+            </BoxPanel>
+          </Box>
         )}
       </>
     );
@@ -696,12 +705,12 @@ export class Employers extends Component {
 
         <StyleContainerBlock>
           {this.props.declarations && this.props.declarations.length && (
-          <>
-            <Box display="inline-flex">
-              {this.renderEmployerPanel()}
-              {this.renderCreatorPanel()}
-            </Box>
-          </>
+            <>
+              <Box display="inline-flex">
+                {this.renderEmployerPanel()}
+                {this.renderCreatorPanel()}
+              </Box>
+            </>
           )}
 
           <StyledAlwaysVisibleContainer
@@ -731,7 +740,6 @@ export class Employers extends Component {
 
         <DeclarationDialogsHandler
           isLoading={this.state.isValidating}
-          isFormLoading={this.state.isActuRequesting}
           isOpened={this.state.isDialogOpened}
           onCancel={this.closeDialog}
           onConfirm={this.onSubmit}

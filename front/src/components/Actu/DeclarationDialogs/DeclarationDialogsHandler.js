@@ -10,7 +10,6 @@ class DeclarationDialogsHandler extends Component {
   static propTypes = {
     isLoading: PropTypes.bool.isRequired,
     isOpened: PropTypes.bool.isRequired,
-    isFormLoading: PropTypes.bool.isRequired,
     onCancel: PropTypes.func.isRequired,
     onConfirm: PropTypes.func.isRequired,
     consistencyErrors: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -26,7 +25,6 @@ class DeclarationDialogsHandler extends Component {
     const {
       isLoading,
       isOpened,
-      isFormLoading,
       consistencyErrors,
       validationErrors,
       onCancel,
@@ -42,14 +40,12 @@ class DeclarationDialogsHandler extends Component {
       onCancel,
     };
 
-    const isSent = isLoading && !isFormLoading && consistencyErrors.length === 0 && validationErrors.length === 0;
     const defaultLoadingProps = {
       ...defaultProps,
-      title: isSent ? 'Acutalisation envoyées' : 'Traitement en cours',
-      isSent,
+      title: 'Traitement en cours',
     };
 
-    if (isLoading || isSent) {
+    if (isLoading) {
       return <LoadingDialog {...defaultLoadingProps} />;
     }
 

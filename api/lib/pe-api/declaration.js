@@ -30,20 +30,34 @@ const getDeclarationWorkHours = (declaration) => {
   const actualWorkHours = declaration.employers.reduce(
     (prev, { workHours }) => prev + workHours,
     0,
+  ) + declaration.revenues.reduce(
+    (prev, { workHours }) => prev + workHours,
+    0,
   );
+
   return actualWorkHours > MAX_DECLARABLE_HOURS
     ? MAX_DECLARABLE_HOURS
     : actualWorkHours;
 };
+
+const getDeclarationRevenue = (declaration) => {
+  const actualRevenues =
+    declaration.employers.reduce((prev, { salary }) => prev + salary, 0) +
+    declaration.revenues.reduce((prev, { turnover }) => prev + turnover, 0);
+
+  if (declaration.employers.length === 0 && declaration.taxeDue === 'quaterly') {
+    return '';
+  }
+
+  return Math.round(actualRevenues);
+}
 
 const convertDeclarationToAPIFormat = (declaration) => {
   const apiDeclaration = {};
 
   if (declaration.hasWorked) {
     apiDeclaration.nbHeuresTrav = getDeclarationWorkHours(declaration);
-    apiDeclaration.montSalaire = Math.round(
-      declaration.employers.reduce((prev, { salary }) => prev + salary, 0),
-    );
+    apiDeclaration.montSalaire = getDeclarationRevenue(declaration);
   }
 
   /*
@@ -136,16 +150,16 @@ const sendDeclaration = ({
   userId,
   previousTries = 0,
 }) => {
+  const dataToSend = {
+    ...convertDeclarationToAPIFormat(declaration),
+    forceIncoherence: ignoreErrors ? 1 : 0,
+  };
+
   // NEVER ACTIVATE IN PRODUCTION
   if (config.get('bypassDeclarationDispatch')) {
     winston.info(`Simulating sending ${declaration.id} to PE`);
     return Promise.resolve({ body: { statut: 0 } });
   }
-
-  const dataToSend = {
-    ...convertDeclarationToAPIFormat(declaration),
-    forceIncoherence: ignoreErrors ? 1 : 0,
-  };
 
   return request({
     method: 'post',

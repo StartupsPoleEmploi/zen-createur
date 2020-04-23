@@ -16,9 +16,8 @@ class DeclarationRevenue extends BaseModel {
         userId: { type: 'integer' },
         declarationId: { type: 'integer' },
         workHours: { type: ['integer', 'null'] },
-        revenue: { type: ['number'] },
+        turnover: { type: ['number', 'null'] },
         hasEndedThisMonth: { type: ['boolean', 'null'] },
-        documentId: { type: ['integer'] },
       },
     };
   }
