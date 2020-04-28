@@ -250,10 +250,6 @@ export class Employers extends Component {
 
         console.log(currentDeclaration, currentDeclaration.entreprises, ((!currentDeclaration.entreprises || currentDeclaration.entreprises.length === 0) && currentDeclaration.taxeDue !== null));
 
-        this.setState({ currentDeclaration });
-
-
-
         if ((!currentDeclaration.entreprises || currentDeclaration.entreprises.length === 0) && currentDeclaration.taxeDue !== null) {
           enterprises.push({ ...enterpriseTemplate });
         }
@@ -304,9 +300,12 @@ export class Employers extends Component {
         }
 
         this.setState({
+          currentDeclaration,
           employers,
           enterprises,
           ...optionToState
+        }, () => {
+          this.checkFormValidity({ getErrorText: false });
         });
       })
       .then(() => this.setState({ isLoading: false }));
