@@ -30,6 +30,21 @@ export const getMissingEnterprisesFiles = (declaration) => {
   if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 && hasNotSentDocument) {
     return [{ name: 'Déclaration trimestielle URSSAF', type: enterpriseQuaterlyTurnoverType }]
   }
+
+  return [];
+}
+
+export const getEnterprisesFiles = (declaration) => {
+  if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
+    return [{ name: 'Déclaration mensuelle URSSAF', type: enterpriseMontlyTurnoverType }]
+  }
+
+  const dateMonth = moment(declaration.declarationMonth.month).format("M");
+  if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3) {
+    return [{ name: 'Déclaration trimestielle URSSAF', type: enterpriseQuaterlyTurnoverType }]
+  }
+
+  return [];
 }
 
 export const getMissingEmployerFiles = (declaration) =>

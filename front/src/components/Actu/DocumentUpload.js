@@ -173,13 +173,9 @@ export class DocumentUpload extends Component {
     file
   })
 
-  showPreview = () => this.props.showPreview(this.props.id)
+  showPreview = () => this.props.showPreview()
 
-  skipFile = () => this.props.skipFile({
-    type: this.props.type,
-    documentId: this.props.id,
-    employerDocType: this.props.employerDocType,
-  })
+  skipFile = () => this.props.skipFile()
 
   renderFileField(fileInput, showTooltip) {
     if (!showTooltip) return fileInput;
@@ -195,7 +191,6 @@ export class DocumentUpload extends Component {
 
   render() {
     const {
-      id,
       caption,
       error,
       fileExistsOnServer,
@@ -233,7 +228,6 @@ export class DocumentUpload extends Component {
 
     const uploadInput = (
       <ActionButton
-        aria-describedby={`file[${id}]`}
         color="primary"
         component="span"
       >
@@ -315,7 +309,6 @@ export class DocumentUpload extends Component {
                   <Or>OU</Or>
                   <SkipFileSection>
                     <Button
-                      aria-describedby={`file[${id}]`}
                       onClick={this.skipFile}
                       className="already-transmitted-button"
                       style={{
@@ -356,7 +349,6 @@ export class DocumentUpload extends Component {
 }
 
 DocumentUpload.propTypes = {
-  id: PropTypes.number,
   error: PropTypes.string,
   fileExistsOnServer: PropTypes.bool,
   label: PropTypes.string.isRequired,
@@ -366,7 +358,6 @@ DocumentUpload.propTypes = {
   submitFile: PropTypes.func.isRequired,
   skipFile: PropTypes.func.isRequired,
   type: PropTypes.oneOf([employerType, infosType]),
-  employerDocType: PropTypes.string,
   showPreview: PropTypes.func.isRequired,
   showTooltip: PropTypes.bool,
   useLightVersion: PropTypes.bool.isRequired,

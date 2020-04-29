@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 import Check from '@material-ui/icons/Check';
 import { withStyles } from '@material-ui/core/styles';
+import superagent from 'superagent';
 
 import StatusFilesError from '../../components/Actu/StatusFilesError';
 import ActuStatus from '../../components/Generic/actu/ActuStatus';
@@ -27,7 +28,6 @@ import {
   showInfoFilePreview as showInfoFilePreviewAction,
   uploadDeclarationInfoFile as uploadDeclarationInfoFileAction,
   uploadEmployerFile as uploadEmployerFileAction,
-  uploadFile as uploadFileAction,
   validateDeclarationInfoDoc as validateDeclarationInfoDocAction,
   validateEmployerDoc as validateEmployerDocAction,
 } from '../../redux/actions/declarations';
@@ -37,7 +37,7 @@ import LoginAgainDialog from '../../components/Actu/LoginAgainDialog';
 import DocumentDialog from '../../components/Generic/documents/DocumentDialog';
 import { muiBreakpoints, primaryBlue, secondaryBlue } from '../../constants';
 import { formattedDeclarationMonth } from '../../lib/date';
-import { getDeclarationMissingFilesNb, getMissingEnterprisesFiles } from '../../lib/file';
+import { getDeclarationMissingFilesNb, getEnterprisesFiles, isImage, optimizeImage, getMissingEnterprisesFiles } from '../../lib/file';
 import {
   selectPreviewedEmployerDoc,
   selectPreviewedInfoDoc,
@@ -232,15 +232,27 @@ const formatInfoDates = ({ startDate, endDate }) => (!endDate ?
 // FIXME is this a duplicate with DocumentUpload.types ?
 const employerType = 'employer';
 const infosType = 'info';
+const enterpriseType = 'enterprise';
 const computeDocUrl = ({ id, type, file }) => {
   // Note: if employer file is missing, there is no data, so we have to check that the id exists
   // But for infosType, the id exists
   if (type === employerType && !id) return null;
   if (type === infosType && !!file) return null;
+  let path = null;
 
-  return type === employerType ?
-    `/api/employers/files?documentId=${id}` :
-    `/api/declarations/files?declarationInfoId=${id}`;
+  switch (type) {
+    case enterpriseType:
+      path = `/api/revenues/files?documentId=${id}`;
+      break;
+    case employerType:
+      path = `/api/employers/files?documentId=${id}`;
+      break;
+    default:
+      path = `/api/declarations/files?declarationInfoId=${id}`;
+      break;
+  }
+
+  return path;
 };
 
 export class Files extends Component {
@@ -253,6 +265,8 @@ export class Files extends Component {
       showSkipConfirmation: false,
       skipFileCallback: noop,
       selectedTab: tab && tab === 'old' ? OLD_MONTHS_TAB : CURRENT_MONTH_TAB,
+      docsLoading: [],
+      showEnterpriseFilePreview: null
     };
   }
 
@@ -315,7 +329,7 @@ export class Files extends Component {
     });
 
     const isOldTab = this.state.selectedTab === OLD_MONTHS_TAB;
-    const missingEnterprisesFiles = getMissingEnterprisesFiles(declaration);
+    const missingEnterprisesFiles = getEnterprisesFiles(declaration);
 
     const infoDocumentsNodes = neededAdditionalDocumentsSpecs.map(
       (neededDocumentSpecs) => (
@@ -376,7 +390,7 @@ export class Files extends Component {
           </DocumentsGroup>
         ))}
 
-        {missingEnterprisesFiles.length && (
+        {missingEnterprisesFiles.length !== 0 && (
           <DocumentsGroup
             key={document.type}
             width={this.props.width}
@@ -527,40 +541,95 @@ export class Files extends Component {
 
   renderEnterpriseRow = ({ documents, declaration, allowSkipFile }) => {
     const commonProps = {
-      //type: DocumentUpload.types.employer,
       showTooltip: true,
       /*skipFile: (params) => this.askToSkipFile(() => {
         this.props.uploadEmployerFile({ ...params, skip: true });
         this.closeSkipModal();
       }),*/
       //allowSkipFile,
-      //showPreview: this.props.showEmployerFilePreview,
       /*useLightVersion:
         muiBreakpoints.xs === this.props.width ||
         muiBreakpoints.sm === this.props.width,*/
     };
 
+
+
+    const declarationRevenueId = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].id : null;
+    const filesSents = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].documents : null;
+
+    console.log('documents', documents, filesSents)
+
+    const documentByTypes = (type) => filesSents.find(d => d.type === type) || null;
+
     return (
       <>
-        {documents.map(doc => (<DocumentUpload
-          {...commonProps}
-          key={`${doc.name}-${doc.type}`}
-          submitFile={(params) => this.props.uploadFile({ ...params, docType: doc.type })}
-          //id={get(certificateDoc, 'id')}
-          label={doc.name}
-          caption={ucfirst(moment(declaration.declarationMonth.month).format('MMMM YYYY'))}
-        /*fileExistsOnServer={
-          !!get(certificateDoc, 'file') && !get(certificateDoc, 'isCleanedUp')
-        }*/
-        //removePage={this.removePage}
-        //isTransmitted={get(certificateDoc, 'isTransmitted')}
-        //employerDocType={employerCertificateType}
-        //isLoading={employer[getEmployerLoadingKey(employerCertificateType)]}
-        //error={employer[getEmployerErrorKey(employerCertificateType)]}
-        />))}
+        {documents.map(doc => {
+          const key = `${doc.name}-${doc.type}`;
+          const docType = documentByTypes(doc.type);
+          console.log('docType', docType)
+
+          return (<DocumentUpload
+            {...commonProps}
+            key={key}
+            submitFile={(params) => this.sentRevenuesDocumentation({ ...params, type: doc.type, declarationRevenueId, key })}
+            label={doc.name}
+            caption={ucfirst(moment(declaration.declarationMonth.month).format('MMMM YYYY'))}
+            fileExistsOnServer={
+              !!get(documentByTypes(doc.type), 'file') && !get(documentByTypes(doc.type), 'isCleanedUp')
+            }
+            showPreview={() => this.setState({ showEnterpriseFilePreview: docType })}
+            //removePage={this.removePage}
+            isTransmitted={get(documentByTypes(doc.type), 'isTransmitted')}
+            isLoading={this.state.docsLoading.indexOf(key) !== -1}
+          //error={employer[getEmployerErrorKey(employerCertificateType)]}
+          />)
+        })}
       </>
     );
   }
+
+  sentRevenuesDocumentation = async ({ key, file, type, declarationRevenueId }) => {
+    const fileSent = await this.uploadFile({ file });
+    this.loadingDocument(key, true);
+
+    let url = '/api/revenues/files';
+
+    superagent
+      .post(url, { file: fileSent.body.file, type, declarationRevenueId, originalFileName: file.name })
+      .set('CSRF-Token', this.props.csrfToken)
+      .then(this.props.fetchDeclarations) // TODO update only delta
+      .then(() =>
+        this.loadingDocument(key, false))
+  }
+
+  uploadFile = async ({ file }) => {
+    let url = '/api/files';
+
+    let request = superagent
+      .post(url)
+      .set('CSRF-Token', this.props.csrfToken)
+
+    const fileToSubmit = isImage(file) ? await optimizeImage(file) : file;
+    request = request.attach('document', fileToSubmit);
+
+    return request;
+  };
+
+  loadingDocument(key, load) {
+    const docsLoading = this.state.docsLoading;
+    const docsLoadingIndex = docsLoading.indexOf(key);
+
+    if (load && docsLoadingIndex === -1) {
+      docsLoading.push(key);
+    }
+
+    if (!load && docsLoadingIndex !== -1) {
+      docsLoading.splice(docsLoadingIndex, 1);
+    }
+
+    this.setState({ docsLoading })
+  }
+
 
   renderCurrentMonthTab = (lastDeclaration) => {
     const { activeMonth, user, declarations } = this.props;
@@ -667,6 +736,9 @@ export class Files extends Component {
       classes,
       width,
     } = this.props;
+    const {
+      showEnterpriseFilePreview
+    } = this.state;
 
     if (isLoading) {
       return (
@@ -768,7 +840,7 @@ export class Files extends Component {
     const showEmployerPreview = !!get(previewedEmployerDoc, 'file');
     const showInfoDocPreview = !!get(previewedInfoDoc, 'file');
 
-    let previewProps = {};
+    let previewProps = null;
 
     if (showEmployerPreview) {
       previewProps = {
@@ -789,7 +861,18 @@ export class Files extends Component {
         url: computeDocUrl({ id: previewedInfoDoc.id, type: infoType }),
         ...previewedInfoDoc,
       };
+    } else if (showEnterpriseFilePreview) {
+      previewProps = {
+        onCancel: () => this.setState({ showEnterpriseFilePreview: null }),
+        submitFile: uploadDeclarationInfoFile,
+        removePage: removeDeclarationInfoFilePage,
+        validateDoc: validateDeclarationInfoDoc,
+        url: computeDocUrl({ id: showEnterpriseFilePreview.id, type: enterpriseType }),
+        ...showEnterpriseFilePreview,
+      };
     }
+
+    console.log('previewProps', previewProps)
 
     return (
       <>
@@ -887,7 +970,7 @@ export class Files extends Component {
             onCancel={this.closeSkipModal}
             onConfirm={this.state.skipFileCallback}
           />
-          {(showEmployerPreview || showInfoDocPreview) && (
+          {(previewProps) && (
             <DocumentDialog isOpened {...previewProps} />
           )}
         </StyledFiles>
@@ -910,14 +993,15 @@ Files.propTypes = {
   removeDeclarationInfoFilePage: PropTypes.func.isRequired,
   removeEmployerFilePage: PropTypes.func.isRequired,
   uploadEmployerFile: PropTypes.func.isRequired,
-  uploadFile: PropTypes.func.isRequired,
   uploadDeclarationInfoFile: PropTypes.func.isRequired,
   hideEmployerFilePreview: PropTypes.func.isRequired,
   hideInfoFilePreview: PropTypes.func.isRequired,
   previewedEmployerDoc: PropTypes.object,
+  previewedEnterpriseDoc: PropTypes.object,
   previewedInfoDoc: PropTypes.object,
   showInfoFilePreview: PropTypes.func.isRequired,
   showEmployerFilePreview: PropTypes.func.isRequired,
+  showEnterpriseFilePreview: PropTypes.func.isRequired,
   validateEmployerDoc: PropTypes.func.isRequired,
   validateDeclarationInfoDoc: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
@@ -937,6 +1021,7 @@ export default connect(
     isFilesServiceUp: state.statusReducer.isFilesServiceUp,
     activeMonth: state.activeMonthReducer.activeMonth,
     user: state.userReducer.user,
+    csrfToken: state.userReducer.user.csrfToken,
     isUserLoggedOut: !!(
       state.userReducer.user && state.userReducer.user.isLoggedOut
     ),
@@ -944,7 +1029,6 @@ export default connect(
   {
     fetchDeclarations: fetchDeclarationAction,
     uploadEmployerFile: uploadEmployerFileAction,
-    uploadFile: uploadFileAction,
     uploadDeclarationInfoFile: uploadDeclarationInfoFileAction,
     removeEmployerFilePage: removeEmployerFilePageAction,
     removeDeclarationInfoFilePage: removeDeclarationInfoFilePageAction,
