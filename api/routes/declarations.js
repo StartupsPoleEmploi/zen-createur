@@ -43,7 +43,7 @@ const docTypes = DeclarationInfo.types;
 
 const MAX_MONTHS_TO_FETCH = 24; // 2 years
 
-const eagerDeclarationString = '[declarationMonth, infos, employers.documents]';
+const eagerDeclarationString = '[declarationMonth, infos, employers.documents, revenues.documents]';
 
 router.post('/remove-file-page', (req, res, next) => {
   if (!req.body.declarationInfoId) {

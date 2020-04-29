@@ -161,6 +161,20 @@ export const uploadEmployerFile = ({
     });
 };
 
+export const uploadFile = ({ file, docType }) => async (dispatch, getState) => {
+  let url = '/api/files';
+  console.log(file)
+
+  let request = superagent
+    .post(url)
+    .set('CSRF-Token', getState().userReducer.user.csrfToken)
+
+  const fileToSubmit = isImage(file) ? await optimizeImage(file) : file;
+  request = request.attach('document', fileToSubmit);
+
+  return request;
+};
+
 export const uploadDeclarationInfoFile = ({
   documentId,
   file,

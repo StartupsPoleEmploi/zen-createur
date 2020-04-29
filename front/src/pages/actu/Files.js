@@ -27,6 +27,7 @@ import {
   showInfoFilePreview as showInfoFilePreviewAction,
   uploadDeclarationInfoFile as uploadDeclarationInfoFileAction,
   uploadEmployerFile as uploadEmployerFileAction,
+  uploadFile as uploadFileAction,
   validateDeclarationInfoDoc as validateDeclarationInfoDocAction,
   validateEmployerDoc as validateEmployerDocAction,
 } from '../../redux/actions/declarations';
@@ -36,13 +37,15 @@ import LoginAgainDialog from '../../components/Actu/LoginAgainDialog';
 import DocumentDialog from '../../components/Generic/documents/DocumentDialog';
 import { muiBreakpoints, primaryBlue, secondaryBlue } from '../../constants';
 import { formattedDeclarationMonth } from '../../lib/date';
-import { getDeclarationMissingFilesNb } from '../../lib/file';
+import { getDeclarationMissingFilesNb, getMissingEnterprisesFiles } from '../../lib/file';
 import {
   selectPreviewedEmployerDoc,
   selectPreviewedInfoDoc,
   utils,
 } from '../../selectors/declarations';
 import NotAutorized from '../other/NotAutorized';
+import { ucfirst } from '../../utils/utils.tool';
+import { DocumentUploadEmployer } from '../../components/Actu/DocumentUploadEmployer';
 
 const { getEmployerLoadingKey, getEmployerErrorKey } = utils;
 
@@ -160,7 +163,6 @@ const BlueSpan = styled.span`
 const LabelTypography = styled(Typography).attrs({ variant: 'subtitle1' })`
   && {
     font-size: 1.8rem;
-    text-transform: uppercase;
     font-weight: bold;
   }
 `;
@@ -302,6 +304,7 @@ export class Files extends Component {
       (spec) => !!declaration[spec.fieldToCheck],
     );
 
+    console.log('declaration', declaration)
     const sortedEmployers = declaration.employers.slice();
     sortedEmployers.sort((emp1, emp2) => {
       const emp1MissingFile = emp1.documents.filter((d) => d.isTransmitted)
@@ -312,6 +315,7 @@ export class Files extends Component {
     });
 
     const isOldTab = this.state.selectedTab === OLD_MONTHS_TAB;
+    const missingEnterprisesFiles = getMissingEnterprisesFiles(declaration);
 
     const infoDocumentsNodes = neededAdditionalDocumentsSpecs.map(
       (neededDocumentSpecs) => (
@@ -341,7 +345,9 @@ export class Files extends Component {
     );
 
     // do not display a section if there are no documents to display.
-    if (sortedEmployers.length + infoDocumentsNodes.length === 0) return null;
+    if (sortedEmployers.length + infoDocumentsNodes.length + missingEnterprisesFiles.length === 0) return null;
+
+    console.log('missingEnterprisesFiles', missingEnterprisesFiles)
 
     return (
       <div>
@@ -370,6 +376,30 @@ export class Files extends Component {
           </DocumentsGroup>
         ))}
 
+        {missingEnterprisesFiles.length && (
+          <DocumentsGroup
+            key={document.type}
+            width={this.props.width}
+            isOldTab={isOldTab}
+            className="employer-row"
+          >
+            {!isOldTab && (
+              <LabelTypography component="h2">
+                Votre entreprise
+              </LabelTypography>
+            )}
+            <StyledUl>
+              {this.renderEnterpriseRow({
+                documents: missingEnterprisesFiles,
+                declaration,
+                allowSkipFile: true
+              })}
+            </StyledUl>
+          </DocumentsGroup>
+        )}
+
+
+
         <div>{infoDocumentsNodes}</div>
       </div>
     );
@@ -380,7 +410,7 @@ export class Files extends Component {
   }) => declaration.infos
     .filter(({ type }) => type === name)
     .map((info) => (
-      <DocumentUpload
+      <DocumentUploadEmployer
         key={`${name}-${info.id}`}
         id={info.id}
         type={DocumentUpload.types.info}
@@ -401,9 +431,9 @@ export class Files extends Component {
         isLoading={info.isLoading}
         error={info.error}
         useLightVersion={
-            muiBreakpoints.xs === this.props.width ||
-            muiBreakpoints.sm === this.props.width
-          }
+          muiBreakpoints.xs === this.props.width ||
+          muiBreakpoints.sm === this.props.width
+        }
       />
     ))
 
@@ -423,8 +453,8 @@ export class Files extends Component {
         this.props.uploadEmployerFile({ ...params, skip: true });
         this.closeSkipModal();
       }),
-      allowSkipFile,
       employerId: employer.id,
+      allowSkipFile,
       showPreview: this.props.showEmployerFilePreview,
       useLightVersion:
         muiBreakpoints.xs === this.props.width ||
@@ -434,7 +464,7 @@ export class Files extends Component {
     const isOldTab = OLD_MONTHS_TAB === this.state.selectedTab;
 
     const salarySheetUpload = (
-      <DocumentUpload
+      <DocumentUploadEmployer
         {...commonProps}
         key={`${employer.id}-${salarySheetType}`}
         id={get(salaryDoc, 'id')}
@@ -454,7 +484,7 @@ export class Files extends Component {
     if (!employer.hasEndedThisMonth) return salarySheetUpload;
 
     const certificateUpload = (
-      <DocumentUpload
+      <DocumentUploadEmployer
         {...commonProps}
         key={`${employer.id}-${employerCertificateType}`}
         id={get(certificateDoc, 'id')}
@@ -489,8 +519,45 @@ export class Files extends Component {
             employeur, car vous nous avez déjà transmis votre attestation
           </Typography>
         ) : (
-          salarySheetUpload
-        )}
+            salarySheetUpload
+          )}
+      </>
+    );
+  }
+
+  renderEnterpriseRow = ({ documents, declaration, allowSkipFile }) => {
+    const commonProps = {
+      //type: DocumentUpload.types.employer,
+      showTooltip: true,
+      /*skipFile: (params) => this.askToSkipFile(() => {
+        this.props.uploadEmployerFile({ ...params, skip: true });
+        this.closeSkipModal();
+      }),*/
+      //allowSkipFile,
+      //showPreview: this.props.showEmployerFilePreview,
+      /*useLightVersion:
+        muiBreakpoints.xs === this.props.width ||
+        muiBreakpoints.sm === this.props.width,*/
+    };
+
+    return (
+      <>
+        {documents.map(doc => (<DocumentUpload
+          {...commonProps}
+          key={`${doc.name}-${doc.type}`}
+          submitFile={(params) => this.props.uploadFile({ ...params, docType: doc.type })}
+          //id={get(certificateDoc, 'id')}
+          label={doc.name}
+          caption={ucfirst(moment(declaration.declarationMonth.month).format('MMMM YYYY'))}
+        /*fileExistsOnServer={
+          !!get(certificateDoc, 'file') && !get(certificateDoc, 'isCleanedUp')
+        }*/
+        //removePage={this.removePage}
+        //isTransmitted={get(certificateDoc, 'isTransmitted')}
+        //employerDocType={employerCertificateType}
+        //isLoading={employer[getEmployerLoadingKey(employerCertificateType)]}
+        //error={employer[getEmployerErrorKey(employerCertificateType)]}
+        />))}
       </>
     );
   }
@@ -546,8 +613,8 @@ export class Files extends Component {
         </Typography>
       </ActuStatusContainer>
     ) : (
-      this.renderSection(lastDeclaration)
-    );
+        this.renderSection(lastDeclaration)
+      );
   }
 
   renderSection = (declaration) => {
@@ -663,6 +730,7 @@ export class Files extends Component {
       );
     }
 
+    console.log('lastDeclaration', lastDeclaration)
     // Users have come to this page without any old documents to validate
     if (
       !activeMonth &&
@@ -679,7 +747,7 @@ export class Files extends Component {
     }
 
     const lastDeclarationMissingFiles = lastDeclaration &&
-    lastDeclaration.hasFinishedDeclaringEmployers ?
+      lastDeclaration.hasFinishedDeclaringEmployers ?
       getDeclarationMissingFilesNb(lastDeclaration) :
       0;
 
@@ -773,16 +841,16 @@ export class Files extends Component {
                       <StyledSup>{oldDeclarationsMissingFiles}</StyledSup>
                     </Pre>
                   ) : (
-                    <>
-                      Mois
-                      {' '}
-                      <Pre>
-                        précédents
+                      <>
+                        Mois
                         {' '}
-                        <StyledSup>{oldDeclarationsMissingFiles}</StyledSup>
-                      </Pre>
-                    </>
-                  )}
+                        <Pre>
+                          précédents
+                        {' '}
+                          <StyledSup>{oldDeclarationsMissingFiles}</StyledSup>
+                        </Pre>
+                      </>
+                    )}
                 </div>
               )}
             />
@@ -795,23 +863,23 @@ export class Files extends Component {
             (oldDeclarationsMissingFiles > 0 ? (
               oldDeclarations.map(this.renderSection)
             ) : (
-              <FilesSection>
-                <StyledTitle
-                  variant="h6"
-                  component="h1"
-                  style={
-                    this.props.width !== 'xs' ?
-                      {
-                        textAlign: 'right',
-                        paddingRight: '2rem',
-                      } :
-                      null
-                  }
-                >
-                  Pas de justificatifs à envoyer
+                <FilesSection>
+                  <StyledTitle
+                    variant="h6"
+                    component="h1"
+                    style={
+                      this.props.width !== 'xs' ?
+                        {
+                          textAlign: 'right',
+                          paddingRight: '2rem',
+                        } :
+                        null
+                    }
+                  >
+                    Pas de justificatifs à envoyer
                 </StyledTitle>
-              </FilesSection>
-            ))}
+                </FilesSection>
+              ))}
 
           <LoginAgainDialog isOpened={this.props.isUserLoggedOut} />
           <FileTransmittedToPE
@@ -842,6 +910,7 @@ Files.propTypes = {
   removeDeclarationInfoFilePage: PropTypes.func.isRequired,
   removeEmployerFilePage: PropTypes.func.isRequired,
   uploadEmployerFile: PropTypes.func.isRequired,
+  uploadFile: PropTypes.func.isRequired,
   uploadDeclarationInfoFile: PropTypes.func.isRequired,
   hideEmployerFilePreview: PropTypes.func.isRequired,
   hideInfoFilePreview: PropTypes.func.isRequired,
@@ -875,6 +944,7 @@ export default connect(
   {
     fetchDeclarations: fetchDeclarationAction,
     uploadEmployerFile: uploadEmployerFileAction,
+    uploadFile: uploadFileAction,
     uploadDeclarationInfoFile: uploadDeclarationInfoFileAction,
     removeEmployerFilePage: removeEmployerFilePageAction,
     removeDeclarationInfoFilePage: removeDeclarationInfoFilePageAction,

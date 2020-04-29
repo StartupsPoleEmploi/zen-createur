@@ -146,7 +146,7 @@ const mergePDF = (file1, file2, output) =>
 const handleNewFileUpload = async ({
   newFilename,
   existingDocumentFile,
-  documentFileObj,
+  documentFileObj = {},
   isAddingFile,
 }) => {
   if (IMG_EXTENSIONS.includes(path.extname(newFilename))) {
