@@ -26,7 +26,7 @@ class DeclarationRevenueDocument extends BaseModel {
   // This object defines the relations to other models.
   static get relationMappings() {
     return {
-      employer: {
+      declarationRevenue: {
         relation: BelongsToOneRelation,
         modelClass: `${__dirname}/DeclarationRevenue`,
         join: {
