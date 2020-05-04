@@ -108,8 +108,16 @@ export const getDeclarationMissingFilesNb = (declaration) => {
 
       if (hasEmployerCertificate) return prev + 0;
       return prev + (hasSalarySheet ? 1 : 2);
-    }, 0) + infoDocumentsRequiredNb
-  );
+    }, 0) + infoDocumentsRequiredNb + declaration.revenues.reduce((all, current) => {
+      console.log(current.documents.length, current.documents.every(d => d.isTransmitted))
+      if (current.documents.length === 0) {
+        all++;
+      } else if (current.documents.every(d => d.isTransmitted) === false) {
+        all++;
+      }
+
+      return all;
+    }, 0));
 };
 
 export function isImage(file) {

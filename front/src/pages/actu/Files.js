@@ -611,7 +611,9 @@ export class Files extends Component {
 
     const fileToSubmit = isImage(file) ? await optimizeImage(file) : file;
     request = request.attach('document', fileToSubmit);
-    request = request.field('fileName', fileName);
+    if (fileName) {
+      request = request.field('fileName', fileName);
+    }
 
     return request;
   };
