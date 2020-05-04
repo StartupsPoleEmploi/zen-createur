@@ -166,22 +166,32 @@ const Dot = styled.span`
 const employerType = 'employer';
 const infosType = 'info';
 
-export class DocumentUpload extends Component {
+export class DocumentUploadEmployer extends Component {
   static types = { employer: employerType, info: infosType }
 
   submitFile = (file) => this.props.submitFile({
-    file
+    file,
+    documentId: this.props.id,
+    type: this.props.type,
+    employerId: this.props.employerId,
+    employerDocType: this.props.employerDocType,
   })
 
-  showPreview = () => this.props.showPreview()
+  showPreview = () => this.props.showPreview(this.props.id)
 
-  skipFile = () => this.props.skipFile()
+  skipFile = () => this.props.skipFile({
+    type: this.props.type,
+    documentId: this.props.id,
+    employerId: this.props.employerId,
+    employerDocType: this.props.employerDocType,
+  })
 
-  renderFileField(fileInput, showTooltip) {
+  renderFileField(fileInput, showTooltip, id) {
     if (!showTooltip) return fileInput;
 
     return (
       <TooltipOnFocus
+        tooltipId={`file[${id}]`}
         content="Formats acceptés: .png, .jpg, .jpeg, .pdf"
       >
         {fileInput}
@@ -191,6 +201,7 @@ export class DocumentUpload extends Component {
 
   render() {
     const {
+      id,
       caption,
       error,
       fileExistsOnServer,
@@ -198,6 +209,7 @@ export class DocumentUpload extends Component {
       isTransmitted,
       label,
       showTooltip,
+      employerId,
       type,
       useLightVersion,
       width,
@@ -228,6 +240,7 @@ export class DocumentUpload extends Component {
 
     const uploadInput = (
       <ActionButton
+        aria-describedby={`file[${id}]`}
         color="primary"
         component="span"
       >
@@ -244,7 +257,7 @@ export class DocumentUpload extends Component {
         className={`${type}-row`}
       >
         <LabelsContainer>
-          <Typography>
+          <Typography style={{ marginBottom: '1.5rem' }}>
             {width === 'xs' && <Dot>.</Dot>}
             {' '}
             <b>{label}</b>
@@ -296,7 +309,7 @@ export class DocumentUpload extends Component {
                       textAlign: 'center',
                     }}
                   >
-                    {this.renderFileField(uploadInput, showTooltip)}
+                    {this.renderFileField(uploadInput, showTooltip, employerId)}
                     {hiddenInput}
                   </StyledFormLabel>
                 ) : (
@@ -309,6 +322,7 @@ export class DocumentUpload extends Component {
                   <Or>OU</Or>
                   <SkipFileSection>
                     <Button
+                      aria-describedby={`file[${id}]`}
                       onClick={this.skipFile}
                       className="already-transmitted-button"
                       style={{
@@ -346,7 +360,8 @@ export class DocumentUpload extends Component {
   }
 }
 
-DocumentUpload.propTypes = {
+DocumentUploadEmployer.propTypes = {
+  id: PropTypes.number,
   error: PropTypes.string,
   fileExistsOnServer: PropTypes.bool,
   label: PropTypes.string.isRequired,
@@ -356,14 +371,16 @@ DocumentUpload.propTypes = {
   submitFile: PropTypes.func.isRequired,
   skipFile: PropTypes.func.isRequired,
   type: PropTypes.oneOf([employerType, infosType]),
+  employerId: PropTypes.number,
+  employerDocType: PropTypes.string,
   showPreview: PropTypes.func.isRequired,
   showTooltip: PropTypes.bool,
   useLightVersion: PropTypes.bool.isRequired,
   width: PropTypes.string.isRequired,
 };
 
-DocumentUpload.defaultProps = {
+DocumentUploadEmployer.defaultProps = {
   showTooltip: false,
 };
 
-export default withWidth()(DocumentUpload);
+export default withWidth()(DocumentUploadEmployer);

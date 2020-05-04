@@ -248,8 +248,6 @@ export class Employers extends Component {
           return this.props.history.replace('/files');
         }
 
-        console.log(currentDeclaration, currentDeclaration.entreprises, ((!currentDeclaration.entreprises || currentDeclaration.entreprises.length === 0) && currentDeclaration.taxeDue !== null));
-
         if ((!currentDeclaration.entreprises || currentDeclaration.entreprises.length === 0) && currentDeclaration.taxeDue !== null) {
           enterprises.push({ ...enterpriseTemplate });
         }

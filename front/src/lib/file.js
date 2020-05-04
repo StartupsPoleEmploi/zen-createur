@@ -1,8 +1,12 @@
 import { get } from 'lodash';
 import { readAndCompressImage } from 'browser-image-resizer';
+import { CREATORTAXRATE } from '../constants';
+import moment from 'moment';
 
 const salarySheetType = 'salarySheet';
 const employerCertificateType = 'employerCertificate';
+const enterpriseMontlyTurnoverType = 'enterpriseMontlyTurnover';
+const enterpriseQuaterlyTurnoverType = 'enterpriseQuaterlyTurnover';
 
 const extractFileExtension = (file) => {
   const dotIndex = file.lastIndexOf('.');
@@ -15,6 +19,33 @@ export const canUsePDFViewer = (fileName) => {
   const extension = extractFileExtension(fileName);
   return ['.png', '.pdf', '.jpg', '.jpeg'].includes(extension);
 };
+
+export const getMissingEnterprisesFiles = (declaration) => {
+  const hasNotSentDocument = declaration.revenues && declaration.revenues.length && declaration.revenues.some(r => r.documents.length === 0);
+  if (declaration.taxeDue === CREATORTAXRATE.MONTHLY && hasNotSentDocument) {
+    return [{ name: 'Déclaration mensuelle URSSAF', type: enterpriseMontlyTurnoverType }]
+  }
+
+  const dateMonth = moment(declaration.declarationMonth.month).format("M");
+  if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 && hasNotSentDocument) {
+    return [{ name: 'Déclaration trimestielle URSSAF', type: enterpriseQuaterlyTurnoverType }]
+  }
+
+  return [];
+}
+
+export const getEnterprisesFiles = (declaration) => {
+  if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
+    return [{ name: 'Déclaration mensuelle URSSAF', type: enterpriseMontlyTurnoverType }]
+  }
+
+  const dateMonth = moment(declaration.declarationMonth.month).format("M");
+  if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3) {
+    return [{ name: 'Déclaration trimestielle URSSAF', type: enterpriseQuaterlyTurnoverType }]
+  }
+
+  return [];
+}
 
 export const getMissingEmployerFiles = (declaration) =>
   declaration.employers.reduce((prev, employer) => {
@@ -77,8 +108,16 @@ export const getDeclarationMissingFilesNb = (declaration) => {
 
       if (hasEmployerCertificate) return prev + 0;
       return prev + (hasSalarySheet ? 1 : 2);
-    }, 0) + infoDocumentsRequiredNb
-  );
+    }, 0) + infoDocumentsRequiredNb + declaration.revenues.reduce((all, current) => {
+      console.log(current.documents.length, current.documents.every(d => d.isTransmitted))
+      if (current.documents.length === 0) {
+        all++;
+      } else if (current.documents.every(d => d.isTransmitted) === false) {
+        all++;
+      }
+
+      return all;
+    }, 0));
 };
 
 export function isImage(file) {
