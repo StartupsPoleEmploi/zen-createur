@@ -327,11 +327,9 @@ export class DocumentUpload extends Component {
                           }}
                         >
                           <CheckBoxOutlineBlankIcon style={{ width: '3rem' }} />
-                          <div>
                             Pôle emploi
                           {' '}
-                            <Upper>a déjà ce justificatif</Upper>
-                          </div>
+                          <Upper>a déjà ce justificatif</Upper>
                         </Typography>
                       </>
                     </Button>

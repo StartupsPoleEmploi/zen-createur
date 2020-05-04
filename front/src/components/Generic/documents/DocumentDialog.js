@@ -123,6 +123,10 @@ class DocumentDialog extends PureComponent {
       employerId: this.props.employerId,
       employerDocType: this.props.employerDocType,
     });
+
+    if (this.state.totalPageNumber <= 1) {
+      this.props.onCancel();
+    }
   }
 
   confirmPageRemoval = () => this.setState({ showPageRemovalConfirmation: true })

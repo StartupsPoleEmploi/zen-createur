@@ -602,7 +602,7 @@ export class Files extends Component {
         this.loadingDocument(key, false))
   }
 
-  uploadFile = async ({ file }) => {
+  uploadFile = async ({ file, fileName = null }) => {
     let url = '/api/files';
 
     let request = superagent
@@ -611,8 +611,24 @@ export class Files extends Component {
 
     const fileToSubmit = isImage(file) ? await optimizeImage(file) : file;
     request = request.attach('document', fileToSubmit);
+    request = request.field('fileName', fileName);
 
     return request;
+  };
+
+  addPage = ({ file, fileName = null }) => {
+    return this.uploadFile({ file, fileName })
+      .then(this.props.fetchDeclarations) // TODO update only delta
+  };
+
+  removePage = ({ file, pageNumberToRemove }) => {
+    return superagent
+      .post(
+        '/api/files/remove-file-page', { pageNumberToRemove, file }
+      )
+      .set('Content-Type', 'application/json')
+      .set('CSRF-Token', this.props.csrfToken)
+      .then(this.props.fetchDeclarations) // TODO update only delta
   };
 
   loadingDocument(key, load) {
@@ -864,9 +880,11 @@ export class Files extends Component {
     } else if (showEnterpriseFilePreview) {
       previewProps = {
         onCancel: () => this.setState({ showEnterpriseFilePreview: null }),
-        submitFile: uploadDeclarationInfoFile,
-        removePage: removeDeclarationInfoFilePage,
-        validateDoc: validateDeclarationInfoDoc,
+        submitFile: (file) => { this.addPage({ ...file, fileName: showEnterpriseFilePreview.file }) },
+        removePage: (tabToRemove) => {
+          this.removePage({ ...tabToRemove, ...showEnterpriseFilePreview })
+        },
+        // validateDoc: validateDeclarationInfoDoc,
         url: computeDocUrl({ id: showEnterpriseFilePreview.id, type: enterpriseType }),
         ...showEnterpriseFilePreview,
       };
