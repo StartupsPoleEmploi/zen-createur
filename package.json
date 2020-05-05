@@ -1,6 +1,6 @@
 {
   "name": "zen-createur",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "",
   "scripts": {
     "test": "yarn lint && yarn test:front && yarn test:api",

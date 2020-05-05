@@ -28,6 +28,7 @@ const async = require('async');
 
 const { request, checkHeadersAndWait } = require('../resilientRequest');
 const EmployerDocument = require('../../models/EmployerDocument');
+const DeclarationRevenueDocument = require('../../models/DeclarationRevenueDocument');
 const { optimizePDF } = require('../pdf-utils');
 const DeclarationInfo = require('../../models/DeclarationInfo');
 
@@ -68,6 +69,16 @@ const CODES = {
     codeSituation: '3',
     codeTypeDocument: 'ASF',
   },
+  ENTREPRISE_CA_MONTHLY: {
+    codeContexte: CONTEXT_CODE,
+    codeSituation: '2',
+    codeTypeDocument: 'JRE',
+  },
+  ENTREPRISE_CA_QUATERLY: {
+    codeContexte: CONTEXT_CODE,
+    codeSituation: '2',
+    codeTypeDocument: 'JRE',
+  }
 };
 
 const documentsToTransmitTypes = [
@@ -100,8 +111,27 @@ const documentsToTransmitTypes = [
     type: 'invalidity',
     label: 'Invalidité',
     confirmationData: CODES.INVALIDITY,
-  },
+  }
 ];
+
+const docmentsRevenueToTransmitTypes = [
+  {
+    type: 'enterpriseMontlyTurnover',
+    label: ({ date }) => `Déclaration CA ${format(
+      date,
+      'MM-YYYY',
+    )}`,
+    confirmationData: CODES.ENTREPRISE_CA_MONTHLY,
+  },
+  {
+    type: 'enterpriseQuaterlyTurnover',
+    label: ({ date }) => `Déclaration CA N°${format(
+      date,
+      'Q-YYYY',
+    )}`,
+    confirmationData: CODES.ENTREPRISE_CA_QUATERLY,
+  }
+]
 
 const uploadUrl = `${config.apiHost}/partenaire/peconnect-envoidocument/v1/depose?synchrone=true`;
 
@@ -127,7 +157,7 @@ const formatEmployerDoc = (doc) => ({
   filePath: `${uploadsDirectory}${doc.file}`,
   label: deburr(
     `${
-      doc.type === EmployerDocument.types.employerCertificate ? 'AE' : 'BS'
+    doc.type === EmployerDocument.types.employerCertificate ? 'AE' : 'BS'
     } - ${doc.employer.employerName} - ${format(
       doc.employer.declaration.declarationMonth.month,
       'MM-YYYY',
@@ -139,6 +169,18 @@ const formatEmployerDoc = (doc) => ({
       ? CODES.EMPLOYER_CERTIFICATE
       : CODES.SALARY_SHEET,
 });
+
+const formatRevenueDoc = (doc) => {
+  const typeInfos = docmentsRevenueToTransmitTypes.find(
+    ({ type }) => type === doc.type,
+  );
+  return {
+    filePath: `${uploadsDirectory}${doc.file}`,
+    label: typeInfos.label({ date: doc.declarationRevenue.declaration.declarationMonth.month }),
+    dbDocument: doc,
+    confirmationData: typeInfos.confirmationData,
+  };
+}
 
 const doUpload = ({ filePath, accessToken, previousTries = 0 }) =>
   request({
@@ -155,6 +197,7 @@ const doUpload = ({ filePath, accessToken, previousTries = 0 }) =>
     ],
     method: 'post',
   }).then((res) => {
+    console.log('do upload', uploadUrl, res.body)
     if (!res.body.conversionId) {
       return checkHeadersAndWait(res.headers).then(() =>
         doUpload({
@@ -176,6 +219,9 @@ const doConfirm = ({ conversionId, document, accessToken }) =>
       ...document.confirmationData,
       nomDocument: document.label,
     },
+  }).then((res) => {
+    console.log('do confirm', getConfirmationUrl(conversionId), res.body)
+    return res;
   });
 
 async function sendDocument({ accessToken, document }) {
@@ -190,9 +236,14 @@ async function sendDocument({ accessToken, document }) {
     infosToSendDocument = formatEmployerDoc(document);
     documentType = `EmployerDocument ${document.type}`;
     userId = document.employer.userId;
+  } else if (Object.values(DeclarationRevenueDocument.types).includes(document.type)) {
+    infosToSendDocument = formatRevenueDoc(document);
+    documentType = `RevenueDocument ${document.type}`;
+    userId = document.declarationRevenue.userId;
   } else {
     throw new Error('Unknown document type');
   }
+
 
   if (config.get('bypassDocumentsDispatch')) {
     winston.info(`Simulating sending document ${infosToSendDocument.dbDocument.type} ${infosToSendDocument.dbDocument.id} to PE`);
@@ -206,7 +257,9 @@ async function sendDocument({ accessToken, document }) {
       winston.debug(`Error while optimizing document ${infosToSendDocument.dbDocument.id} (ERR ${err})`));
   }
 
+
   let step = 0;
+  console.log('sent to pe', infosToSendDocument)
   try {
     const retryTime = { times: MAX_TRIES, interval: DEFAULT_WAIT_TIME };
     const { body: { conversionId } } = await async.retry(retryTime,

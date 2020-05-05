@@ -47,12 +47,26 @@ const hasMissingDeclarationDocuments = (declaration) =>
         type === docTypes.invalidity && isNull(file) && !isTransmitted,
     ));
 
+const hasMissingRevenuesDocuments = (declaration) => {
+  const nbMissingFiles = declaration.revenues.reduce((all, current) => {
+    if (current.documents.length === 0) {
+      all++;
+    } else if (current.documents.every(d => d.isTransmitted) === false) {
+      all++;
+    }
+
+    return all;
+  }, 0);
+
+  return nbMissingFiles !== 0
+}
+
 const fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated = ({
   declarationId,
   userId,
 }) =>
   Declaration.query()
-    .eager('[infos, employers.documents]')
+    .eager('[infos, employers.documents, revenues.documents]')
     .findOne({
       id: declarationId,
       userId,
@@ -61,6 +75,7 @@ const fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated = ({
       if (
         hasMissingEmployersDocuments(declaration)
         || hasMissingDeclarationDocuments(declaration)
+        || hasMissingRevenuesDocuments(declaration)
       ) {
         return declaration;
       }
@@ -82,7 +97,7 @@ const fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated = ({
           // And add it in the initial query will cause some trouble with the date :
           //   See => https://github.com/StartupsPoleEmploi/zen/commit/d10e639179881ca67c63968054ab44f848b0d824
           Declaration.query()
-            .eager('[infos, employers.documents, declarationMonth]')
+            .eager('[infos, employers.documents, revenues.documents, declarationMonth]')
             .findOne({
               id: declarationId,
               userId,
