@@ -37,7 +37,7 @@ import LoginAgainDialog from '../../components/Actu/LoginAgainDialog';
 import DocumentDialog from '../../components/Generic/documents/DocumentDialog';
 import { muiBreakpoints, primaryBlue, secondaryBlue } from '../../constants';
 import { formattedDeclarationMonth } from '../../lib/date';
-import { getDeclarationMissingFilesNb, getEnterprisesFiles, isImage, optimizeImage, getMissingEnterprisesFiles } from '../../lib/file';
+import { getDeclarationMissingFilesNb, getEnterprisesFiles, isImage, optimizeImage } from '../../lib/file';
 import {
   selectPreviewedEmployerDoc,
   selectPreviewedInfoDoc,
@@ -318,7 +318,6 @@ export class Files extends Component {
       (spec) => !!declaration[spec.fieldToCheck],
     );
 
-    console.log('declaration', declaration)
     const sortedEmployers = declaration.employers.slice();
     sortedEmployers.sort((emp1, emp2) => {
       const emp1MissingFile = emp1.documents.filter((d) => d.isTransmitted)
@@ -360,8 +359,6 @@ export class Files extends Component {
 
     // do not display a section if there are no documents to display.
     if (sortedEmployers.length + infoDocumentsNodes.length + missingEnterprisesFiles.length === 0) return null;
-
-    console.log('missingEnterprisesFiles', missingEnterprisesFiles)
 
     return (
       <div>
@@ -550,8 +547,6 @@ export class Files extends Component {
 
     const declarationRevenueId = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].id : null;
     const filesSents = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].documents : null;
-
-    console.log('documents', documents, filesSents)
 
     const documentByTypes = (type) => filesSents.find(d => d.type === type) || null;
 
@@ -837,7 +832,6 @@ export class Files extends Component {
       );
     }
 
-    console.log('lastDeclaration', lastDeclaration)
     // Users have come to this page without any old documents to validate
     if (
       !activeMonth &&

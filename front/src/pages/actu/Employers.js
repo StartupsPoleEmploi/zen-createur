@@ -19,8 +19,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import superagent from 'superagent';
+import * as Sentry from '@sentry/browser';
 
-import { Box, DialogContentText } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import {
   fetchDeclarations as fetchDeclarationsAction,
   postEmployers as postEmployersAction,
@@ -38,7 +39,6 @@ import {
   CREATORTAXRATE,
   TIMEWORKED,
   MAXHOURCANWORK,
-  DELAYBEFOREQUITACTUALISATION,
 } from '../../constants';
 import {
   MAX_SALARY,
@@ -460,7 +460,7 @@ export class Employers extends Component {
         }
 
         // Reporting here to get a metric of how much next error happens
-        window.Raven.captureException(err);
+        Sentry.captureException(err);
 
         if (err.status === 401 || err.status === 403) {
           this.closeDialog();

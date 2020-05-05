@@ -1,4 +1,5 @@
 import superagent from 'superagent';
+import * as Sentry from '@sentry/browser';
 
 import catchMaintenance from '../../lib/catchMaintenance';
 import {
@@ -19,8 +20,8 @@ export const fetchUser = () => (dispatch) => {
         return;
       }
 
-      window.Raven.setUserContext({
-        id: user.id,
+      Sentry.configureScope(function (scope) {
+        scope.setUser(user);
       });
 
       dispatch({ type: FETCH_USER_SUCCESS, payload: user });
