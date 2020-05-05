@@ -40,6 +40,12 @@ const DOCUMENT_LABELS = {
   salarySheet: 'Bulletin de salaire',
 };
 
+const CREATORTAXRATE = {
+  MONTHLY: 'monthly',
+  QUATERLY: 'quaterly',
+  YEARLY: 'yearly',
+};
+
 
 module.exports = {
   DECLARATION_STATUSES,
@@ -47,4 +53,5 @@ module.exports = {
   DECLARATION_CONTEXT_ID,
   REALM,
   DOCUMENT_LABELS,
+  CREATORTAXRATE
 };

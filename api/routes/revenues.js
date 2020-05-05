@@ -14,6 +14,9 @@ const { sendDocument } = require('../lib/pe-api/documents');
 const { refreshAccessToken } = require('../lib/middleware/refreshAccessTokenMiddleware');
 const { isUserTokenValid } = require('../lib/token');
 const winston = require('../lib/log');
+const {
+  fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated,
+} = require('../controllers/declarationCtrl');
 
 const DeclarationRevenue = require('../models/DeclarationRevenue');
 const DeclarationRevenueDocument = require('../models/DeclarationRevenueDocument');
@@ -55,7 +58,7 @@ router.post(
           type,
           declarationRevenueId,
           originalFileName,
-          isTransmitted: false,
+          isTransmitted: file ? false : true,
           isCleanedUp: false
         }
 
@@ -96,6 +99,45 @@ router.get('/files', (req, res, next) => {
         res.sendFile(pdfPath, { root: uploadDestination });
       });
     })
+    .catch(next);
+});
+
+router.post('/validateDocument', (req, res, next) => {
+  const { id } = req.body;
+
+  if (!isUserTokenValid(req.user.tokenExpirationDate)) {
+    return res.status(401).json('Expired token');
+  }
+  if (!id) return res.status(400).json('Missing id');
+
+  return DeclarationRevenueDocument.query()
+    .eager('declarationRevenue.[user, declaration.declarationMonth]')
+    .findOne({ id })
+    .then((revenueDoc) => {
+      console.log('revenue doc', revenueDoc)
+      if (
+        !revenueDoc
+        || get(revenueDoc, 'declarationRevenue.user.id') !== req.session.user.id
+      ) {
+        return res.status(404).json('Not found');
+      }
+
+      if (revenueDoc.isTransmitted) return revenueDoc;
+
+      return (
+        sendDocument({
+          document: revenueDoc,
+          accessToken: req.session.userSecret.accessToken,
+        })
+          .then(() =>
+            fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated({
+              declarationId: revenueDoc.declarationRevenue.declaration.id,
+              userId: req.session.user.id,
+            }))
+          .then(() => revenueDoc)
+      );
+    })
+    .then(r => res.json(r))
     .catch(next);
 });
 

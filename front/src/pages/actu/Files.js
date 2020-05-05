@@ -542,17 +542,11 @@ export class Files extends Component {
   renderEnterpriseRow = ({ documents, declaration, allowSkipFile }) => {
     const commonProps = {
       showTooltip: true,
-      /*skipFile: (params) => this.askToSkipFile(() => {
-        this.props.uploadEmployerFile({ ...params, skip: true });
-        this.closeSkipModal();
-      }),*/
       //allowSkipFile,
-      /*useLightVersion:
+      useLightVersion:
         muiBreakpoints.xs === this.props.width ||
-        muiBreakpoints.sm === this.props.width,*/
+        muiBreakpoints.sm === this.props.width,
     };
-
-
 
     const declarationRevenueId = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].id : null;
     const filesSents = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].documents : null;
@@ -564,23 +558,24 @@ export class Files extends Component {
     return (
       <>
         {documents.map(doc => {
-          const key = `${doc.name}-${doc.type}`;
-          const docType = documentByTypes(doc.type);
-          console.log('docType', docType)
+          const docType = documentByTypes(doc.type) || { id: `${doc.name}-${doc.type}` };
 
           return (<DocumentUpload
             {...commonProps}
-            key={key}
-            submitFile={(params) => this.sentRevenuesDocumentation({ ...params, type: doc.type, declarationRevenueId, key })}
+            key={`revenue-${docType.id}`}
+            submitFile={(params) => this.sentRevenuesDocumentation({ ...params, type: doc.type, declarationRevenueId, id: docType.id })}
+            skipFile={(params) => this.askToSkipFile(() => {
+              this.sentRevenuesDocumentation({ type: doc.type, declarationRevenueId, id: docType.id })
+              this.closeSkipModal();
+            })}
             label={doc.name}
             caption={ucfirst(moment(declaration.declarationMonth.month).format('MMMM YYYY'))}
             fileExistsOnServer={
               !!get(documentByTypes(doc.type), 'file') && !get(documentByTypes(doc.type), 'isCleanedUp')
             }
             showPreview={() => this.setState({ showEnterpriseFilePreview: docType })}
-            //removePage={this.removePage}
             isTransmitted={get(documentByTypes(doc.type), 'isTransmitted')}
-            isLoading={this.state.docsLoading.indexOf(key) !== -1}
+            isLoading={this.state.docsLoading.indexOf(`revenue-${docType.id}`) !== -1}
           //error={employer[getEmployerErrorKey(employerCertificateType)]}
           />)
         })}
@@ -588,18 +583,22 @@ export class Files extends Component {
     );
   }
 
-  sentRevenuesDocumentation = async ({ key, file, type, declarationRevenueId }) => {
-    const fileSent = await this.uploadFile({ file });
-    this.loadingDocument(key, true);
+  sentRevenuesDocumentation = async ({ id, file, type, declarationRevenueId }) => {
+    let fileSent;
+
+    if (file) {
+      fileSent = await this.uploadFile({ file });
+    }
+    this.loadingDocument(`revenue-${id}`, true);
 
     let url = '/api/revenues/files';
 
     superagent
-      .post(url, { file: fileSent.body.file, type, declarationRevenueId, originalFileName: file.name })
+      .post(url, { file: fileSent ? fileSent.body.file : null, type, declarationRevenueId, originalFileName: file ? file.name : null })
       .set('CSRF-Token', this.props.csrfToken)
       .then(this.props.fetchDeclarations) // TODO update only delta
       .then(() =>
-        this.loadingDocument(key, false))
+        this.loadingDocument(`revenue-${id}`, false))
   }
 
   uploadFile = async ({ file, fileName = null }) => {
@@ -633,6 +632,20 @@ export class Files extends Component {
       .then(this.props.fetchDeclarations) // TODO update only delta
   };
 
+  onValidateRevenues = ({ id }) => {
+    this.loadingDocument(`revenue-${id}`, true);
+
+    return superagent
+      .post(
+        '/api/revenues/validateDocument', { id }
+      )
+      .set('Content-Type', 'application/json')
+      .set('CSRF-Token', this.props.csrfToken)
+      .then(this.props.fetchDeclarations) // TODO update only delta
+      .then(() => this.loadingDocument(`revenue-${id}`, false))
+      .then(this.unselectAll)
+  };
+
   loadingDocument(key, load) {
     const docsLoading = this.state.docsLoading;
     const docsLoadingIndex = docsLoading.indexOf(key);
@@ -646,6 +659,10 @@ export class Files extends Component {
     }
 
     this.setState({ docsLoading })
+  }
+
+  unselectAll() {
+    this.setState({ showEnterpriseFilePreview: null })
   }
 
 
@@ -881,18 +898,17 @@ export class Files extends Component {
       };
     } else if (showEnterpriseFilePreview) {
       previewProps = {
-        onCancel: () => this.setState({ showEnterpriseFilePreview: null }),
-        submitFile: (file) => { this.addPage({ ...file, fileName: showEnterpriseFilePreview.file }) },
-        removePage: (tabToRemove) => {
+        onCancel: this.unselectAll,
+        submitFile: (file) => this.addPage({ ...file, fileName: showEnterpriseFilePreview.file }),
+        removePage: (tabToRemove) =>
           this.removePage({ ...tabToRemove, ...showEnterpriseFilePreview })
-        },
-        // validateDoc: validateDeclarationInfoDoc,
+        ,
+        validateDoc: () => this.onValidateRevenues(showEnterpriseFilePreview),
         url: computeDocUrl({ id: showEnterpriseFilePreview.id, type: enterpriseType }),
         ...showEnterpriseFilePreview,
+        isLoading: this.state.docsLoading.indexOf(`revenue-${showEnterpriseFilePreview.id}`) !== -1
       };
     }
-
-    console.log('previewProps', previewProps)
 
     return (
       <>

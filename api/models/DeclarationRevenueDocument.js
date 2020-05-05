@@ -39,8 +39,8 @@ class DeclarationRevenueDocument extends BaseModel {
 
   static get types() {
     return {
-      monthlyIS: 'monthlyIS',
-      quaterlyIS: 'quaterlyIS',
+      enterpriseMontlyTurnover: 'enterpriseMontlyTurnover',
+      enterpriseQuaterlyTurnover: 'enterpriseQuaterlyTurnover',
     };
   }
 }
