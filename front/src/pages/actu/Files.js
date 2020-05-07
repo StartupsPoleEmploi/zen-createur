@@ -35,7 +35,7 @@ import DocumentUpload from '../../components/Actu/DocumentUpload';
 import FileTransmittedToPE from '../../components/Actu/FileTransmittedToPEDialog';
 import LoginAgainDialog from '../../components/Actu/LoginAgainDialog';
 import DocumentDialog from '../../components/Generic/documents/DocumentDialog';
-import { muiBreakpoints, primaryBlue, secondaryBlue } from '../../constants';
+import { muiBreakpoints, primaryBlue, secondaryBlue, DEFAULT_ERROR_MESSAGE } from '../../constants';
 import { formattedDeclarationMonth } from '../../lib/date';
 import { getDeclarationMissingFilesNb, getEnterprisesFiles, isImage, optimizeImage } from '../../lib/file';
 import {
@@ -266,6 +266,7 @@ export class Files extends Component {
       skipFileCallback: noop,
       selectedTab: tab && tab === 'old' ? OLD_MONTHS_TAB : CURRENT_MONTH_TAB,
       docsLoading: [],
+      errors: {},
       showEnterpriseFilePreview: null
     };
   }
@@ -571,7 +572,7 @@ export class Files extends Component {
             showPreview={() => this.setState({ showEnterpriseFilePreview: docType })}
             isTransmitted={get(documentByTypes(doc.type), 'isTransmitted')}
             isLoading={this.state.docsLoading.indexOf(`revenue-${docType.id}`) !== -1}
-          //error={employer[getEmployerErrorKey(employerCertificateType)]}
+            error={this.state.errors[`revenue-${docType.id}`] || null}
           />)
         })}
       </>
@@ -594,6 +595,11 @@ export class Files extends Component {
       .then(this.props.fetchDeclarations) // TODO update only delta
       .then(() =>
         this.loadingDocument(`revenue-${id}`, false))
+      .then(() => this.setError(`revenue-${id}`))
+      .catch(error => {
+        this.loadingDocument(`revenue-${id}`, false);
+        this.setError(`revenue-${id}`, DEFAULT_ERROR_MESSAGE);
+      })
   }
 
   uploadFile = async ({ file, fileName = null }) => {
@@ -638,10 +644,15 @@ export class Files extends Component {
       .set('CSRF-Token', this.props.csrfToken)
       .then(this.props.fetchDeclarations) // TODO update only delta
       .then(() => this.loadingDocument(`revenue-${id}`, false))
+      .then(() => this.setError(`revenue-${id}`))
       .then(this.unselectAll)
+      .catch(error => {
+        this.loadingDocument(`revenue-${id}`, false);
+        this.setError(`revenue-${id}`, DEFAULT_ERROR_MESSAGE);
+      })
   };
 
-  loadingDocument(key, load) {
+  loadingDocument = (key, load) => {
     const docsLoading = this.state.docsLoading;
     const docsLoadingIndex = docsLoading.indexOf(key);
 
@@ -656,8 +667,20 @@ export class Files extends Component {
     this.setState({ docsLoading })
   }
 
-  unselectAll() {
+  unselectAll = () => {
     this.setState({ showEnterpriseFilePreview: null })
+  }
+
+  setError = (key, message) => {
+    const errors = this.state.errors;
+
+    if (message) {
+      errors[key] = message
+    } else {
+      delete errors[key];
+    }
+
+    this.setState({ errors });
   }
 
 
@@ -897,6 +920,7 @@ export class Files extends Component {
         removePage: (tabToRemove) =>
           this.removePage({ ...tabToRemove, ...showEnterpriseFilePreview })
         ,
+        error: this.state.errors[`revenue-${showEnterpriseFilePreview.id}`] || null,
         validateDoc: () => this.onValidateRevenues(showEnterpriseFilePreview),
         url: computeDocUrl({ id: showEnterpriseFilePreview.id, type: enterpriseType }),
         ...showEnterpriseFilePreview,
@@ -1031,7 +1055,7 @@ Files.propTypes = {
   previewedInfoDoc: PropTypes.object,
   showInfoFilePreview: PropTypes.func.isRequired,
   showEmployerFilePreview: PropTypes.func.isRequired,
-  showEnterpriseFilePreview: PropTypes.func.isRequired,
+  showEnterpriseFilePreview: PropTypes.func,
   validateEmployerDoc: PropTypes.func.isRequired,
   validateDeclarationInfoDoc: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,

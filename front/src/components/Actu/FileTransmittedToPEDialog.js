@@ -23,6 +23,7 @@ const FileTransmittedToPE = ({ isOpened, onCancel, onConfirm }) => (
           onClick={onConfirm}
           color="primary"
           autoFocus
+          primary
         >
           Je confirme
         </MainActionButton>

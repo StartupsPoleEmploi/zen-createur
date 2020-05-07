@@ -39,6 +39,7 @@ import {
   CREATORTAXRATE,
   TIMEWORKED,
   MAXHOURCANWORK,
+  DEFAULT_ERROR_MESSAGE,
 } from '../../constants';
 import {
   MAX_SALARY,
@@ -470,9 +471,7 @@ export class Employers extends Component {
 
         // Unhandled error
         this.setState({
-          error: `Nous sommes désolés, mais une erreur s'est produite. Merci de réessayer ultérieurement.
-          Si le problème persiste, merci de contacter l'équipe Zen, et d'effectuer
-          en attendant votre actualisation sur Pole-emploi.fr.`,
+          error: DEFAULT_ERROR_MESSAGE,
         });
         this.closeDialog();
       });

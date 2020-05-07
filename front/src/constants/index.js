@@ -59,3 +59,7 @@ export const TIMEWORKED = {
   ALF: 'alf',
   FULL: 'full',
 };
+
+export const DEFAULT_ERROR_MESSAGE = `Nous sommes désolés, mais une erreur s'est produite. Merci de réessayer ultérieurement.
+Si le problème persiste, merci de contacter l'équipe Zen, et d'effectuer
+en attendant votre actualisation sur Pole-emploi.fr.`;
