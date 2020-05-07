@@ -69,7 +69,6 @@ router.post(
           return DeclarationRevenueDocument.query().insert(documentFileObj);
         }
       })
-      .then(fetchRevenue)
       .then((result) => res.json(result))
       .catch(next);
   },

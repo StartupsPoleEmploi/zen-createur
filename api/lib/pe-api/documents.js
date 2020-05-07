@@ -197,7 +197,6 @@ const doUpload = ({ filePath, accessToken, previousTries = 0 }) =>
     ],
     method: 'post',
   }).then((res) => {
-    console.log('do upload', uploadUrl, res.body)
     if (!res.body.conversionId) {
       return checkHeadersAndWait(res.headers).then(() =>
         doUpload({
@@ -219,9 +218,6 @@ const doConfirm = ({ conversionId, document, accessToken }) =>
       ...document.confirmationData,
       nomDocument: document.label,
     },
-  }).then((res) => {
-    console.log('do confirm', getConfirmationUrl(conversionId), res.body)
-    return res;
   });
 
 async function sendDocument({ accessToken, document }) {
