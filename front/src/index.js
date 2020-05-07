@@ -16,17 +16,17 @@ import App from './App';
 import store from './redux/store';
 import DeveloperDialog from './components/Generic/DeveloperDialog';
 import CookiePolicy from './components/Generic/CookiePolicy';
+import * as Sentry from '@sentry/browser';
+
 
 const environment = process.env.REACT_APP_SENTRY_ENV || process.env.REACT_APP_ZEN_ENV;
 
 if (environment !== 'development') {
-  window.Raven.config(
-    'https://a1844e1ab4404bf9b6b63fe127874cdf@sentry.io/1216087',
-    {
-      release: version,
-      environment,
-    },
-  ).install();
+  Sentry.init({ dsn: 'https://a1844e1ab4404bf9b6b63fe127874cdf@sentry.io/1216087' });
+  Sentry.configureScope(function (scope) {
+    scope.setTag("environment", environment);
+    scope.setTag("release", version);
+  });
 }
 
 moment.locale('fr');
@@ -93,8 +93,8 @@ ReactDOM.render(
     <CssBaseline />
     <MuiThemeProvider theme={theme}>
       {/* The following modal must never be displayed out of dev mode, modify with extreme caution */
-      (process.env.REACT_APP_ZEN_ENV === 'development' ||
-        process.env.REACT_APP_ZEN_ENV === 'qa') && <DeveloperDialog />
+        (process.env.REACT_APP_ZEN_ENV === 'development' ||
+          process.env.REACT_APP_ZEN_ENV === 'qa') && <DeveloperDialog />
       }
       <BrowserRouter>
         <App />

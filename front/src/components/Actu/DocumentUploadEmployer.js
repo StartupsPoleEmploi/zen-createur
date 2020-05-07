@@ -376,7 +376,7 @@ DocumentUploadEmployer.propTypes = {
   showPreview: PropTypes.func.isRequired,
   showTooltip: PropTypes.bool,
   useLightVersion: PropTypes.bool.isRequired,
-  width: PropTypes.string.isRequired,
+  width: PropTypes.string,
 };
 
 DocumentUploadEmployer.defaultProps = {

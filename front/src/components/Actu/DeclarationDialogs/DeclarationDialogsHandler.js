@@ -5,6 +5,7 @@ import LoadingDialog from './LoadingDialog';
 import ErrorsDialog from './ErrorsDialog';
 import ConsistencyErrorsDialogs from './ConsistencyErrorsDialog';
 import DeclarationSummaryDialog from './DeclarationSummaryDialog';
+import * as Sentry from '@sentry/browser';
 
 class DeclarationDialogsHandler extends Component {
   static propTypes = {
@@ -82,7 +83,7 @@ class DeclarationDialogsHandler extends Component {
     // If nothing alarming appears in the monitoring, this should be changed to simply
     // throw the error.
     if (!this.hasSentError) {
-      window.Raven.captureException(
+      Sentry.captureException(
         new Error(
           'DeclarationDialogsHandler is unable to create modal, this should never happen',
         ),

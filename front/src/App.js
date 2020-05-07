@@ -10,6 +10,9 @@ import { hot } from 'react-hot-loader';
 import {
   Redirect, Route, Switch, withRouter,
 } from 'react-router-dom';
+import * as Sentry from '@sentry/browser';
+
+
 
 import { fetchUser as fetchUserAction } from './redux/actions/user';
 import { fetchStatus as fetchStatusAction } from './redux/actions/status';
@@ -73,14 +76,14 @@ class App extends Component {
           if (this.props.user.hasAlreadySentDeclaration) {
             // show modal once, and redirect to /files
             this.setState({ showDeclarationSentOnPEModal: true });
-            window.Raven.captureException(
+            Sentry.captureException(
               new Error('User has already sent declaration on pe.fr'),
             );
             return;
           }
           if (!this.props.user.canSendDeclaration) {
             // something is broken, or user has no access to declarations. Show sorry modal.
-            window.Raven.captureException(
+            Sentry.captureException(
               new Error('Cannot get declaration data'),
             );
             return this.setState({
@@ -107,7 +110,7 @@ class App extends Component {
 
   componentDidCatch(err, errorInfo) {
     this.setState({ err });
-    window.Raven.captureException(err, { extra: errorInfo });
+    Sentry.captureException(err, { extra: errorInfo });
   }
 
   onCloseModal = () => {
@@ -232,13 +235,13 @@ class App extends Component {
             render={(props) => (user.isBlocked ? (
               <Redirect to="/dashboard" />
             ) : (
-              <Actu
-                {...props}
-                activeMonth={activeMonth}
-                declaration={activeDeclaration}
-                user={user}
-              />
-            ))}
+                <Actu
+                  {...props}
+                  activeMonth={activeMonth}
+                  declaration={activeDeclaration}
+                  user={user}
+                />
+              ))}
           />
           <PrivateRoute
             exact
@@ -247,8 +250,8 @@ class App extends Component {
             render={(props) => (user.isBlocked ? (
               <Redirect to="/dashboard" />
             ) : (
-              <Employers {...props} user={user} activeMonth={activeMonth} />
-            ))}
+                <Employers {...props} user={user} activeMonth={activeMonth} />
+              ))}
           />
 
           <PrivateRoute

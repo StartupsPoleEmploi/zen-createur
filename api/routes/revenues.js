@@ -114,7 +114,6 @@ router.post('/validateDocument', (req, res, next) => {
     .eager('declarationRevenue.[user, declaration.declarationMonth]')
     .findOne({ id })
     .then((revenueDoc) => {
-      console.log('revenue doc', revenueDoc)
       if (
         !revenueDoc
         || get(revenueDoc, 'declarationRevenue.user.id') !== req.session.user.id

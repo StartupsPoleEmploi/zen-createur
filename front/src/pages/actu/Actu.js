@@ -19,6 +19,7 @@ import ArrowRightAlt from '@material-ui/icons/ArrowRightAlt';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import Box from '@material-ui/core/Box';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import * as Sentry from '@sentry/browser';
 
 
 import { postDeclaration as postDeclarationAction } from '../../redux/actions/declarations';
@@ -432,7 +433,7 @@ export class Actu extends Component {
         }
 
         // Reporting here to get a metric of how much next error happens
-        window.Raven.captureException(err);
+        Sentry.captureException(err);
 
         if (err.status === 401 || err.status === 403) {
           this.closeDialog();
@@ -597,7 +598,7 @@ export class Actu extends Component {
                 <br />
                 Ex: Auto-entrepeneur, micro-entreprise, SARL, VDI, etc.
               </>
-)}
+            )}
             name="isCreator"
             value={this.state.isCreator}
             onAnswer={this.onAnswer}
@@ -696,191 +697,191 @@ export class Actu extends Component {
 
         {!completeCreatorQuestion && this.renderCreatorQuestions()}
         {completeCreatorQuestion && (
-        <form>
-          <StyledPaper>
-            <StyledList>
-              <DeclarationQuestion
-                verticalLayout={useVerticalLayoutForQuestions}
-                label="Avez-vous été en formation ?"
-                name="hasTrained"
-                value={this.state.hasTrained}
-                onAnswer={this.onAnswer}
-              />
-              <DeclarationQuestion
-                verticalLayout={useVerticalLayoutForQuestions}
-                label="Avez-vous été en stage ?"
-                name="hasInternship"
-                value={this.state.hasInternship}
-                onAnswer={this.onAnswer}
-              >
-                {hasInternship && (
-                <>
-                  {this.renderDatePickerGroup({
-                    type: types.INTERNSHIP,
-                    allowRemove: true,
-                  })}
-                  <AddElementButtonContainer>
-                    <AddElementButton
-                      onClick={() => this.addDates(types.INTERNSHIP)}
-                    >
-                      + Ajouter un stage
-                    </AddElementButton>
-                  </AddElementButtonContainer>
-                </>
-                )}
-              </DeclarationQuestion>
-              <DeclarationQuestion
-                verticalLayout={useVerticalLayoutForQuestions}
-                label={`Avez-vous été en arrêt maladie${
-                  user.gender === USER_GENDER_MALE ?
-                    ' ou en congé paternité' :
-                    ''
-                } ?`}
-                name="hasSickLeave"
-                value={this.state.hasSickLeave}
-                onAnswer={this.onAnswer}
-                style={{ paddingTop: hasInternship ? '3rem' : '1rem' }}
-              >
-                {hasSickLeave && (
-                <>
-                  {this.renderDatePickerGroup({
-                    type: types.SICK_LEAVE,
-                    allowRemove: true,
-                  })}
-                  <AddElementButtonContainer>
-                    <AddElementButton
-                      onClick={() => this.addDates(types.SICK_LEAVE)}
-                    >
-                      + Ajouter un arrêt maladie
-                    </AddElementButton>
-                  </AddElementButtonContainer>
-                </>
-                )}
-              </DeclarationQuestion>
-              {user.gender !== USER_GENDER_MALE && (
-              <DeclarationQuestion
-                verticalLayout={useVerticalLayoutForQuestions}
-                label="Avez-vous été en congé maternité ?"
-                name="hasMaternityLeave"
-                value={hasMaternityLeave}
-                onAnswer={this.onAnswer}
-                style={{ paddingTop: hasSickLeave ? '3rem' : '1rem' }}
-              >
-                {this.renderDatePickerGroup({
-                  type: types.MATERNITY_LEAVE,
-                  showEndDate: false,
-                })}
-              </DeclarationQuestion>
-              )}
-              <DeclarationQuestion
-                verticalLayout={useVerticalLayoutForQuestions}
-                label="Percevez-vous une nouvelle pension retraite ?"
-                name="hasRetirement"
-                value={this.state.hasRetirement}
-                onAnswer={this.onAnswer}
-                style={{
-                  // accounts for the fact that the section maternityLeave will be absent
-                  // for males, and add padding if there was a "add sick leave" button
-                  paddingTop:
-                    hasSickLeave && user.gender === USER_GENDER_MALE ?
-                      '3rem' :
-                      '1rem',
-                }}
-              >
-                {this.renderDatePickerGroup({
-                  type: types.RETIREMENT,
-                  showEndDate: false,
-                  startLabel: 'Depuis le',
-                })}
-              </DeclarationQuestion>
-              <DeclarationQuestion
-                verticalLayout={useVerticalLayoutForQuestions}
-                label="Percevez-vous une nouvelle pension d'invalidité de 2eme ou 3eme catégorie ?"
-                name="hasInvalidity"
-                value={this.state.hasInvalidity}
-                onAnswer={this.onAnswer}
-                className="force-border"
-              >
-                {this.renderDatePickerGroup({
-                  type: types.INVALIDITY,
-                  showEndDate: false,
-                  startLabel: 'Depuis le',
-                })}
-              </DeclarationQuestion>
-            </StyledList>
-          </StyledPaper>
-
-          {!this.state.hasTrained && (
-          <StyledPaper>
-            <StyledList>
-              <DeclarationQuestion
-                verticalLayout={useVerticalLayoutForQuestions}
-                label="Souhaitez-vous rester inscrit à Pôle emploi ?"
-                name="isLookingForJob"
-                value={this.state.isLookingForJob}
-                onAnswer={this.onAnswer}
-                withChildrenOnNo
-                className="force-border"
-              >
-                {this.renderDatePickerGroup({
-                  type: types.JOB_SEARCH,
-                  showStartDate: false,
-                  endLabel: 'Date de fin de recherche',
-                  largeLabel: true,
-                })}
-                <RadioGroup
-                  row
-                  aria-label="motif d'arrêt de recherche d'emploi"
-                  name="search"
-                  value={this.state.jobSearchStopMotive}
-                  onChange={this.onJobSearchStopMotive}
-                  style={{ marginTop: '1rem' }}
+          <form>
+            <StyledPaper>
+              <StyledList>
+                <DeclarationQuestion
+                  verticalLayout={useVerticalLayoutForQuestions}
+                  label="Avez-vous été en formation ?"
+                  name="hasTrained"
+                  value={this.state.hasTrained}
+                  onAnswer={this.onAnswer}
+                />
+                <DeclarationQuestion
+                  verticalLayout={useVerticalLayoutForQuestions}
+                  label="Avez-vous été en stage ?"
+                  name="hasInternship"
+                  value={this.state.hasInternship}
+                  onAnswer={this.onAnswer}
                 >
-                  <FormControlLabel
-                    value={jobSearchEndMotive.WORK}
-                    control={<Radio color="primary" />}
-                    label="Reprise du travail"
-                  />
-                  <FormControlLabel
-                    value={jobSearchEndMotive.RETIREMENT}
-                    control={<Radio color="primary" />}
-                    label="Retraite"
-                  />
-                  <FormControlLabel
-                    value={jobSearchEndMotive.OTHER}
-                    control={<Radio color="primary" />}
-                    label="Autre"
-                  />
-                </RadioGroup>
-              </DeclarationQuestion>
-            </StyledList>
-          </StyledPaper>
-          )}
+                  {hasInternship && (
+                    <>
+                      {this.renderDatePickerGroup({
+                        type: types.INTERNSHIP,
+                        allowRemove: true,
+                      })}
+                      <AddElementButtonContainer>
+                        <AddElementButton
+                          onClick={() => this.addDates(types.INTERNSHIP)}
+                        >
+                          + Ajouter un stage
+                    </AddElementButton>
+                      </AddElementButtonContainer>
+                    </>
+                  )}
+                </DeclarationQuestion>
+                <DeclarationQuestion
+                  verticalLayout={useVerticalLayoutForQuestions}
+                  label={`Avez-vous été en arrêt maladie${
+                    user.gender === USER_GENDER_MALE ?
+                      ' ou en congé paternité' :
+                      ''
+                    } ?`}
+                  name="hasSickLeave"
+                  value={this.state.hasSickLeave}
+                  onAnswer={this.onAnswer}
+                  style={{ paddingTop: hasInternship ? '3rem' : '1rem' }}
+                >
+                  {hasSickLeave && (
+                    <>
+                      {this.renderDatePickerGroup({
+                        type: types.SICK_LEAVE,
+                        allowRemove: true,
+                      })}
+                      <AddElementButtonContainer>
+                        <AddElementButton
+                          onClick={() => this.addDates(types.SICK_LEAVE)}
+                        >
+                          + Ajouter un arrêt maladie
+                    </AddElementButton>
+                      </AddElementButtonContainer>
+                    </>
+                  )}
+                </DeclarationQuestion>
+                {user.gender !== USER_GENDER_MALE && (
+                  <DeclarationQuestion
+                    verticalLayout={useVerticalLayoutForQuestions}
+                    label="Avez-vous été en congé maternité ?"
+                    name="hasMaternityLeave"
+                    value={hasMaternityLeave}
+                    onAnswer={this.onAnswer}
+                    style={{ paddingTop: hasSickLeave ? '3rem' : '1rem' }}
+                  >
+                    {this.renderDatePickerGroup({
+                      type: types.MATERNITY_LEAVE,
+                      showEndDate: false,
+                    })}
+                  </DeclarationQuestion>
+                )}
+                <DeclarationQuestion
+                  verticalLayout={useVerticalLayoutForQuestions}
+                  label="Percevez-vous une nouvelle pension retraite ?"
+                  name="hasRetirement"
+                  value={this.state.hasRetirement}
+                  onAnswer={this.onAnswer}
+                  style={{
+                    // accounts for the fact that the section maternityLeave will be absent
+                    // for males, and add padding if there was a "add sick leave" button
+                    paddingTop:
+                      hasSickLeave && user.gender === USER_GENDER_MALE ?
+                        '3rem' :
+                        '1rem',
+                  }}
+                >
+                  {this.renderDatePickerGroup({
+                    type: types.RETIREMENT,
+                    showEndDate: false,
+                    startLabel: 'Depuis le',
+                  })}
+                </DeclarationQuestion>
+                <DeclarationQuestion
+                  verticalLayout={useVerticalLayoutForQuestions}
+                  label="Percevez-vous une nouvelle pension d'invalidité de 2eme ou 3eme catégorie ?"
+                  name="hasInvalidity"
+                  value={this.state.hasInvalidity}
+                  onAnswer={this.onAnswer}
+                  className="force-border"
+                >
+                  {this.renderDatePickerGroup({
+                    type: types.INVALIDITY,
+                    showEndDate: false,
+                    startLabel: 'Depuis le',
+                  })}
+                </DeclarationQuestion>
+              </StyledList>
+            </StyledPaper>
 
-          <AlwaysVisibleContainer>
-            {formError && <ErrorMessage>{formError}</ErrorMessage>}
-            <FinalButtonsContainer>
-              <MainActionButton
-                primary={false}
-                onClick={() => this.validateCreatorQuestions(false)}
-              >
-                <StyledArrowBack />
+            {!this.state.hasTrained && (
+              <StyledPaper>
+                <StyledList>
+                  <DeclarationQuestion
+                    verticalLayout={useVerticalLayoutForQuestions}
+                    label="Souhaitez-vous rester inscrit à Pôle emploi ?"
+                    name="isLookingForJob"
+                    value={this.state.isLookingForJob}
+                    onAnswer={this.onAnswer}
+                    withChildrenOnNo
+                    className="force-border"
+                  >
+                    {this.renderDatePickerGroup({
+                      type: types.JOB_SEARCH,
+                      showStartDate: false,
+                      endLabel: 'Date de fin de recherche',
+                      largeLabel: true,
+                    })}
+                    <RadioGroup
+                      row
+                      aria-label="motif d'arrêt de recherche d'emploi"
+                      name="search"
+                      value={this.state.jobSearchStopMotive}
+                      onChange={this.onJobSearchStopMotive}
+                      style={{ marginTop: '1rem' }}
+                    >
+                      <FormControlLabel
+                        value={jobSearchEndMotive.WORK}
+                        control={<Radio color="primary" />}
+                        label="Reprise du travail"
+                      />
+                      <FormControlLabel
+                        value={jobSearchEndMotive.RETIREMENT}
+                        control={<Radio color="primary" />}
+                        label="Retraite"
+                      />
+                      <FormControlLabel
+                        value={jobSearchEndMotive.OTHER}
+                        control={<Radio color="primary" />}
+                        label="Autre"
+                      />
+                    </RadioGroup>
+                  </DeclarationQuestion>
+                </StyledList>
+              </StyledPaper>
+            )}
+
+            <AlwaysVisibleContainer>
+              {formError && <ErrorMessage>{formError}</ErrorMessage>}
+              <FinalButtonsContainer>
+                <MainActionButton
+                  primary={false}
+                  onClick={() => this.validateCreatorQuestions(false)}
+                >
+                  <StyledArrowBack />
                 Retour
               </MainActionButton>
 
-              <MainActionButton
-                primary
-                onClick={this.state.hasEmployers || this.state.creatorTaxeRate !== null ?
-                  this.onSubmit :
-                  this.openDialog}
-                disabled={!this.hasAnsweredMainQuestions() || isValidating}
-              >
-                Suivant
+                <MainActionButton
+                  primary
+                  onClick={this.state.hasEmployers || this.state.creatorTaxeRate !== null ?
+                    this.onSubmit :
+                    this.openDialog}
+                  disabled={!this.hasAnsweredMainQuestions() || isValidating}
+                >
+                  Suivant
                 <StyledArrowRightAlt />
-              </MainActionButton>
-            </FinalButtonsContainer>
-          </AlwaysVisibleContainer>
-        </form>
+                </MainActionButton>
+              </FinalButtonsContainer>
+            </AlwaysVisibleContainer>
+          </form>
         )}
 
         {!this.getFormError() && (

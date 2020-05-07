@@ -25,6 +25,8 @@ import { utils } from '../../selectors/declarations';
 import { canUsePDFViewer, optimizeImage, isImage } from '../../lib/file';
 import { manageErrorCsrfToken } from '../../lib/serviceHelpers';
 import catchMaintenance from '../../lib/catchMaintenance';
+import * as Sentry from '@sentry/browser';
+
 
 const { findEmployer, findDeclarationInfo } = utils;
 
@@ -45,7 +47,7 @@ export const fetchDeclarations = ({ limit } = {}) => (dispatch) => {
     .catch((err) => {
       if (manageErrorCsrfToken(err, dispatch)) return;
       dispatch({ type: FETCH_DECLARATIONS_FAILURE, payload: err });
-      window.Raven.captureException(err);
+      Sentry.captureException(err);
     })
     .then(() => {
       fetchDeclarationsPromise = null;
@@ -157,7 +159,7 @@ export const uploadEmployerFile = ({
           employerDocType,
         },
       });
-      window.Raven.captureException(err);
+      Sentry.captureException(err);
     });
 };
 
@@ -220,7 +222,7 @@ export const uploadDeclarationInfoFile = ({
         type: POST_DECLARATION_INFO_FAILURE,
         payload: { err: getUploadErrorMessage(err), documentId },
       });
-      window.Raven.captureException(err);
+      Sentry.captureException(err);
     });
 };
 
@@ -257,7 +259,7 @@ export const removeEmployerFilePage = ({
           employerDocType,
         },
       });
-      window.Raven.captureException(err);
+      Sentry.captureException(err);
     });
 };
 
@@ -289,7 +291,7 @@ export const removeDeclarationInfoFilePage = ({
           documentId,
         },
       });
-      window.Raven.captureException(err);
+      Sentry.captureException(err);
     });
 };
 
@@ -375,7 +377,7 @@ export const validateEmployerDoc = ({
       if (err.status === 401 || err.status === 403) {
         return dispatch({ type: SET_USER_LOGGED_OUT });
       }
-      window.Raven.captureException(err);
+      Sentry.captureException(err);
     });
 };
 export const validateDeclarationInfoDoc = ({ documentId }) => (
@@ -407,7 +409,7 @@ export const validateDeclarationInfoDoc = ({ documentId }) => (
       if (err.status === 401 || err.status === 403) {
         return dispatch({ type: SET_USER_LOGGED_OUT });
       }
-      window.Raven.captureException(err);
+      Sentry.captureException(err);
     });
 };
 
