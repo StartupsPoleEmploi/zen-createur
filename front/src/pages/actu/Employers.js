@@ -241,7 +241,7 @@ export class Employers extends Component {
           currentDeclaration,
           previousDeclaration,
         ] = this.props.declarations;
-        const enterprises = [];
+        let enterprises = [];
         let employers = [];
         const optionToState = {}
 
@@ -249,8 +249,16 @@ export class Employers extends Component {
           return this.props.history.replace('/files');
         }
 
-        if ((!currentDeclaration.entreprises || currentDeclaration.entreprises.length === 0) && currentDeclaration.taxeDue !== null) {
-          enterprises.push({ ...enterpriseTemplate });
+        if (currentDeclaration.taxeDue !== null) {
+          if (!currentDeclaration.revenues || currentDeclaration.revenues.length === 0) {
+            enterprises.push({ ...enterpriseTemplate });
+          } else {
+            enterprises = currentDeclaration.revenues.map(r => ({
+              workHoursCreator: { value: r.workHours, error: null },
+              turnover: { value: r.turnover || 0, error: null },
+              timeWorked: { value: r.workHours <= MIN_WORK_HOURS ? TIMEWORKED.NO : r.workHours === MAXHOURCANWORK ? TIMEWORKED.FULL : TIMEWORKED.ALF, error: null },
+            }));
+          }
         }
 
         if (currentDeclaration.hasEmployers) {
