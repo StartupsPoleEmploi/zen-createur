@@ -216,12 +216,25 @@ export class Actu extends Component {
       return this.props.history.replace('/dashboard');
     }
 
+    console.log('declaration', declaration)
+
+    let additionnalOptions = {};
+
+    if (declaration) {
+      additionnalOptions = {
+        hasEmployers: declaration.hasEmployers,
+        isCreator: declaration.taxeDue !== null,
+        creatorTaxeRate: declaration.taxeDue
+      }
+    }
+
     // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({
       hasMaternityLeave: user.gender === USER_GENDER_MALE ? false : null,
       // Set active declaration data, prevent declaration data unrelated to this form.
       ...pick(declaration, formFields.concat('id', 'infos')),
       isLoading: false,
+      ...additionnalOptions
     });
   }
 
@@ -412,8 +425,13 @@ export class Actu extends Component {
 
     this.setState({ isValidating: true });
 
-    const hasWorked = (this.state.hasEmployers || this.state.creatorTaxeRate !== null);
-    const objectToSend = { ...this.state, hasWorked, ignoreErrors };
+    const hasWorked = (this.state.hasEmployers || this.state.isCreator);
+    const objectToSend = {
+      ...this.state,
+      hasWorked,
+      ignoreErrors,
+      creatorTaxeRate: this.state.isCreator ? this.state.creatorTaxeRate : null
+    };
 
     return this.props
       .postDeclaration(objectToSend)

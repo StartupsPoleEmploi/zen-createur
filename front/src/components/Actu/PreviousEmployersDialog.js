@@ -75,7 +75,7 @@ const PreviousEmployersDialog = ({ employers = [], isOpened, onCancel }) => (
     isOpened={isOpened}
     onCancel={onCancel}
     actions={(
-      <MainActionButton onClick={onCancel} variant="contained" color="primary">
+      <MainActionButton onClick={onCancel} variant="contained" color="primary" primary>
         J'ai compris
         <StyledArrowRightAlt />
       </MainActionButton>
