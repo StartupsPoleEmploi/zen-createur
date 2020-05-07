@@ -90,6 +90,8 @@ export const getDeclarationMissingFilesNb = (declaration) => {
     ({ type, isTransmitted }) => type !== 'jobSearch' && !isTransmitted,
   ).length;
 
+  const revenues = declaration.revenues || [];
+
   return (
     declaration.employers.reduce((prev, employer) => {
       if (!employer.hasEndedThisMonth) {
@@ -109,7 +111,7 @@ export const getDeclarationMissingFilesNb = (declaration) => {
 
       if (hasEmployerCertificate) return prev + 0;
       return prev + (hasSalarySheet ? 1 : 2);
-    }, 0) + infoDocumentsRequiredNb + declaration.revenues.reduce((all, current) => {
+    }, 0) + infoDocumentsRequiredNb + revenues.reduce((all, current) => {
       if (current.documents.length === 0) {
         all++;
       } else if (current.documents.every(d => d.isTransmitted) === false) {

@@ -580,10 +580,23 @@ export class Files extends Component {
 
   sentRevenuesDocumentation = async ({ id, file, type, declarationRevenueId }) => {
     let fileSent;
+    const errormsg = () => {
+      this.loadingDocument(`revenue-${id}`, false);
+      this.setError(`revenue-${id}`, DEFAULT_ERROR_MESSAGE);
+    }
 
     if (file) {
-      fileSent = await this.uploadFile({ file });
+      try {
+        fileSent = await this.uploadFile({ file });
+      } catch (err) { }
     }
+
+    if (file && !fileSent) {
+      // check if PE is available
+      errormsg();
+      return;
+    }
+
     this.loadingDocument(`revenue-${id}`, true);
 
     let url = '/api/revenues/files';
@@ -591,16 +604,12 @@ export class Files extends Component {
     return superagent
       .post(url, { file: fileSent ? fileSent.body.file : null, type, declarationRevenueId, originalFileName: file ? file.name : null })
       .set('CSRF-Token', this.props.csrfToken)
-      .then(document => this.setState({ showEnterpriseFilePreview: document.body }))
+      .then(document => { if (file) return this.setState({ showEnterpriseFilePreview: document.body }) })
       .then(this.props.fetchDeclarations) // TODO update only delta
       .then(() =>
         this.loadingDocument(`revenue-${id}`, false))
       .then(() => this.setError(`revenue-${id}`))
-
-      .catch(error => {
-        this.loadingDocument(`revenue-${id}`, false);
-        this.setError(`revenue-${id}`, DEFAULT_ERROR_MESSAGE);
-      })
+      .catch(errormsg)
   }
 
   uploadFile = async ({ file, fileName = null }) => {
