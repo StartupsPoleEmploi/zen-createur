@@ -565,7 +565,6 @@ export class Files extends Component {
               this.closeSkipModal();
             })}
             label={doc.name}
-            caption={ucfirst(moment(declaration.declarationMonth.month).format('MMMM YYYY'))}
             fileExistsOnServer={
               !!get(documentByTypes(doc.type), 'file') && !get(documentByTypes(doc.type), 'isCleanedUp')
             }
@@ -589,13 +588,15 @@ export class Files extends Component {
 
     let url = '/api/revenues/files';
 
-    superagent
+    return superagent
       .post(url, { file: fileSent ? fileSent.body.file : null, type, declarationRevenueId, originalFileName: file ? file.name : null })
       .set('CSRF-Token', this.props.csrfToken)
+      .then(document => this.setState({ showEnterpriseFilePreview: document.body }))
       .then(this.props.fetchDeclarations) // TODO update only delta
       .then(() =>
         this.loadingDocument(`revenue-${id}`, false))
       .then(() => this.setError(`revenue-${id}`))
+
       .catch(error => {
         this.loadingDocument(`revenue-${id}`, false);
         this.setError(`revenue-${id}`, DEFAULT_ERROR_MESSAGE);

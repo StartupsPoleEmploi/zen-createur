@@ -22,26 +22,27 @@ export const canUsePDFViewer = (fileName) => {
 
 export const getMissingEnterprisesFiles = (declaration) => {
   const hasNotSentDocument = declaration.revenues && declaration.revenues.length && declaration.revenues.some(r => r.documents.length === 0);
-  if (declaration.taxeDue === CREATORTAXRATE.MONTHLY && hasNotSentDocument) {
-    return [{ name: 'Déclaration mensuelle URSSAF', type: enterpriseMontlyTurnoverType }]
-  }
-
-  const dateMonth = moment(declaration.declarationMonth.month).format("M");
-  if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 && hasNotSentDocument) {
-    return [{ name: 'Déclaration trimestielle URSSAF', type: enterpriseQuaterlyTurnoverType }]
+  if (hasNotSentDocument) {
+    return getEnterprisesFiles(declaration);
   }
 
   return [];
 }
 
 export const getEnterprisesFiles = (declaration) => {
+  const date = moment(declaration.declarationMonth.month);
+
   if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
-    return [{ name: 'Déclaration mensuelle URSSAF', type: enterpriseMontlyTurnoverType }]
+    return [{
+      name: `Déclaration CA ${date.format('MM-YYYY')}`, type: enterpriseMontlyTurnoverType
+    }]
   }
 
   const dateMonth = moment(declaration.declarationMonth.month).format("M");
   if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3) {
-    return [{ name: 'Déclaration trimestielle URSSAF', type: enterpriseQuaterlyTurnoverType }]
+    return [{
+      name: `Déclaration CA N°${date.format('Q-YYYY')}`, type: enterpriseQuaterlyTurnoverType
+    }]
   }
 
   return [];
