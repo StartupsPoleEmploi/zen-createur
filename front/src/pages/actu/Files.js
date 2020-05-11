@@ -588,14 +588,18 @@ export class Files extends Component {
     if (file) {
       try {
         fileSent = await this.uploadFile({ file });
-      } catch (err) { }
+      } catch (err) {
+      }
     }
 
-    if (file && !fileSent) {
+    // TODO ecrease this feature
+    if (file && (!fileSent || !fileSent.body.file)) {
       // check if PE is available
       errormsg();
       return;
     }
+
+    return;
 
     this.loadingDocument(`revenue-${id}`, true);
 
