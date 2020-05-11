@@ -585,6 +585,8 @@ export class Files extends Component {
       this.setError(`revenue-${id}`, DEFAULT_ERROR_MESSAGE);
     }
 
+    this.loadingDocument(`revenue-${id}`, true);
+
     if (file) {
       try {
         fileSent = await this.uploadFile({ file });
@@ -592,6 +594,7 @@ export class Files extends Component {
       }
     }
 
+    console.log('file', file, fileSent)
     // TODO ecrease this feature
     if (file && (!fileSent || !fileSent.body.file)) {
       // check if PE is available
@@ -599,9 +602,6 @@ export class Files extends Component {
       return;
     }
 
-    return;
-
-    this.loadingDocument(`revenue-${id}`, true);
 
     let url = '/api/revenues/files';
 
