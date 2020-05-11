@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import Check from '@material-ui/icons/Check';
 import { withStyles } from '@material-ui/core/styles';
 import superagent from 'superagent';
+import * as Sentry from '@sentry/browser';
 
 import StatusFilesError from '../../components/Actu/StatusFilesError';
 import ActuStatus from '../../components/Generic/actu/ActuStatus';
@@ -30,6 +31,7 @@ import {
   uploadEmployerFile as uploadEmployerFileAction,
   validateDeclarationInfoDoc as validateDeclarationInfoDocAction,
   validateEmployerDoc as validateEmployerDocAction,
+  userLoogedOut as userLoogedOutAction,
 } from '../../redux/actions/declarations';
 import DocumentUpload from '../../components/Actu/DocumentUpload';
 import FileTransmittedToPE from '../../components/Actu/FileTransmittedToPEDialog';
@@ -578,12 +580,25 @@ export class Files extends Component {
     );
   }
 
+  // TODO centralise
+  catchQueryError = (err) => {
+    if (err.status === 401 || err.status === 403) {
+      this.props.userLoogedOut();
+    }
+
+    throw 'Erreur lors de la validation du justificatif, merci de bien vouloir réessayer ultérieurement';
+
+    Sentry.captureException(err);
+  }
+
   sentRevenuesDocumentation = async ({ id, file, type, declarationRevenueId }) => {
     let fileSent;
     const errormsg = () => {
       this.loadingDocument(`revenue-${id}`, false);
       this.setError(`revenue-${id}`, DEFAULT_ERROR_MESSAGE);
     }
+
+    this.loadingDocument(`revenue-${id}`, true);
 
     if (file) {
       try {
@@ -592,6 +607,7 @@ export class Files extends Component {
       }
     }
 
+    console.log('file', file, fileSent)
     // TODO ecrease this feature
     if (file && (!fileSent || !fileSent.body.file)) {
       // check if PE is available
@@ -599,9 +615,6 @@ export class Files extends Component {
       return;
     }
 
-    return;
-
-    this.loadingDocument(`revenue-${id}`, true);
 
     let url = '/api/revenues/files';
 
@@ -613,6 +626,7 @@ export class Files extends Component {
       .then(() =>
         this.loadingDocument(`revenue-${id}`, false))
       .then(() => this.setError(`revenue-${id}`))
+      .catch(this.catchQueryError)
       .catch(errormsg)
   }
 
@@ -629,12 +643,14 @@ export class Files extends Component {
       request = request.field('fileName', fileName);
     }
 
-    return request;
+    return request
+      .catch(this.catchQueryError);
   };
 
   addPage = ({ file, fileName = null }) => {
     return this.uploadFile({ file, fileName })
       .then(this.props.fetchDeclarations) // TODO update only delta
+      .catch(this.catchQueryError)
   };
 
   removePage = ({ file, pageNumberToRemove }) => {
@@ -645,6 +661,7 @@ export class Files extends Component {
       .set('Content-Type', 'application/json')
       .set('CSRF-Token', this.props.csrfToken)
       .then(this.props.fetchDeclarations) // TODO update only delta
+      .catch(this.catchQueryError)
   };
 
   onValidateRevenues = ({ id }) => {
@@ -660,9 +677,10 @@ export class Files extends Component {
       .then(() => this.loadingDocument(`revenue-${id}`, false))
       .then(() => this.setError(`revenue-${id}`))
       .then(this.unselectAll)
+      .catch(this.catchQueryError)
       .catch(error => {
         this.loadingDocument(`revenue-${id}`, false);
-        this.setError(`revenue-${id}`, DEFAULT_ERROR_MESSAGE);
+        this.setError(`revenue-${id}`, error);
       })
   };
 
@@ -1078,6 +1096,7 @@ Files.propTypes = {
   isFilesServiceUp: PropTypes.bool.isRequired,
   width: PropTypes.string,
   classes: PropTypes.object,
+  userLoogedOut: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -1106,5 +1125,6 @@ export default connect(
     hideInfoFilePreview: hideInfoFilePreviewAction,
     validateEmployerDoc: validateEmployerDocAction,
     validateDeclarationInfoDoc: validateDeclarationInfoDocAction,
+    userLoogedOut: userLoogedOutAction,
   },
 )(withWidth()(withStyles(styles)(Files)));

@@ -21,31 +21,9 @@ const hasMissingEmployersDocuments = (declaration) =>
   });
 
 const hasMissingDeclarationDocuments = (declaration) =>
-  (declaration.hasInternship
-    && declaration.infos.some(
-      ({ isTransmitted, type, file }) =>
-        type === docTypes.internship && isNull(file) && !isTransmitted,
-    ))
-  || (declaration.hasSickLeave
-    && declaration.infos.some(
-      ({ isTransmitted, type, file }) =>
-        type === docTypes.sickLeave && isNull(file) && !isTransmitted,
-    ))
-  || (declaration.hasMaternityLeave
-    && declaration.infos.some(
-      ({ isTransmitted, type, file }) =>
-        type === docTypes.maternityLeave && isNull(file) && !isTransmitted,
-    ))
-  || (declaration.hasRetirement
-    && declaration.infos.some(
-      ({ isTransmitted, type, file }) =>
-        type === docTypes.retirement && isNull(file) && !isTransmitted,
-    ))
-  || (declaration.hasInvalidity
-    && declaration.infos.some(
-      ({ isTransmitted, type, file }) =>
-        type === docTypes.invalidity && isNull(file) && !isTransmitted,
-    ));
+  declaration.infos.filter(
+    ({ type, isTransmitted }) => type !== 'jobSearch' && !isTransmitted,
+  ).length !== 0
 
 const hasMissingRevenuesDocuments = (declaration) => {
   const nbMissingFiles = declaration.revenues.reduce((all, current) => {

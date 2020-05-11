@@ -33,13 +33,17 @@ router.post(
 
     if (!req.file) return res.status(400).json('Missing file');
 
+    const isAddingFile = !!fileName;
+
     try {
       documentFileObj = await handleNewFileUpload({
         newFilename: req.file.filename,
         existingDocumentFile: fileName,
-        isAddingFile: !!fileName,
+        documentFileObj: {
+          file: req.file.filename,
+        },
+        isAddingFile,
       });
-
       res.json(documentFileObj);
     } catch (err) {
       // To get the correct error message front-side,
