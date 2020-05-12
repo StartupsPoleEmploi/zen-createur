@@ -549,7 +549,7 @@ export class Files extends Component {
     };
 
     const declarationRevenueId = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].id : null;
-    const filesSents = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].documents : null;
+    const filesSents = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].documents : [];
 
     const documentByTypes = (type) => filesSents.find(d => d.type === type) || null;
 
