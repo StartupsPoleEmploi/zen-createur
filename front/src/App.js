@@ -150,13 +150,13 @@ class App extends Component {
       if (pathname !== '/dashboard') {
         return <Redirect to="/dashboard" />;
       }
-    } else if (!user.email) {
+    } /* else if (!user.email) {
       // User is logged but no email is register
       if (pathname !== '/add-email') {
         return <Redirect to="/add-email" />;
       }
       // User is logged
-    } else if (pathname === '/') {
+    }*/ else if (pathname === '/') {
       return <Redirect to="/dashboard" />;
     }
 
