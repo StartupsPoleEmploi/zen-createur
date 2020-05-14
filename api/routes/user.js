@@ -21,8 +21,8 @@ router.get('/', refreshAccessToken, async (req, res) => {
 
   return res.json({
     isBlocked: dbUser.isBlocked,
-    needOnBoarding: dbUser.needOnBoarding,
-    needEmployerOnBoarding: dbUser.needEmployerOnBoarding,
+    needOnBoarding: false, //dbUser.needOnBoarding,
+    needEmployerOnBoarding: false, //dbUser.needEmployerOnBoarding,
     registeredAt: dbUser.registeredAt,
     ...req.session.user,
     csrfToken: req.csrfToken && req.csrfToken(),

@@ -2,11 +2,12 @@ import React, { useState, useRef } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import styled from 'styled-components'
-import { Typography, Grid } from '@material-ui/core'
+import { Typography, Grid, Hidden } from '@material-ui/core'
 import DoneIcon from '@material-ui/icons/Done'
 import PrintIcon from '@material-ui/icons/Print'
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
 import withWidth from '@material-ui/core/withWidth'
+import _ from 'lodash'
 
 import { primaryBlue } from '../../../constants'
 import { ActuStatusBlock, ActuHr } from './ActuGenericComponent'
@@ -36,10 +37,6 @@ const DECLARATION_FILE_URL = '/api/declarations/summary-file'
 const DeclarationFinished = ({ declaration, width }) => {
   const [showPrintIframe, setShowPrintIframe] = useState(false)
   const iframeEl = useRef(null)
-
-  const salary = Math.round(
-    declaration.employers.reduce((prev, emp) => prev + emp.salary, 0),
-  )
 
   function printDeclaration(e) {
     e.preventDefault()
@@ -78,41 +75,69 @@ const DeclarationFinished = ({ declaration, width }) => {
         <Grid item sm={12} md={6}>
           <Typography style={{ padding: '0 0 1rem 0' }}>
             <FileLink
-              href="/api/declarations/summary-file?download=true"
+              href="https://www.pole-emploi.fr/"
               target="_blank"
-              title="Télécharger votre déclaration au format PDF (Nouvelle fenêtre)"
+              title="PDF d'actualisation disponible uniquement sur Pôle emploi.fr"
             >
-              <VerticalAlignBottomIcon style={{ color: primaryBlue, marginRight: '1rem' }} />
-              Télécharger ma déclaration
-            </FileLink>
-          </Typography>
-
-          <Typography style={{ padding: '0 0 1rem 0' }}>
-            <FileLink href="#" onClick={printDeclaration}>
-              <PrintIcon style={{ color: primaryBlue, marginRight: '1rem' }} />
-              Imprimer ma déclaration
+              PDF d'actualisation disponible uniquement sur Pôle emploi.fr
             </FileLink>
           </Typography>
         </Grid>
       </Grid>
-      <ActuHr />
-      <div style={{ margin: '2rem auto 2rem auto' }}>
+      {declaration.employers.length !== 0 && (<><ActuHr /><div style={{ margin: '2rem auto 2rem auto' }}>
         <Grid container >
-          <Grid item xs={5} sm={4} md={4} lg={3}>
-            <Typography>Employeurs</Typography>
+          <Grid item xs={10} sm={10} md={3} lg={3}>
+            <Typography>Employeur{declaration.employers.length > 1 && <>s</>}</Typography>
             <Typography variant="h2" style={{ lineHeight: '1' }}>
               {declaration.employers.length}
             </Typography>
           </Grid>
-          <Grid item ><Hr width={width} /></Grid>
-          <Grid item xs={5} sm={6}>
-            <Typography>Rémunération déclarée</Typography>
+          <Hidden smDown>
+            <Grid item ><Hr width={width} /></Grid>
+          </Hidden>
+          <Grid item xs={10} sm={10} md={3} lg={3}>
+            <Typography>Nombre d'heures</Typography>
             <Typography variant="h2" style={{ lineHeight: '1' }}>
-              {salary} €
+              {Math.round(_.sumBy(declaration.employers, 'workHours'))} h
+          </Typography>
+          </Grid>
+          <Hidden smDown>
+            <Grid item ><Hr width={width} /></Grid>
+          </Hidden>
+          <Grid item xs={10} sm={10} md={3} lg={3}>
+            <Typography>Salaire € brut</Typography>
+            <Typography variant="h2" style={{ lineHeight: '1' }}>
+              {Math.round(_.sumBy(declaration.employers, 'salary'))} €
             </Typography>
           </Grid>
         </Grid>
-      </div>
+      </div></>)}
+      {declaration.revenues.length !== 0 && (<><ActuHr /><div style={{ margin: '2rem auto 2rem auto' }}><Grid container >
+        <Grid item xs={10} sm={10} md={3} lg={3}>
+          <Typography>Entreprise{declaration.revenues.length > 1 && <>s</>}</Typography>
+          <Typography variant="h2" style={{ lineHeight: '1' }}>
+            {declaration.revenues.length}
+          </Typography>
+        </Grid>
+        <Hidden smDown>
+          <Grid item ><Hr width={width} /></Grid>
+        </Hidden>
+        <Grid item xs={10} sm={10} md={3} lg={3}>
+          <Typography>Nombre d'heures</Typography>
+          <Typography variant="h2" style={{ lineHeight: '1' }}>
+            {Math.round(_.sumBy(declaration.revenues, 'workHours'))} h
+          </Typography>
+        </Grid>
+        <Hidden smDown>
+          <Grid item ><Hr width={width} /></Grid>
+        </Hidden>
+        <Grid item xs={10} sm={10} md={3} lg={3}>
+          <Typography>Montant chiffre d'affaire</Typography>
+          <Typography variant="h2" style={{ lineHeight: '1' }}>
+            {Math.round(_.sumBy(declaration.revenues, 'turnover'))} €
+          </Typography>
+        </Grid>
+      </Grid></div></>)}
 
       {showPrintIframe && (
         <iframe

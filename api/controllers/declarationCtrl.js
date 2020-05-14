@@ -1,4 +1,4 @@
-const { isNull } = require('lodash');
+const { isNull, get } = require('lodash');
 const { transaction } = require('objection');
 
 const EmployerDocument = require('../models/EmployerDocument');
@@ -9,16 +9,25 @@ const ActivityLog = require('../models/ActivityLog');
 const docTypes = DeclarationInfo.types;
 
 const hasMissingEmployersDocuments = (declaration) =>
-  declaration.employers.some((employer) => {
-    // If employer contract is still going on, we only need one document (the salary sheet)
-    // to validate it. Otherwise, we need an employer certificate.
+  declaration.employers.reduce((prev, employer) => {
     if (!employer.hasEndedThisMonth) {
-      return employer.documents.length === 0;
+      return prev + (get(employer, 'documents[0].isTransmitted') ? 0 : 1);
     }
-    return !employer.documents.find(
-      ({ type }) => type === EmployerDocument.types.employerCertificate,
+
+    /*
+        The salary sheet is optional for users which have already sent their employer certificate,
+        in which case we do not count it in the needed documents.
+      */
+    const hasEmployerCertificate = employer.documents.some(
+      ({ type, isTransmitted }) => type === employerCertificateType && isTransmitted,
     );
-  });
+    const hasSalarySheet = employer.documents.some(
+      ({ type, isTransmitted }) => type === salarySheetType && isTransmitted,
+    );
+
+    if (hasEmployerCertificate) return prev + 0;
+    return prev + (hasSalarySheet ? 1 : 2);
+  }, 0) !== 0
 
 const hasMissingDeclarationDocuments = (declaration) =>
   declaration.infos.filter(

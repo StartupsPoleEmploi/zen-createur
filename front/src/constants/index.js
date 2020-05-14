@@ -2,7 +2,7 @@
 // TODO harmonize error colors here
 export const primaryBlue = '#0065DB';
 export const secondaryBlue = '#262C65';
-export const helpColor = '#0065DB';
+export const helpColor = '#791A8B';
 export const darkBlue = '#1e2c59';
 
 /* Sizes */
@@ -36,6 +36,8 @@ export const DOCUMENT_LABELS = {
   invalidity: 'Attestation invalidité',
   employerCertificate: 'Attestation employeur',
   salarySheet: 'Bulletin de salaire',
+  enterpriseMontlyTurnover: 'Déclaration CA mensuelle',
+  enterpriseQuaterlyTurnover: 'Déclaration CA trimestrielle',
 };
 
 export const jobSearchEndMotive = {

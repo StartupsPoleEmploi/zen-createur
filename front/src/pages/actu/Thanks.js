@@ -7,6 +7,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 import MainActionButton from '../../components/Generic/MainActionButton';
 import sendDoc from '../../images/sendDoc.svg';
+import { primaryBlue } from '../../constants';
 
 const DECLARATION_FILE_URL = '/api/declarations/summary-file';
 
@@ -27,14 +28,7 @@ const Title = styled(Typography).attrs({ component: 'h1' })`
 `;
 
 const ButtonsContainers = styled.div`
-  display: flex;
-  margin: auto;
-  align-items: center;
   text-align: center;
-
-  @media (max-width: 850px) {
-    flex-direction: column;
-  }
 `;
 
 const Complementary = styled.div`
@@ -42,6 +36,14 @@ const Complementary = styled.div`
   padding: 3rem 1rem 2rem 1rem;
   border-top: 1px solid black;
 `;
+
+const FileLink = styled.a`
+  font-size: 1.6rem;
+  &:hover {
+    text-decoration: underline;
+    color: ${primaryBlue};
+  }
+`
 
 export default class Thanks extends Component {
   constructor(props) {
@@ -101,34 +103,13 @@ export default class Thanks extends Component {
             </Typography>
 
             <ButtonsContainers>
-              <MainActionButton
-                href="/api/declarations/summary-file?download=true"
+              <FileLink
+                href="https://www.pole-emploi.fr/"
                 target="_blank"
-                title="Télécharger votre déclaration au format PDF (Nouvelle fenêtre)"
-                style={{
-                  borderRadius: '3rem',
-                  minWidth: '30rem',
-                }}
-                primary
+                title="PDF d'actualisation disponible uniquement sur Pôle emploi.fr"
               >
-                Télécharger ma déclaration
-              </MainActionButton>
-
-              <Typography paragraph style={{ margin: '1rem' }}>
-                ou
-              </Typography>
-
-              <MainActionButton
-                primary={false}
-                onClick={this.printDeclaration}
-                style={{
-                  minWidth: '30rem',
-                  borderRadius: '3rem',
-                }}
-                variant="outlined"
-              >
-                Imprimer ma déclaration
-              </MainActionButton>
+                PDF d'actualisation disponible uniquement sur Pôle emploi.fr
+              </FileLink>
             </ButtonsContainers>
 
             <Complementary>
@@ -165,21 +146,21 @@ export default class Thanks extends Component {
             )}
           </>
         ) : (
-          <>
-            <Title variant="h6">
-              Merci, vos données ont bien été enregistrées.
+            <>
+              <Title variant="h6">
+                Merci, vos données ont bien été enregistrées.
             </Title>
-            <Typography paragraph>
-              Vous pourrez reprendre ultérieurement.
+              <Typography paragraph>
+                Vous pourrez reprendre ultérieurement.
             </Typography>
-            <ErrorOutlineIcon style={{ color: '#1F2C59', fontSize: 40, marginTop: '4rem' }} />
-            <Typography paragraph style={{ fontSize: '1.7rem' }}>
-              N’oubliez pas de revenir avant le 15 pour valider votre actualisation.
+              <ErrorOutlineIcon style={{ color: '#1F2C59', fontSize: 40, marginTop: '4rem' }} />
+              <Typography paragraph style={{ fontSize: '1.7rem' }}>
+                N’oubliez pas de revenir avant le 15 pour valider votre actualisation.
               <br />
               Un e-mail de rappel vous sera envoyé.
             </Typography>
-          </>
-        )}
+            </>
+          )}
       </StyledThanks>
     );
   }
