@@ -193,7 +193,7 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
 
       // Additional check: Employers declaration is finished and all should be filled
       if (
-        !checkValidityOfDeclaration({ declaration })
+        !checkValidityOfDeclaration({ declaration }) && req.body.isFinished
       ) {
         return res.status(400).json('Invalid declaration');
       }
