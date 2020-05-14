@@ -36,6 +36,8 @@ export const DOCUMENT_LABELS = {
   invalidity: 'Attestation invalidité',
   employerCertificate: 'Attestation employeur',
   salarySheet: 'Bulletin de salaire',
+  enterpriseMontlyTurnover: 'Déclaration CA mensuelle',
+  enterpriseQuaterlyTurnover: 'Déclaration CA trimestrielle',
 };
 
 export const jobSearchEndMotive = {

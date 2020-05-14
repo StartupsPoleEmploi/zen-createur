@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
 
 import { formattedDeclarationMonth, formatIntervalDates } from '../../lib/date'
-import { getMissingEmployerFiles, getMissingFilesNb } from '../../lib/file'
+import { getMissingEmployerFiles, getMissingFilesNb, getMissingEnterprisesFiles } from '../../lib/file'
 import { primaryBlue, DOCUMENT_LABELS, darkBlue } from '../../constants'
 
 import DashbordMainBt from '../../components/Generic/DashbordMainBt'
@@ -127,12 +127,13 @@ class DashboardJustificatifs extends PureComponent {
     if (declaration.isFinished) return null
 
     const employerFilesMissing = getMissingEmployerFiles(declaration)
+    const enterprisesFilesMissing = getMissingEnterprisesFiles(declaration)
     const infoFilesMissing = declaration.infos.filter((f) => !f.isTransmitted)
     const formattedMonth = formattedDeclarationMonth(
       declaration.declarationMonth.month,
     )
 
-    if (employerFilesMissing.length + infoFilesMissing.length === 0) {
+    if (employerFilesMissing.length + infoFilesMissing.length + enterprisesFilesMissing.length === 0) {
       return null
     }
 
@@ -151,17 +152,30 @@ class DashboardJustificatifs extends PureComponent {
           </Typography>
         ))}
 
-        {infoFilesMissing.map((info) => (
+        {enterprisesFilesMissing.map(({ name, type }) => (
           <Typography
-            key={`${info.employerId}-${info.type}`}
+            key={type}
             style={{ fontWeight: 'bold' }}
-            className="missing-info-file"
+            className="missing-employer-file"
           >
-            {DOCUMENT_LABELS[info.type]}{' '}
-            <Lower>{formatIntervalDates(info.startDate, info.endDate)}</Lower>
+            <Upper>{name}</Upper> : {DOCUMENT_LABELS[type]}
           </Typography>
-        ))}
-      </RemainingFiles>
+        ))
+        }
+
+        {
+          infoFilesMissing.map((info) => (
+            <Typography
+              key={`${info.employerId}-${info.type}`}
+              style={{ fontWeight: 'bold' }}
+              className="missing-info-file"
+            >
+              {DOCUMENT_LABELS[info.type]}{' '}
+              <Lower>{formatIntervalDates(info.startDate, info.endDate)}</Lower>
+            </Typography>
+          ))
+        }
+      </RemainingFiles >
     )
   }
 
