@@ -499,7 +499,7 @@ router.post('/files/validate', refreshAccessToken, (req, res, next) => {
           }))
         .then(() =>
           Declaration.query()
-            .eager('[employers.documents, infos, declarationMonth]')
+            .eager('[employers.documents, infos, revenues.documents, declarationMonth]')
             .findOne({
               id: declarationInfo.declaration.id,
               userId: req.session.user.id,
