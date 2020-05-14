@@ -695,9 +695,9 @@ export class Actu extends Component {
       return null;
     }
 
-    if (this.shouldDisplayJobCheck()) {
+    /*if (this.shouldDisplayJobCheck()) {
       return <UserJobCheck onValidate={this.setJobCheck} />;
-    }
+    }*/
 
     const activeMonthMoment = moment(this.props.activeMonth);
 
