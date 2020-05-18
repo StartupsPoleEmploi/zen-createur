@@ -418,7 +418,7 @@ export class Employers extends Component {
       [from]: prevEmployers.map((employer, key) =>
         (key === index ? { ...employer, [name]: { value, error } } : employer)),
       error: null,
-    }), () => { if (!error) this.checkFormValidity({ getErrorText: false }); });
+    }));
 
 
   onRemove = (index, from = 'employers') => {
@@ -724,7 +724,7 @@ export class Employers extends Component {
             {error && <ErrorMessage>{error}</ErrorMessage>}
 
             <ButtonsContainer>
-              <StyledMainAction primary onClick={this.openDialog} disabled={!isFormValid}>
+              <StyledMainAction primary onClick={this.openDialog}>
                 Envoyer mon
                 <br />
                 actualisation
@@ -732,7 +732,6 @@ export class Employers extends Component {
               <StyledMainAction
                 primary={false}
                 onClick={this.saveAndRedirect}
-                disabled={!isFormValid}
               >
                 Enregistrer
                 <br />
