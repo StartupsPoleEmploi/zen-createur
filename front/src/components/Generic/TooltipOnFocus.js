@@ -20,7 +20,7 @@ const TooltipTitle = styled(Typography)`
 
 const TooltipText = styled(Typography)`
   && {
-    line-height: 2rem;
+    line-height: 2.2rem;
   }
 `;
 
@@ -28,6 +28,7 @@ const InfoImg = styled.img`
   width: 2.5rem;
   float: left;
   margin-right: 1rem;
+  transform: rotate(180deg);
 `;
 
 const styles = () => ({

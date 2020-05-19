@@ -8,7 +8,7 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import ErrorOutline from '@material-ui/icons/ErrorOutline';
 
 
 import { Typography, Box } from '@material-ui/core';
@@ -88,7 +88,7 @@ const StyledTextField = styled(TextField)`
   }
 `;
 
-const InfoTooltipImg = styled(InfoOutlinedIcon)`
+const ErrorOutlineImg = styled(ErrorOutline)`
   && {
     color: ${helpColor};
     vertical-align: sub;
@@ -112,6 +112,7 @@ const CollapsedTitle = styled.div`
 const QuestionLabel = styled(Typography)`
   && {
     flex-shrink: 1;
+    margin-bottom: 16px;
 
     @media (max-width: ${mobileBreakpoint}) {
       margin-bottom: 0.5rem;
@@ -157,15 +158,15 @@ export class CreatorQuestion extends PureComponent {
   renderLabel = ({
     id, label, content, showTooltip,
   }) => (
-    <div>
-      {label}
-      {showTooltip && (
-      <TooltipOnFocus tooltipId={id} content={content}>
-        <InfoImg src={warn} alt="Informations" />
-      </TooltipOnFocus>
-      )}
-    </div>
-  )
+      <div>
+        {label}
+        {showTooltip && (
+          <TooltipOnFocus tooltipId={id} content={content}>
+            <InfoImg src={warn} alt="Informations" />
+          </TooltipOnFocus>
+        )}
+      </div>
+    )
 
   updateTimeworked = (time) => {
     switch (time) {
@@ -281,8 +282,8 @@ export class CreatorQuestion extends PureComponent {
                       label="Non, pas ce mois-ci"
                     />
                   </Box>
-                  <TooltipOnFocus content="Si vous déclarez ne pas avoir travaillé pour votre entreprise, le nombre d'heure inscrit sur votre déclaration d'actualisation Pôle emploi sera de 1 heure. Si vous souhaitez arrêter l'activité de votre entreprise, vous devez le déclarer à Pôle emploi.">
-                    <InfoTooltipImg />
+                  <TooltipOnFocus content={<>Si vous déclarez <b>ne pas avoir travaillé</b> pour votre entreprise, <b>le nombre d'heure inscrit</b> sur votre déclaration d'actualisation Pôle emploi sera de <b>1 heure</b>. Si vous souhaitez arrêter l'activité de votre entreprise, vous devez le déclarer à Pôle emploi.</>}>
+                    <ErrorOutlineImg />
                   </TooltipOnFocus>
                 </Box>
                 <Box display="flex" alignItems="center">
@@ -293,8 +294,8 @@ export class CreatorQuestion extends PureComponent {
                       label="Oui, à temps partiel"
                     />
                   </Box>
-                  <TooltipOnFocus content="Temps partiel est la ligne à remplir si n'avez pas travaillé tout ce mois-ci pour votre entreprise. Quelques heures ou plusieurs jours dans le mois ? Pour exemple, 7h équivaut à une journée pleine.">
-                    <InfoTooltipImg />
+                  <TooltipOnFocus content={<>Temps partiel est la ligne à remplir si n'avez pas travaillé tout ce mois-ci pour votre entreprise. Quelques heures ou plusieurs jours dans le mois ? Pour exemple, 7h équivaut à une journée pleine.</>}>
+                    <ErrorOutlineImg />
                   </TooltipOnFocus>
                 </Box>
                 <Box display="flex" alignItems="center">
@@ -305,15 +306,15 @@ export class CreatorQuestion extends PureComponent {
                       label="Oui, à temps plein"
                     />
                   </Box>
-                  <TooltipOnFocus content="Si vous déclarez avoir travaillé pour votre entreprise à temps plein pour ce mois, le nombre d'heure inscrit sur votre déclaration d'actualisation Pôle emploi sera de 151 heures.">
-                    <InfoTooltipImg />
+                  <TooltipOnFocus content={<>Si vous déclarez avoir travaillé pour votre entreprise à <b>temps plein</b> pour ce mois, le nombre d'heure inscrit sur votre déclaration d'actualisation Pôle emploi sera de <b>151 heures</b>.</>}>
+                    <ErrorOutlineImg />
                   </TooltipOnFocus>
                 </Box>
               </RadioGroup>
               {timeWorked && timeWorked.error && (
-              <ErrorMessage>
-                {timeWorked.error}
-              </ErrorMessage>
+                <ErrorMessage>
+                  {timeWorked.error}
+                </ErrorMessage>
               )}
               {timeWorked.value === TIMEWORKED.ALF && (
                 <StyledTextField
@@ -344,35 +345,36 @@ export class CreatorQuestion extends PureComponent {
               )}
 
               {this.props.needTurnover && (
-              <StyledTextField
-                id={`creator-turnover[${index}]`}
-                className="root-salary"
-                label={this.renderLabel({
-                  id: `creator-turnover[${index}]`,
-                  label: "Montant chiffre d'affaire",
-                  content: "Vous devez renseigner un chiffre d'affaire en € TTC avant abattement, mis à jour avec le ou les montants facturés ce mois-ci.",
-                  showTooltip,
-                })}
-                name={`turnover[${index}]`}
-                value={turnover.value}
-                onChange={this.onChange}
-                error={!!turnover.error}
-                helperText={turnover.error}
-                InputProps={{
-                  inputComponent: EuroInputWithoutTaxe,
-                }}
-                // eslint-disable-next-line react/jsx-no-duplicate-props
-                inputProps={{
-                  maxLength: 10,
-                  'aria-describedby': `salaryDescription[${index}]`,
-                }}
-                fullWidth={verticalLayout}
-                inputRef={this.turnoverInput}
-              />
+                <StyledTextField
+                  id={`creator-turnover[${index}]`}
+                  className="root-salary"
+                  label={this.renderLabel({
+                    id: `creator-turnover[${index}]`,
+                    label: "Montant chiffre d'affaire",
+                    content: <>Vous devez renseigner un chiffre d'affaire en <b>€ TTC avant abattement, mis à jour</b> avec le ou les montants facturés ce mois-ci.</>,
+                    showTooltip,
+                  })}
+                  name={`turnover[${index}]`}
+                  value={turnover.value}
+                  onChange={this.onChange}
+                  error={!!turnover.error}
+                  helperText={turnover.error}
+                  InputProps={{
+                    inputComponent: EuroInputWithoutTaxe,
+                  }}
+                  // eslint-disable-next-line react/jsx-no-duplicate-props
+                  inputProps={{
+                    maxLength: 10,
+                    'aria-describedby': `salaryDescription[${index}]`,
+                  }}
+                  fullWidth={verticalLayout}
+                  inputRef={this.turnoverInput}
+                />
               )}
             </StyledMain>
           </>
-        )}
+        )
+        }
       </StyledContainer>
     );
   }

@@ -174,7 +174,7 @@ const DeclarationSummaryDialog = ({
                             leftPart = "Je n'ai pas travaillé pour mon entreprise ce mois-ci";
                             break;
                           case TIMEWORKED.FULL:
-                            leftPart = "J'ai travaillé à temps pleins pour mon entreprise";
+                            leftPart = "J'ai travaillé à temps plein pour mon entreprise";
                             break;
                           default:
                             leftPart = (
@@ -192,7 +192,7 @@ const DeclarationSummaryDialog = ({
                         if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
                           rightPart = (
                             <>
-                              <b>Déclaration Urssaf tous les mois</b>
+                              <b>Déclaration URSSAF tous les mois</b>
                               {' '}
                             -
                             {' '}
@@ -210,7 +210,7 @@ const DeclarationSummaryDialog = ({
                         } else {
                           rightPart = (
                             <b>
-                              Déclaration Urssaf tous les trismestres
+                              Déclaration URSSAF tous les trismestres
                             </b>
                           );
                         }
