@@ -2,6 +2,8 @@
 // configuration is mainly done with docker .env files
 // interpolated in default.json
 module.exports = {
+  bypassDeclarationDispatch: true, // disables calls to pe-api for documents
+  bypassDocumentsDispatch: true, // disables calls to pe-api for declarations
 
   // scops get from https://www-r.es-qvr-dev.fr/
   peConnectScope: [
