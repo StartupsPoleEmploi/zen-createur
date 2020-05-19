@@ -13,7 +13,6 @@ services:
   api:
     image: zen-createur-api_${ZEN_ENV}:${BUILD_VERSION}
     volumes:
-      - '/mnt/datalakepe/:/mnt/datalakepe/'
       - './var/log/zen-createur_api:/var/log/zen-createur_api'
     environment:
       - WINSTON_FILE_FOLDER=/var/log/zen-createur_api
