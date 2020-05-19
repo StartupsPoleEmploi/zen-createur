@@ -184,7 +184,7 @@ export class EmployerQuestion extends PureComponent {
                   id: `employerName[${index}]`,
                   label: 'Nom employeur',
                   content:
-                    'Si vous avez plusieurs employeurs, cliquez sur "Ajouter un employeur"',
+                    <>Si vous avez plusieurs employeurs, cliquez sur <b>Ajouter un employeur</b></>,
                 })}
                 name={`employerName[${index}]`}
                 value={employerName.value}
@@ -207,7 +207,7 @@ export class EmployerQuestion extends PureComponent {
                       id: `workHours[${index}]`,
                       label: "Nombre d'heures",
                       content:
-                        'Inscrivez les heures qui sont inscrites sur votre fiche de paie.',
+                        <>Inscrivez <b>les heures inscrites</b> sur votre fiche de paie.</>,
                     })}
                     name={`workHours[${index}]`}
                     value={workHours.value}
@@ -233,7 +233,7 @@ export class EmployerQuestion extends PureComponent {
                     label={this.renderLabel({
                       id: `salary[${index}]`,
                       label: 'Salaire € brut',
-                      content: 'Déclarez le salaire brut pour cet employeur',
+                      content: <>Déclarez <b>le salaire brut</b> pour cet employeur</>,
                     })}
                     name={`salary[${index}]`}
                     value={salary.value}
@@ -265,13 +265,13 @@ export class EmployerQuestion extends PureComponent {
                   &nbsp;?
                       </>
                     ) : (
-                      <>
-                        Terminé en
+                        <>
+                          Terminé en
                         {' '}
-                        {moment(this.props.activeMonth).format('MMMM')}
+                          {moment(this.props.activeMonth).format('MMMM')}
                   &nbsp;?
                       </>
-                    )}
+                      )}
                     {hasEndedThisMonth.error && (
                       <FormHelperText error>{hasEndedThisMonth.error}</FormHelperText>
                     )}

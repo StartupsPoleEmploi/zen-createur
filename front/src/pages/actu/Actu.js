@@ -18,7 +18,7 @@ import styled from 'styled-components';
 import ArrowRightAlt from '@material-ui/icons/ArrowRightAlt';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import Box from '@material-ui/core/Box';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import * as Sentry from '@sentry/browser';
 
 
@@ -142,7 +142,7 @@ const QuestionLabel = styled(Typography)`
   }
 `;
 
-const InfoImg = styled(InfoOutlinedIcon)`
+const ErrorOutlineImg = styled(ErrorOutline)`
   && {
     color: ${helpColor};
     vertical-align: sub;
@@ -666,7 +666,7 @@ export class Actu extends Component {
     const helperText = (
       <>
         Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au mois ou au
-        trimestre. En cas de doute, vous pouvez consulter votre compte en ligne sur le site
+        trimestre. En cas de doute, vous pouvez consulter votre compte en ligne sur le site<>{' '}</>
         <u>Autoentrepreneur.urssaf.fr.</u>
       </>
     );
@@ -685,7 +685,7 @@ export class Actu extends Component {
               <>
                 Avez-vous une entreprise ?
                 <br />
-                Ex: Auto-entrepeneur, micro-entreprise, SARL, VDI, etc.
+                Ex: Auto-entrepreneur, micro-entreprise, SARL, VDI, etc.
               </>
             )}
             name="isCreator"
@@ -717,7 +717,7 @@ export class Actu extends Component {
                   />
                 </Box>
                 <TooltipOnFocus content={helperText}>
-                  <InfoImg />
+                  <ErrorOutlineImg />
                 </TooltipOnFocus>
               </Box>
               <Box display="flex" alignItems="center">
@@ -729,7 +729,7 @@ export class Actu extends Component {
                   />
                 </Box>
                 <TooltipOnFocus content={helperText}>
-                  <InfoImg />
+                  <ErrorOutlineImg />
                 </TooltipOnFocus>
               </Box>
             </RadioGroup>
