@@ -7,6 +7,10 @@ const Declaration = require('../models/Declaration');
 const ActivityLog = require('../models/ActivityLog');
 
 const docTypes = DeclarationInfo.types;
+const salarySheetType = 'salarySheet';
+const employerCertificateType = 'employerCertificate';
+const enterpriseMontlyTurnoverType = 'enterpriseMontlyTurnover';
+const enterpriseQuaterlyTurnoverType = 'enterpriseQuaterlyTurnover';
 
 const hasMissingEmployersDocuments = (declaration) =>
   declaration.employers.reduce((prev, employer) => {

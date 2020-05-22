@@ -46,7 +46,6 @@ const DeclarationHeader = styled.div`
 
 const DeclarationValues = styled(Typography).attrs({ color: 'secondary' })`
   && {
-    font-weight: bold;
     font-size: 1.6rem;
   }
 `;
@@ -192,7 +191,7 @@ const DeclarationSummaryDialog = ({
                         if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
                           rightPart = (
                             <>
-                              <b>Déclaration URSSAF tous les mois</b>
+                              Déclaration URSSAF tous les mois
                               {' '}
                             -
                             {' '}
@@ -208,11 +207,9 @@ const DeclarationSummaryDialog = ({
                             </>
                           );
                         } else {
-                          rightPart = (
-                            <b>
-                              Déclaration URSSAF tous les trismestres
-                            </b>
-                          );
+                          rightPart = <>
+                            Déclaration URSSAF tous les trismestres
+                          </>;
                         }
 
                         return (
@@ -321,12 +318,12 @@ const DeclarationSummaryDialog = ({
               <DeclarationHeader>Inscription</DeclarationHeader>
               {declaration.isLookingForJob ? (
                 <DeclarationValues>
-                  Oui, je souhaite rester inscrit à Pôle emploi
+                  Oui, je souhaite rester inscrit.e à Pôle emploi
                 </DeclarationValues>
               ) : (
                   <>
                     <DeclarationValues>
-                      Non, je ne souhaite pas rester inscrit à Pôle emploi
+                      Non, je ne souhaite pas rester inscrit.e à Pôle emploi
                   </DeclarationValues>
 
                     <DeclarationValues>

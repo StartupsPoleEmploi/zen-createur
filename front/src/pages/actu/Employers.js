@@ -176,6 +176,7 @@ const Block = styled.div`
 
 const StyleContainerBlock = styled.div`
   margin: auto;
+  max-width: 1000px;
 `;
 
 const BoxContainer = styled(Box)`

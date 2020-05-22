@@ -102,6 +102,10 @@ const CollapsedTitle = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
+  transition: opacity 0.4s;
+  &:hover {
+    opacity: 0.6;
+  }
 `;
 
 
