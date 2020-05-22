@@ -663,19 +663,26 @@ export class Actu extends Component {
         (this.state.isCreator === true && this.state.creatorTaxeRate !== null) ||
         this.state.isCreator === false
       );
-    const helperText = (
+    const helperTextMonthly = (
       <>
-        Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au mois ou au
+        Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au mois. En cas de doute, vous pouvez consulter votre compte en ligne sur le site<>{' '}</>
+        <u>Autoentrepreneur.urssaf.fr.</u>
+      </>
+    );
+    const helperTextQuaterly = (
+      <>
+        Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au
         trimestre. En cas de doute, vous pouvez consulter votre compte en ligne sur le site<>{' '}</>
         <u>Autoentrepreneur.urssaf.fr.</u>
       </>
     );
 
+
     return (
       <StyledPaper>
         <StyledList>
           <DeclarationQuestion
-            label="Avez-vous travaillé pour un employeur ce mois-ci?"
+            label="Avez-vous travaillé pour un employeur ce mois-ci ?"
             name="hasEmployers"
             value={this.state.hasEmployers}
             onAnswer={this.onAnswer}
@@ -716,7 +723,7 @@ export class Actu extends Component {
                     label="Tous les mois"
                   />
                 </Box>
-                <TooltipOnFocus content={helperText}>
+                <TooltipOnFocus content={helperTextMonthly}>
                   <ErrorOutlineImg />
                 </TooltipOnFocus>
               </Box>
@@ -728,7 +735,7 @@ export class Actu extends Component {
                     label="Tous les trimestres"
                   />
                 </Box>
-                <TooltipOnFocus content={helperText}>
+                <TooltipOnFocus content={helperTextQuaterly}>
                   <ErrorOutlineImg />
                 </TooltipOnFocus>
               </Box>
