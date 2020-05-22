@@ -74,6 +74,12 @@ const Title = styled(Typography)`
   }
 `;
 
+const TypographyLight = styled(Typography)`
+&& {
+  line-height: 26px;
+}
+`;
+
 const AddEmployersButtonContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -100,6 +106,12 @@ const LineDiv = styled.div`
   height: 0.1rem;
   background-color: #e4e4e4;
 `;
+
+const MainLineDiv = styled(LineDiv)`
+  max-width: inherit;
+  margin: 24px 0 32px 0;
+`
+
 const ButtonsContainer = styled.div`
   display: flex;
   flex-direction: row-reverse;
@@ -141,7 +153,7 @@ const StyledMainAction = styled(MainActionButton)`
 `;
 
 const BoxPanel = styled.div`
-  margin: 20px auto 0 auto;
+  margin: 20px auto 0 0;
   padding: 0 40px;
   width: 520px;
 
@@ -151,15 +163,26 @@ const BoxPanel = styled.div`
   }
 `;
 
+const BoxEmployerPanel = styled(BoxPanel)`
+margin: 20px 0 0 auto;
+`
+
+
 const Block = styled.div`
   border-radius: 15px;
   background-color: #FAFAFA;
-  padding: 20px 40px;
+  padding: 37px 40px;
 `;
 
 const StyleContainerBlock = styled.div`
-  display: inline-block;
+  margin: auto;
+  max-width: 1000px;
 `;
+
+const BoxContainer = styled(Box)`
+  display: flex;
+  margin: auto;
+`
 
 
 const employerTemplate = {
@@ -618,7 +641,7 @@ export class Employers extends Component {
               </Title>
               <Block style={{ backgroundColor: 'transparent' }}>
                 {employers.length <= 1 && (
-                  <Typography>
+                  <TypographyLight>
                     Pour quel employeur avez-vous travaillé
                     <br />
                 en
@@ -626,7 +649,7 @@ export class Employers extends Component {
                     {moment(this.props.activeMonth).format('MMMM YYYY')}
                     {' '}
                 ?
-                  </Typography>
+                  </TypographyLight>
                 )}
                 {employers.map(this.renderEmployerQuestion)}
               </Block>
@@ -677,7 +700,7 @@ export class Employers extends Component {
         {this.props.declarations[0].taxeDue && (
           <Box flex={1}>
             <BoxPanel>
-              <Block style={{ paddingTop: '50px' }}>
+              <Block style={{ marginTop: '33px' }}>
                 <Title variant="h6" component="h1">
                   <b>{enterprises.length > 1 ? 'MES ENTREPRISES' : 'MON ENTREPRISE'}</b>
                   {' '}
@@ -710,12 +733,14 @@ export class Employers extends Component {
         <StyleContainerBlock>
           {this.props.declarations && this.props.declarations.length && (
             <>
-              <Box display="inline-flex">
+              <BoxContainer>
                 {this.renderEmployerPanel()}
                 {this.renderCreatorPanel()}
-              </Box>
+              </BoxContainer>
             </>
           )}
+
+          <MainLineDiv />
 
           <StyledAlwaysVisibleContainer
             scrollButtonTopValue="0"

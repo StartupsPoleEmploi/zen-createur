@@ -18,7 +18,7 @@ import styled from 'styled-components';
 import ArrowRightAlt from '@material-ui/icons/ArrowRightAlt';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import Box from '@material-ui/core/Box';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import * as Sentry from '@sentry/browser';
 
 
@@ -142,7 +142,7 @@ const QuestionLabel = styled(Typography)`
   }
 `;
 
-const InfoImg = styled(InfoOutlinedIcon)`
+const ErrorOutlineImg = styled(ErrorOutline)`
   && {
     color: ${helpColor};
     vertical-align: sub;
@@ -663,19 +663,26 @@ export class Actu extends Component {
         (this.state.isCreator === true && this.state.creatorTaxeRate !== null) ||
         this.state.isCreator === false
       );
-    const helperText = (
+    const helperTextMonthly = (
       <>
-        Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au mois ou au
-        trimestre. En cas de doute, vous pouvez consulter votre compte en ligne sur le site
+        Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au mois. En cas de doute, vous pouvez consulter votre compte en ligne sur le site<>{' '}</>
         <u>Autoentrepreneur.urssaf.fr.</u>
       </>
     );
+    const helperTextQuaterly = (
+      <>
+        Lors de la création de votre statut, vous avez choisi de déclarer vos revenus au
+        trimestre. En cas de doute, vous pouvez consulter votre compte en ligne sur le site<>{' '}</>
+        <u>Autoentrepreneur.urssaf.fr.</u>
+      </>
+    );
+
 
     return (
       <StyledPaper>
         <StyledList>
           <DeclarationQuestion
-            label="Avez-vous travaillé pour un employeur ce mois-ci?"
+            label="Avez-vous travaillé pour un employeur ce mois-ci ?"
             name="hasEmployers"
             value={this.state.hasEmployers}
             onAnswer={this.onAnswer}
@@ -685,7 +692,7 @@ export class Actu extends Component {
               <>
                 Avez-vous une entreprise ?
                 <br />
-                Ex: Auto-entrepeneur, micro-entreprise, SARL, VDI, etc.
+                Ex: Auto-entrepreneur, micro-entreprise, SARL, VDI, etc.
               </>
             )}
             name="isCreator"
@@ -716,8 +723,8 @@ export class Actu extends Component {
                     label="Tous les mois"
                   />
                 </Box>
-                <TooltipOnFocus content={helperText}>
-                  <InfoImg />
+                <TooltipOnFocus content={helperTextMonthly}>
+                  <ErrorOutlineImg />
                 </TooltipOnFocus>
               </Box>
               <Box display="flex" alignItems="center">
@@ -728,8 +735,8 @@ export class Actu extends Component {
                     label="Tous les trimestres"
                   />
                 </Box>
-                <TooltipOnFocus content={helperText}>
-                  <InfoImg />
+                <TooltipOnFocus content={helperTextQuaterly}>
+                  <ErrorOutlineImg />
                 </TooltipOnFocus>
               </Box>
             </RadioGroup>

@@ -369,12 +369,7 @@ export const Home = ({ location: { search } }) => {
               <span style={{ color: primaryBlue }}>.</span>
             </Title>
             <Tagline>
-              Zen est un service Pôle emploi dédié aux
-              {' '}
-              <strong>personnes ayant un ou plusieurs employeurs.</strong>
-              <br />
-              Bénéficiez d'une actualisation et d'un envoi de justificatifs
-              simplifiés.
+              Zen est un service Pôle emploi qui propose une actualisation et un envoi de justificatifs simplifiés.
             </Tagline>
             {useMobileVersion && (
               <Typography style={{ padding: '1rem 0 2rem' }}>
@@ -439,8 +434,8 @@ export const Home = ({ location: { search } }) => {
             {useIntermediaryVersion ? (
               <ArrowDownward alt="" />
             ) : (
-              <ArrowForward alt="" />
-            )}
+                <ArrowForward alt="" />
+              )}
           </SummaryLi>
           <SummaryLi>
             <SummaryImgContainer>
@@ -463,8 +458,8 @@ export const Home = ({ location: { search } }) => {
             {useIntermediaryVersion ? (
               <ArrowDownward alt="" />
             ) : (
-              <ArrowForward alt="" />
-            )}
+                <ArrowForward alt="" />
+              )}
           </SummaryLi>
           <SummaryLi>
             <SummaryImgContainer>
@@ -501,8 +496,8 @@ export const Home = ({ location: { search } }) => {
               <strong>
                 Vous êtes
                 {' '}
-                <span aria-label="assistants ou assistantes maternels">
-                  assistant.e maternel.le
+                <span aria-label="créateur">
+                  créateur
                 </span>
               </strong>
               <br />
@@ -511,11 +506,7 @@ export const Home = ({ location: { search } }) => {
               à Pôle
               emploi
               <br />
-              Exerçant une activité en France,
-              <br />
-              excepté en Bourgogne-Franche-Comté, Centre-Val de Loire
-              <br />
-              et dans les DOM-TOM
+              Exerçant une activité en France.
             </ZenIsForYouText>
           </ZenIsForYouSubSection>
         </ZenIsForYouContainer>
