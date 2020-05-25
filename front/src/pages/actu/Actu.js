@@ -245,9 +245,9 @@ export class Actu extends Component {
   })
 
   openDialog = () => {
-    const error = this.getFormError();
-    if (error) {
-      return this.setState({ formError: error });
+    const { errorMsg, errorsField } = this.getFormError();
+    if (errorMsg) {
+      return this.setState({ formError: errorMsg, errorsField });
     }
     this.setState({ isDialogOpened: true });
   }
@@ -463,7 +463,7 @@ export class Actu extends Component {
 
     }
 
-    if (!isLookingForJob) {
+    if (isLookingForJob === false) {
       const checkList = infos.filter(
         ({ type }) => type === types.JOB_SEARCH,
       );
@@ -474,6 +474,7 @@ export class Actu extends Component {
           errorMsg = 'Merci d\'indiquer depuis quand vous ne cherchez plus d\'emploi';
         }
       })
+
 
       if (!jobSearchStopMotive) {
         errorMsg = 'Merci d\'indiquer pourquoi vous ne recherchez plus d\'emploi';
@@ -773,6 +774,7 @@ export class Actu extends Component {
       return null;
     }
 
+
     /*if (this.shouldDisplayJobCheck()) {
       return <UserJobCheck onValidate={this.setJobCheck} />;
     }*/
@@ -780,7 +782,7 @@ export class Actu extends Component {
     const activeMonthMoment = moment(this.props.activeMonth);
 
     const useVerticalLayoutForQuestions = this.props.width === muiBreakpoints.xs;
-    const { errorMsg } = this.getFormError();
+    const { errorMsg } = formError || { errorMsg: null };
     const error = errorMsg !== null;
 
     return (
@@ -957,7 +959,7 @@ export class Actu extends Component {
             )}
 
             <AlwaysVisibleContainer>
-              {formError && <ErrorMessage>{formError}</ErrorMessage>}
+              {error && <ErrorMessage>{errorMsg}</ErrorMessage>}
               <FinalButtonsContainer>
                 <MainActionButton
                   primary={false}
