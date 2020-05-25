@@ -73,6 +73,7 @@ async function getActualisationStatus(authToken) {
     accessToken: authToken.token.access_token,
   })
     .then(({ body: declarationData }) => {
+      console.log('PE return', declarationData);
       // We only allow declarations when we have this status code
       // (yes, it doesn't seem to make sense, but that's what the API
       // gives us when the declaration hasn't been done yet)
