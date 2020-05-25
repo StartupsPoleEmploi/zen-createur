@@ -1,5 +1,6 @@
 const { BelongsToOneRelation, HasManyRelation } = require('objection');
 const BaseModel = require('./BaseModel');
+const EmployerDocument = require('./EmployerDocument');
 
 class Employer extends BaseModel {
   static get tableName() {
@@ -22,6 +23,12 @@ class Employer extends BaseModel {
         documentId: { type: ['integer'] },
       },
     };
+  }
+
+  static async beforeDelete({ findQuery, transaction }) {
+    // `findQuery` is a "read-only" version of the delete query about to be executed.
+    // You can use it for example as a subquery like this:
+    await EmployerDocument.query(transaction).delete().whereIn('employerId', findQuery.select('id'))
   }
 
   // This object defines the relations to other models.

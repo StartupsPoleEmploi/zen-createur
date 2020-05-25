@@ -326,11 +326,11 @@ const DeclarationSummaryDialog = ({
                       Non, je ne souhaite pas rester inscrit.e à Pôle emploi
                   </DeclarationValues>
 
-                    <DeclarationValues>
+                    {jobSearch && <DeclarationValues>
                       Date de fin :
                     {' '}
                       {formatDate(jobSearch.endDate)}
-                    </DeclarationValues>
+                    </DeclarationValues>}
                     <DeclarationValues>
                       Motif :
                     {' '}
