@@ -506,7 +506,11 @@ export const Home = ({ location: { search } }) => {
               à Pôle
               emploi
               <br />
-              Exerçant une activité en France.
+              Exerçant une activité en France,
+              <br />
+              excepté en Bourgogne-Franche-Comté, Centre-Val de Loire
+              <br />
+              et dans les DOM-TOM
             </ZenIsForYouText>
           </ZenIsForYouSubSection>
         </ZenIsForYouContainer>
