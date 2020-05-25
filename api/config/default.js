@@ -22,6 +22,8 @@ module.exports = {
   bypassDeclarationDispatch: false,
   bypassDocumentsDispatch: false,
 
+  authorizeEmailsOnCreation: [],
+
   // scops get from https://www.emploi-store-dev.fr/
   peConnectScope: [
     // API => Se connecter avec Pôle emploi - V1
