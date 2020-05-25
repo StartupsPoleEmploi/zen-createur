@@ -74,7 +74,6 @@ router.get('/callback', async (req, res) => {
       };
       dbUser = await User.query().insert(userToSave).returning('*');
       canSendDeclaration = isAuthorized;
-      hasAlreadySentDeclaration = false;
       if (config.get('shouldSendTransactionalEmails') && dbUser.email) {
         // Note: We do not wait for Mailjet to answer to send data back to the user
         mailjet
