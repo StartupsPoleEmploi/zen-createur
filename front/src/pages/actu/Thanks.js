@@ -6,10 +6,36 @@ import Typography from '@material-ui/core/Typography';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 import MainActionButton from '../../components/Generic/MainActionButton';
-import sendDoc from '../../images/sendDoc.svg';
+import thankImg from '../../images/thank.svg';
 import { primaryBlue } from '../../constants';
+import { Box } from '@material-ui/core';
+import ArrowRightAlt from '@material-ui/icons/ArrowRightAlt';
+import Check from '@material-ui/icons/Check';
+import { connect } from 'react-redux';
 
 const DECLARATION_FILE_URL = '/api/declarations/summary-file';
+
+const Btn = styled(MainActionButton)`
+white-space: nowrap;
+width: auto !important;
+padding: 0 4rem !important;
+`
+
+const Text = styled(Typography)`
+font-size: 18px;
+`
+
+const CheckIcon = styled(Check)`
+  && {
+    margin-right: 1rem;
+    color: green;
+    vertical-align: sub;
+  }
+`;
+
+const StyledArrowRightAlt = styled(ArrowRightAlt)`
+  margin-left: 1rem;
+`;
 
 const StyledThanks = styled.div`
   margin: auto;
@@ -24,141 +50,91 @@ const StyledImg = styled.img`
 `;
 
 const Title = styled(Typography).attrs({ component: 'h1' })`
-  padding: 4rem 0 6rem 0;
+  padding: 0 0 0.5rem 0;
+  font-size: 22px !important;
 `;
 
 const ButtonsContainers = styled.div`
   text-align: center;
 `;
 
-const Complementary = styled.div`
-  margin-top: 5rem;
-  padding: 3rem 1rem 2rem 1rem;
-  border-top: 1px solid black;
-`;
-
-const FileLink = styled.a`
-  font-size: 1.6rem;
-  &:hover {
-    text-decoration: underline;
-    color: ${primaryBlue};
-  }
-`
-
-export default class Thanks extends Component {
+class Thanks extends Component {
   constructor(props) {
     super(props);
 
-    this.printIframe = React.createRef();
-  }
-
-  state = { showPrintIframe: false }
-
-  printDeclaration = (e) => {
-    e.preventDefault();
-
-    if (this.state.showPrintIframe) {
-      try {
-        this.printIframe.current.contentWindow.print();
-      } catch (err) {
-        // Some browser, like firefox, can't print an iframe content, so we open a new tab for the PDF
-        // For more information : https://bugzilla.mozilla.org/show_bug.cgi?id=874200
-        window.open(DECLARATION_FILE_URL, '_blank');
-      }
-    } else this.setState({ showPrintIframe: true });
-  }
-
-  printIframeContent = (e) => {
-    try {
-      e.target.contentWindow.print();
-    } catch (err) {
-      // Some browser, like firefox, can't print an iframe content, so we open a new tab for the PDF
-      // For more information : https://bugzilla.mozilla.org/show_bug.cgi?id=874200
-      window.open(DECLARATION_FILE_URL, '_blank');
+    this.state = {
+      showSurvey: false
     }
   }
 
-  render() {
-    const { showPrintIframe } = this.state;
+  componentDidMount = () => {
+    const lastResponse = localStorage.getItem(`survey-response-${this.props.user.id}`);
+    const now = new Date();
+
+    const showSurvey = lastResponse === null || new Date(lastResponse).getMonth() != now.getMonth();
+    this.setState({ showSurvey })
+  }
+
+  onMemorizeAction = () => {
+    localStorage.setItem(`survey-response-${this.props.user.id}`, new Date());
+    this.setState({ showSurvey: false })
+  }
+
+  render = () => {
+    const later = this.props.location.search.includes('later');
 
     return (
       <StyledThanks>
-        <StyledImg src={sendDoc} alt="" />
-        {!this.props.location.search.includes('later') ? (
-          <>
-            <Title variant="h6" style={{ paddingBottom: '3rem' }}>
-              Merci, vos justificatifs ont été bien transmis
-              <br />
-              et seront traités dans les plus brefs délais.
+        {later ? <>
+          <Title variant="h4">
+            Merci, vos données ont bien été enregistrées.
             </Title>
+          <Text paragraph>
+            Vous pourrez reprendre ultérieurement.
+            </Text>
+        </> : <>
+            <Title variant="h4">
+              Félicitations, votre dossier est à jour.
+            </Title>
+            <Text paragraph>
+              Soyez Zen, aucun justificatif à transmettre
+            </Text>
+          </>}
+''
+        <StyledImg src={thankImg} alt="" />
 
-            <Typography paragraph style={{ paddingBottom: '3rem' }}>
-              Pas besoin d'envoyer vos justificatifs sur
-              {' '}
-              <br />
-              <a href="https://www.pole-emploi.fr">pole-emploi.fr</a>
-              ,
-              {' '}
-              <strong>Zen s'en charge pour vous !</strong>
-            </Typography>
-
-            <ButtonsContainers>
-              <FileLink
-                href="https://www.pole-emploi.fr/"
-                target="_blank"
-                title="PDF d'actualisation disponible uniquement sur Pôle emploi.fr"
-              >
-                PDF d'actualisation disponible uniquement sur Pôle emploi.fr
-              </FileLink>
-            </ButtonsContainers>
-
-            <Complementary>
-              <Typography paragraph>
-                <strong>Un problème ? Une question ?</strong>
-                <br />
-                Vous pouvez joindre votre conseiller depuis votre espace
-                personnel sur
-                {' '}
-                <a href="https://www.pole-emploi.fr">pole-emploi.fr</a>
-                <br />
-                ou
-                {' '}
-                <a
-                  href="https://pole-emploi.zendesk.com/hc/fr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="ouverture dans une nouvelle fenêtre"
-                >
-                  consulter notre FAQ
-                </a>
-              </Typography>
-            </Complementary>
-
-            {showPrintIframe && (
-              <iframe
-                src={DECLARATION_FILE_URL}
-                title="Aucun contenu (dispositif technique)"
-                style={{ display: 'none' }}
-                ref={this.printIframe}
-                id="declarationIframe"
-                onLoad={this.printIframeContent}
-              />
-            )}
+        {!later ? (
+          <>
+            {this.state.showSurvey ? <><Title variant="h4" style={{ marginTop: '4rem' }}>
+              Quelques minutes devant vous ?
+            </Title>
+              <Text paragraph>
+                Aidez-nous à améliorer Zen en donnant votre avis
+            </Text>
+              <a href="https://surveys.hotjar.com/s?siteId=929102&surveyId=136440" rel="noopener noreferrer" target="_blank" style={{ textDecoration: 'none' }} onClick={this.onMemorizeAction}><Btn color="primary" primary>
+                Je donne mon avis
+              <StyledArrowRightAlt />
+              </Btn></a></> : <>
+                <Title variant="h4" style={{ marginTop: '4rem' }}>
+                  <CheckIcon /> Merci, vous avez particié ce mois-ci
+            </Title>
+                <Text paragraph>
+                  Rendez-vous le mois prochain pour nous aider à améliorer Zen
+            </Text>
+                <Btn color="primary" primary disabled>
+                  Je donne mon avis
+              <StyledArrowRightAlt />
+                </Btn>
+              </>}
           </>
         ) : (
             <>
-              <Title variant="h6">
-                Merci, vos données ont bien été enregistrées.
-            </Title>
-              <Typography paragraph>
-                Vous pourrez reprendre ultérieurement.
-            </Typography>
-              <ErrorOutlineIcon style={{ color: '#1F2C59', fontSize: 40, marginTop: '4rem' }} />
-              <Typography paragraph style={{ fontSize: '1.7rem' }}>
+              <Box><ErrorOutlineIcon style={{ color: '#1F2C59', fontSize: 40, marginTop: '4rem' }} /></Box>
+              <Text paragraph style={{ fontSize: '1.7rem' }}>
                 N’oubliez pas de revenir avant le 15 pour valider votre actualisation.
               <br />
               Un e-mail de rappel vous sera envoyé.
-            </Typography>
+            </Text>
             </>
           )}
       </StyledThanks>
@@ -168,4 +144,14 @@ export default class Thanks extends Component {
 
 Thanks.propTypes = {
   location: PropTypes.shape({ search: PropTypes.string.isRequired }).isRequired,
+  user: PropTypes.object.isRequired,
+  showSurvey: PropTypes.bool.isRequired
 };
+
+export default connect(
+  (state) => ({
+    user: state.userReducer.user,
+  }),
+  {
+  },
+)(Thanks);
