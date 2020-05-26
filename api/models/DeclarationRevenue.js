@@ -1,5 +1,6 @@
 const { BelongsToOneRelation, HasManyRelation } = require('objection');
 const BaseModel = require('./BaseModel');
+const DeclarationRevenueDocument = require('./DeclarationRevenueDocument');
 
 class DeclarationRevenue extends BaseModel {
   static get tableName() {
@@ -20,6 +21,12 @@ class DeclarationRevenue extends BaseModel {
         hasEndedThisMonth: { type: ['boolean', 'null'] },
       },
     };
+  }
+
+  static async beforeDelete({ findQuery, transaction }) {
+    // `findQuery` is a "read-only" version of the delete query about to be executed.
+    // You can use it for example as a subquery like this:
+    await DeclarationRevenueDocument.query(transaction).delete().whereIn('declarationRevenueId', findQuery.select('id'))
   }
 
   // This object defines the relations to other models.

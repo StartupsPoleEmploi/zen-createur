@@ -25,6 +25,8 @@ const { isUserTokenValid } = require('../lib/token');
 const Declaration = require('../models/Declaration');
 const DeclarationInfo = require('../models/DeclarationInfo');
 const ActivityLog = require('../models/ActivityLog');
+const DeclarationRevenue = require('../models/DeclarationRevenue');
+const Employer = require('../models/Employer');
 const {
   generatePdfPath,
   getDeclarationPdf,
@@ -228,8 +230,21 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
     })
     .skipUndefined()
     .then(async (declaration) => {
-      const saveDeclaration = (trx) =>
-        Declaration.query(trx).upsertGraphAndFetch(declarationData);
+      const saveDeclaration = async (trx) => {
+        // remove old revenus 
+        if (declaration) {
+          await DeclarationRevenue.query()
+            .delete()
+            .where({ declarationId: declaration.id });
+
+          await Employer.query()
+            .delete()
+            .where({ declarationId: declaration.id });
+        }
+
+
+        return Declaration.query(trx).upsertGraphAndFetch(declarationData);
+      }
 
       const saveAndLogDeclaration = () =>
         transaction(Declaration.knex(), (trx) =>

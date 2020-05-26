@@ -16,7 +16,7 @@ const { REALM } = require('../constants');
 // eslint-disable-next-line import/order
 const oauth2 = require('simple-oauth2').create(credentials);
 
-const { peConnectScope, redirectUri } = config;
+const { peConnectScope, redirectUri, authorizeEmailsOnCreation } = config;
 const tokenConfig = {
   redirect_uri: redirectUri,
   realm: REALM,
@@ -62,17 +62,18 @@ router.get('/callback', async (req, res) => {
     const userinfo = await userCtrl.getUserinfo(authToken);
     let dbUser = await User.query().findOne({ peId: userinfo.peId });
     if (!dbUser) {
+      const isAuthorized = authorizeEmailsOnCreation.indexOf(userinfo.email ? userinfo.email.toLowerCase() : null) !== -1;
+
       // user is not in the DB, so the user is not acceptable
       // NOTE: the user is not add to mailjet and doesn't receive any message
       const userToSave = {
         ...pick(userinfo, ['peId', 'email', 'firstName', 'lastName', 'gender']),
         postalCode: await userCtrl.getPostalCode(authToken),
-        isAuthorized: false,
+        isAuthorized,
         registeredAt: new Date(),
       };
       dbUser = await User.query().insert(userToSave).returning('*');
-      canSendDeclaration = false;
-      hasAlreadySentDeclaration = false;
+      canSendDeclaration = isAuthorized;
       if (config.get('shouldSendTransactionalEmails') && dbUser.email) {
         // Note: We do not wait for Mailjet to answer to send data back to the user
         mailjet
