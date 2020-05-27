@@ -78,7 +78,7 @@ class Dashboard extends PureComponent {
               <img src={dashboardHelpImg} style={{ width: '100%' }} alt="Besoin d'aide" />
               <H4>Besoin d'aide ?</H4>
               <Typography>
-                Toutes nos réponses concernant l'actualisation sue Zen Pôle emploi.
+                Toutes nos réponses concernant l'actualisation sur Zen Pôle emploi.
               </Typography>
               <MainActionButton
                 href="https://pole-emploi.zendesk.com/hc/fr"

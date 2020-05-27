@@ -116,7 +116,7 @@ class Thanks extends Component {
               <StyledArrowRightAlt />
               </Btn></a></> : <>
                 <Title variant="h4" style={{ marginTop: '4rem' }}>
-                  <CheckIcon /> Merci, vous avez particié ce mois-ci
+                  <CheckIcon /> Merci, vous avez participé ce mois-ci
             </Title>
                 <Text paragraph>
                   Rendez-vous le mois prochain pour nous aider à améliorer Zen
