@@ -32,12 +32,15 @@ module.exports = {
 };
 ```
 
-## Deploy QA
-  - update / create the `.env.qa` file
-  - run : `sh ./script/deploy-qa.sh`
-  - connect to the server `ssh zen-createur-qa`
+## Deploy QA OR production
+  - update / create the `.env.qa` or `.env.production` file
+  - update / create the `./api/config/local-qa.js` or `./api/config/local-production.js` file
+  - update / create the `./nginx/.htpasswd.qa` or `./nginx/.htpasswd.production` file
+  - create the `./nginx/entrust-zen.pole-emploi.fr-key.pem` file
+  - run : `sh ./script/deploy.sh qa` or `sh ./script/deploy.sh production`
+  - connect to the server `ssh zen-createur-qa` or `ssh zen-createur-production`
   - go to teh correct folder `cd /home/docker/zen-createur`
-  - update docker : `sh ./script/start-qa.sh`
+  - update docker : `sh ./script/start.sh qa` or  `sh ./script/start.sh production`
 
 ### HTTPS certificate
 

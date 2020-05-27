@@ -48,6 +48,7 @@ import {
 import NotAutorized from '../other/NotAutorized';
 import { ucfirst } from '../../utils/utils.tool';
 import { DocumentUploadEmployer } from '../../components/Actu/DocumentUploadEmployer';
+import { Redirect } from 'react-router';
 
 const { getEmployerLoadingKey, getEmployerErrorKey } = utils;
 
@@ -958,6 +959,10 @@ export class Files extends Component {
         ...showEnterpriseFilePreview,
         isLoading: this.state.docsLoading.indexOf(`revenue-${showEnterpriseFilePreview.id}`) !== -1
       };
+    }
+
+    if (totalMissingFiles === 0) {
+      return <Redirect to="/thanks" />
     }
 
     return (
