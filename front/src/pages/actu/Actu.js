@@ -691,9 +691,9 @@ export class Actu extends Component {
           <DeclarationQuestion
             label={(
               <>
-                Avez-vous une entreprise ?
+                Avez-vous une entreprise ou un statut d'autoentrepreneur ?
                 <br />
-                Ex: Auto-entrepreneur, micro-entreprise, SARL, VDI, etc.
+                Ex: micro-entreprise, SARL, VDI, etc.
               </>
             )}
             name="isCreator"
