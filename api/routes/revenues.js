@@ -126,6 +126,7 @@ router.post('/validateDocument', (req, res, next) => {
         sendDocument({
           document: revenueDoc,
           accessToken: req.session.userSecret.accessToken,
+          isFakeAuth: req.session.user.isFakeAuth,
         })
           .then(() =>
             fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated({

@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { Modal } from 'antd';
 import superagent from 'superagent';
 
 const DeclarationsContext = React.createContext();
@@ -30,6 +31,21 @@ export function DeclarationsProvider(props) {
     }
   };
 
+  const removeDeclarations = useCallback(async () => {
+    Modal.confirm({
+      content: 'Je confirme la suppression des actualisations !!!',
+      onOk() {
+        superagent
+          .post('/zen-admin-api/settings/remove-declarations')
+          .then(() => {
+            Modal.success({
+              content: 'L\'ensemble des actualisations sont supprimées.',
+            });
+          });
+      },
+    });
+  }, []);
+
   return (
     <DeclarationsContext.Provider
       {...props}
@@ -41,6 +57,7 @@ export function DeclarationsProvider(props) {
         // function
         setSelectedMonthId,
         init,
+        removeDeclarations,
       }}
     />
   );
