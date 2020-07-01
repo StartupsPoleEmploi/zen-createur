@@ -80,20 +80,23 @@ export default function Settings() {
         )}
       </ZnContent>
 
+      {['development', 'qa'].includes(process.env.NODE_ENV) && 
+        <>
+          <hr />
 
-      <hr />
-
-      <ZnContent>
-        <b>
-          Ce bouton permet, après confirmation, de supprimer toutes les
-          actualisations de ce mois-ci. Ne pas manipuler sans raison !
-        </b>
-        <ZnContent>
-          <Button onClick={removeDeclarations} danger>
-            Supprimer les actualisations du mois
-          </Button>
-        </ZnContent>
-      </ZnContent>
+          <ZnContent>
+            <b>
+              Ce bouton permet, après confirmation, de supprimer toutes les
+              actualisations de ce mois-ci. Ne pas manipuler sans raison !
+            </b>
+            <ZnContent>
+              <Button onClick={removeDeclarations} danger>
+                Supprimer les actualisations du mois
+              </Button>
+            </ZnContent>
+          </ZnContent>
+      </>
+     }
     </div>
   );
 }
