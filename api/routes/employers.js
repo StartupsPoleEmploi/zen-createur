@@ -5,7 +5,7 @@ const fs = require('fs');
 const router = express.Router();
 const { transaction } = require('objection');
 const {
-  get, isBoolean, isInteger, isNumber, isString,
+  get, isBoolean, isInteger, isNumber, isString, ceil,
 } = require('lodash');
 const { uploadsDirectory: uploadDestination } = require('config');
 
@@ -47,8 +47,8 @@ const getSanitizedEmployer = ({ employer, declaration, user }) => {
     userId: user.id,
     declarationId: declaration.id,
     // Save temp data as much as possible
-    workHours: !Number.isNaN(workHours) ? workHours : null,
-    salary: !Number.isNaN(salary) ? salary : null,
+    workHours: !Number.isNaN(workHours) ? ceil(workHours) : null,
+    salary: !Number.isNaN(salary) ? ceil(salary) : null,
   };
 
   if (object.id === null) {
@@ -66,8 +66,8 @@ const getSanitizedEnterprise = ({ enterprise, declaration, user }) => {
     userId: user.id,
     declarationId: declaration.id,
     // Save temp data as much as possible
-    workHours: !Number.isNaN(workHours) ? workHours : null,
-    turnover: !Number.isNaN(turnover) ? turnover : null,
+    workHours: !Number.isNaN(workHours) ? ceil(workHours) : null,
+    turnover: !Number.isNaN(turnover) ? ceil(turnover) : null,
   };
 
   if (object.id === null) {
