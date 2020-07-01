@@ -7,13 +7,10 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 import MainActionButton from '../../components/Generic/MainActionButton';
 import thankImg from '../../images/thank.svg';
-import { primaryBlue } from '../../constants';
 import { Box } from '@material-ui/core';
 import ArrowRightAlt from '@material-ui/icons/ArrowRightAlt';
 import Check from '@material-ui/icons/Check';
 import { connect } from 'react-redux';
-
-const DECLARATION_FILE_URL = '/api/declarations/summary-file';
 
 const Btn = styled(MainActionButton)`
 white-space: nowrap;
@@ -54,10 +51,6 @@ const Title = styled(Typography).attrs({ component: 'h1' })`
   font-size: 22px !important;
 `;
 
-const ButtonsContainers = styled.div`
-  text-align: center;
-`;
-
 class Thanks extends Component {
   constructor(props) {
     super(props);
@@ -71,7 +64,7 @@ class Thanks extends Component {
     const lastResponse = localStorage.getItem(`survey-response-${this.props.user.id}`);
     const now = new Date();
 
-    const showSurvey = lastResponse === null || new Date(lastResponse).getMonth() != now.getMonth();
+    const showSurvey = lastResponse === null || new Date(lastResponse).getMonth() !== now.getMonth();
     this.setState({ showSurvey })
   }
 

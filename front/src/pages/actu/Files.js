@@ -46,7 +46,6 @@ import {
   utils,
 } from '../../selectors/declarations';
 import NotAutorized from '../other/NotAutorized';
-import { ucfirst } from '../../utils/utils.tool';
 import { DocumentUploadEmployer } from '../../components/Actu/DocumentUploadEmployer';
 import { Redirect } from 'react-router';
 
@@ -263,7 +262,7 @@ export class Files extends Component {
     super(props);
 
     let tab
-    if(new URL(window.location).searchParams) {
+    if (new URL(window.location).searchParams) {
       tab = new URL(window.location).searchParams.get('tab');
     }
 

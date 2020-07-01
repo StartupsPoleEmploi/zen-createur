@@ -163,11 +163,6 @@ const BoxPanel = styled.div`
   }
 `;
 
-const BoxEmployerPanel = styled(BoxPanel)`
-margin: 20px 0 0 auto;
-`
-
-
 const Block = styled.div`
   border-radius: 15px;
   background-color: #FAFAFA;
@@ -718,7 +713,7 @@ export class Employers extends Component {
   }
 
   render() {
-    const { error, isLoading, isFormValid } = this.state;
+    const { error, isLoading } = this.state;
 
     if (isLoading) {
       return (

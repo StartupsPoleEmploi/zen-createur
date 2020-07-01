@@ -39,7 +39,7 @@ export const getEnterprisesFiles = (declaration) => {
   }
 
   const dateMonth = moment(declaration.declarationMonth.month).format("M");
-  if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3) {
+  if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 === 0) {
     return [{
       name: `Déclaration CA N°${date.format('Q-YYYY')}`, type: enterpriseQuaterlyTurnoverType
     }]
