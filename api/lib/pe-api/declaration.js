@@ -169,7 +169,9 @@ const sendDeclaration = ({
     accessToken,
     headers: [{ key: 'media', value: 'I' }],
   })
-    .then(({ body }) => {
+    .then((response) => {
+      console.log('PE api response', response)
+      const { body } = response
       if (body.statut !== DECLARATION_STATUSES.SAVED) {
         // the service will answer with HTTP 200 for a bunch of errors
         // So they need to be handled here
