@@ -220,7 +220,7 @@ const doConfirm = ({ conversionId, document, accessToken }) =>
     },
   });
 
-async function sendDocument({ accessToken, document }) {
+async function sendDocument({ accessToken, document, isFakeAuth = false }) {
   let documentType = null;
   let userId = null;
   let infosToSendDocument = null;
@@ -241,7 +241,7 @@ async function sendDocument({ accessToken, document }) {
   }
 
 
-  if (config.get('bypassDocumentsDispatch')) {
+  if (isFakeAuth || config.get('bypassDocumentsDispatch')) {
     winston.info(`Simulating sending document ${infosToSendDocument.dbDocument.type} ${infosToSendDocument.dbDocument.id} to PE`);
     return infosToSendDocument.dbDocument.$query().patch({ isTransmitted: true });
   }

@@ -23,10 +23,14 @@ class DeclarationRevenue extends BaseModel {
     };
   }
 
-  static async beforeDelete({ findQuery, transaction }) {
-    // `findQuery` is a "read-only" version of the delete query about to be executed.
-    // You can use it for example as a subquery like this:
-    await DeclarationRevenueDocument.query(transaction).delete().whereIn('declarationRevenueId', findQuery.select('id'))
+  async $beforeDelete(queryContext) {
+    await super.$beforeDelete(queryContext);
+    const list = await DeclarationRevenueDocument.query().where('declarationRevenueId', '=', this.id);
+
+    await Promise.all(
+      list.map(async (d) =>
+        d.$query().delete()),
+    );
   }
 
   // This object defines the relations to other models.

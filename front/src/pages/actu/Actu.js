@@ -26,7 +26,7 @@ import { postDeclaration as postDeclarationAction } from '../../redux/actions/de
 import DeclarationDialogsHandler from '../../components/Actu/DeclarationDialogs/DeclarationDialogsHandler';
 import DeclarationQuestion from '../../components/Actu/DeclarationQuestion';
 import LoginAgainDialog from '../../components/Actu/LoginAgainDialog';
-import UserJobCheck from '../../components/Actu/UserJobCheck';
+//import UserJobCheck from '../../components/Actu/UserJobCheck';
 import AlwaysVisibleContainer from '../../components/Generic/AlwaysVisibleContainer';
 import DatePicker from '../../components/Generic/DatePicker';
 import MainActionButton from '../../components/Generic/MainActionButton';
@@ -371,6 +371,8 @@ export class Actu extends Component {
           localErrorFied.push(`${types.INTERNSHIP}_${index}_end`);
           hasWrongInternshipDates = true;
         }
+
+        return { startDate, endDate };
       })
 
       if (hasMissingInternshipDates) {
@@ -406,6 +408,8 @@ export class Actu extends Component {
           localErrorFied.push(`${types.SICK_LEAVE}_${index}_end`);
           hasWrongSickLeaveDates = true;
         }
+
+        return { startDate, endDate };
       })
 
 
@@ -429,6 +433,8 @@ export class Actu extends Component {
           localErrorFied.push(`${types.MATERNITY_LEAVE}_${index}_start`);
           errorMsg = 'Merci d\'indiquer votre date de départ en congé maternité';
         }
+
+        return { startDate };
       })
     }
 
@@ -444,6 +450,8 @@ export class Actu extends Component {
           localErrorFied.push(`${types.RETIREMENT}_${index}_start`);
           errorMsg = 'Merci d\'indiquer depuis quand vous touchez une pension retraite';
         }
+
+        return { startDate };
       })
     }
 
@@ -459,6 +467,8 @@ export class Actu extends Component {
           localErrorFied.push(`${types.INVALIDITY}_${index}_start`);
           errorMsg = 'Merci d\'indiquer depuis quand vous touchez une pension d\'invalidité';
         }
+
+        return { startDate };
       })
 
     }
@@ -473,6 +483,8 @@ export class Actu extends Component {
           localErrorFied.push(`${types.JOB_SEARCH}_${index}_end`);
           errorMsg = 'Merci d\'indiquer depuis quand vous ne cherchez plus d\'emploi';
         }
+
+        return { endDate };
       })
 
 

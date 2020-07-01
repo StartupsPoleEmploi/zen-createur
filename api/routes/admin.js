@@ -26,9 +26,12 @@ const DeclarationReview = require('../models/DeclarationReview');
 
 const User = require('../models/User');
 const Status = require('../models/Status');
+const monthCtrl = require('../controllers/monthCtrl');
 
 const router = express.Router();
 router.use(zip());
+const { setIsServiceUp } = require('../lib/middleware/serviceUpMiddleware');
+
 
 router.get('/declarationsMonths', (req, res, next) => {
   DeclarationMonth.query()
@@ -84,7 +87,7 @@ router.get('/users/csv', async (req, res, next) => {
     res.set(
       'Content-disposition',
       `attachment; filename=utilisateurs-${
-        !isAuthorized ? 'non-' : ''
+      !isAuthorized ? 'non-' : ''
       }autorisés-${format(new Date(), 'YYYY-MM-DD')}.csv`,
     );
     res.set('Content-type', 'text/csv');
@@ -239,7 +242,7 @@ router.get('/declarations/:declarationId/files', (req, res) => {
           path: `${uploadDestination}${file.value}`,
           name: kebabCase(
             `${declaration.user.firstName}-${declaration.user.lastName}-${
-              file.label
+            file.label
             }-${formattedMonth}-${String.fromCharCode(key + 97)}`, // identifier to avoid duplicates
           ).concat(
             // PE.fr uploads do not handle "jpeg" files (-_-), so renaming on the fly.
@@ -255,21 +258,21 @@ router.get('/declarations/:declarationId/files', (req, res) => {
         files,
         filename: `${declaration.user.firstName}-${
           declaration.user.lastName
-        }-${formattedMonth}-fichiers-${
+          }-${formattedMonth}-fichiers-${
           declaration.isFinished ? 'validés' : 'non-validés'
-        }.zip`,
+          }.zip`,
       });
     });
 });
 
-router.post('/status-global', (req, res, next) =>
+router.post('/settings/status-global', (req, res, next) =>
   Status.query()
     .patch({ up: req.body.up })
     .returning('*')
     .then((result) => {
       const message = `Suite à une action effectué dans l'interface d'administration, Zen est maintenant *${
         req.body.up ? 'activé' : 'désactivé'
-      }*`;
+        }*`;
 
       // No return for this promise : Slack being up or not should prevent us from sending back a 200
       superagent
@@ -282,14 +285,14 @@ router.post('/status-global', (req, res, next) =>
     })
     .catch(next));
 
-router.post('/status-files', (req, res, next) =>
+router.post('/settings/status-files', (req, res, next) =>
   Status.query()
     .patch({ isFilesServiceUp: req.body.up })
     .returning('*')
     .then((result) => {
       const message = `Suite à une action effectué dans l'interface d'administration, l'envoi de justificatifs est *${
         req.body.up ? 'activé' : 'désactivé'
-      }*`;
+        }*`;
 
       // No return for this promise : Slack being up or not should prevent us from sending back a 200
       superagent
@@ -301,6 +304,28 @@ router.post('/status-files', (req, res, next) =>
       return res.json(result[0]);
     })
     .catch(next));
+
+router.post('/settings/remove-declarations', async (req, res, next) => {
+  if (['development', 'qa'].includes(process.env.NODE_ENV)) {
+    const currentMonth = await monthCtrl.getCurrentMonth();
+    const declarations = await Declaration.query().where('monthId', '=', currentMonth.id);
+
+    await Promise.all(
+      declarations.map(async (d) =>
+        d.$query().delete()),
+    ).then(() => res.json('OK'))
+      .catch(next);
+  } else {
+    res.status(400).json('Only valid for development and qa env !');
+  }
+});
+
+router.get('/settings/status', setIsServiceUp, (req, res) =>
+  res.json({
+    global: { up: req.isServiceUp },
+    files: { up: req.isFilesServiceUp },
+  }));
+
 
 router.delete('/delete-user', (req, res, next) => {
   const { userId } = req.query;

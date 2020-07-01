@@ -1,11 +1,9 @@
-import React, { useState, useRef } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import styled from 'styled-components'
 import { Typography, Grid, Hidden } from '@material-ui/core'
 import DoneIcon from '@material-ui/icons/Done'
-import PrintIcon from '@material-ui/icons/Print'
-import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom'
 import withWidth from '@material-ui/core/withWidth'
 import _ from 'lodash'
 
@@ -32,36 +30,7 @@ const Hr = styled.div`
   }};
 `
 
-const DECLARATION_FILE_URL = '/api/declarations/summary-file'
-
 const DeclarationFinished = ({ declaration, width }) => {
-  const [showPrintIframe, setShowPrintIframe] = useState(false)
-  const iframeEl = useRef(null)
-
-  function printDeclaration(e) {
-    e.preventDefault()
-
-    if (showPrintIframe) {
-      try {
-        iframeEl.current.contentWindow.print()
-      } catch (err) {
-        // Some browser, like firefox, can't print an iframe content, so we open a new tab for the PDF
-        // For more information : https://bugzilla.mozilla.org/show_bug.cgi?id=874200
-        window.open(DECLARATION_FILE_URL, '_blank')
-      }
-    } else setShowPrintIframe(true)
-  }
-
-  function printIframeContent(e) {
-    try {
-      e.target.contentWindow.print()
-    } catch (err) {
-      // Some browser, like firefox, can't print an iframe content, so we open a new tab for the PDF
-      // For more information : https://bugzilla.mozilla.org/show_bug.cgi?id=874200
-      window.open(DECLARATION_FILE_URL, '_blank')
-    }
-  }
-
   return (
     <>
       <Grid container spacing={2}>
@@ -138,17 +107,6 @@ const DeclarationFinished = ({ declaration, width }) => {
           </Typography>
         </Grid>
       </Grid></div></>)}
-
-      {showPrintIframe && (
-        <iframe
-          src={DECLARATION_FILE_URL}
-          title="Aucun contenu (dispositif technique)"
-          style={{ display: 'none' }}
-          ref={iframeEl}
-          id="declarationIframe"
-          onLoad={printIframeContent}
-        />
-      )}
     </>
   )
 }
