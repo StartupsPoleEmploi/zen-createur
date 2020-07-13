@@ -80,8 +80,6 @@ export default function Settings() {
         )}
       </ZnContent>
 
-      {['development', 'qa'].includes(process.env.NODE_ENV) && 
-        <>
           <hr />
 
           <ZnContent>
@@ -95,8 +93,6 @@ export default function Settings() {
               </Button>
             </ZnContent>
           </ZnContent>
-      </>
-     }
     </div>
   );
 }
