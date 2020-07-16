@@ -67,3 +67,11 @@ export const TIMEWORKED = {
 export const DEFAULT_ERROR_MESSAGE = `Nous sommes désolés, mais une erreur s'est produite. Merci de réessayer ultérieurement.
 Si le problème persiste, merci de contacter l'équipe Zen, et d'effectuer
 en attendant votre actualisation sur Pole-emploi.fr.`;
+
+export const CREATOR_STATUS = {
+  sarl: 'SARL / EURL / EIRL / SAS',
+  entrepriseIndividuelle: 'Entreprise individuelle',
+  autoEntreprise: 'Autoentreprise ou VDI',
+  nonSalarieAgricole: 'Non Salarié Agricole',
+  artisteAuteur: 'Artiste Auteur'
+};

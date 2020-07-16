@@ -51,6 +51,7 @@ class Declaration extends BaseModel {
         'hasInvalidity',
         'isLookingForJob',
         'hasFinishedDeclaringEmployers',
+        'status',
         'taxeDue',
       ],
 
@@ -91,6 +92,8 @@ class Declaration extends BaseModel {
         metadata: { type: 'object' },
         transmittedAt: { type: ['string', 'object', 'null'] },
         taxeDue: { type: ['string', 'null'], enum: [null, 'monthly', 'quaterly'] },
+        status: { type: ['string', 'null'] },
+        hasPay: { type: ['boolean', 'null'] },
       },
     };
   }
