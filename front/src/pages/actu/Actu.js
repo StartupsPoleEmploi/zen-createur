@@ -37,6 +37,7 @@ import {
   mobileBreakpoint,
   CREATORTAXRATE,
   helpColor,
+  CREATOR_STATUS,
 } from '../../constants';
 import ScrollToButton from '../../components/Generic/ScrollToButton';
 import TooltipOnFocus from '../../components/Generic/TooltipOnFocus';
@@ -202,6 +203,8 @@ export class Actu extends Component {
     creatorTaxeRate: null,
     hasEmployers: null,
     completeCreatorQuestion: false,
+    hasPay: null,
+    status: null,
     infos: [],
     errorsField: [],
     ...formFields.reduce((prev, field) => ({ ...prev, [field]: null }), {}),
@@ -222,8 +225,10 @@ export class Actu extends Component {
     if (declaration) {
       additionnalOptions = {
         hasEmployers: declaration.hasEmployers,
+        hasPay: declaration.hasPay,
         isCreator: declaration.taxeDue !== null,
-        creatorTaxeRate: declaration.taxeDue
+        creatorTaxeRate: declaration.taxeDue,
+        status: declaration.status
       }
     }
 
@@ -673,7 +678,10 @@ export class Actu extends Component {
     const isValidating = this.state.hasEmployers !== null &&
       this.state.isCreator !== null &&
       (
-        (this.state.isCreator === true && this.state.creatorTaxeRate !== null) ||
+        (this.state.isCreator === true && this.state.status !== null && (
+          (this.state.status === 'sarl' && this.state.hasPay !== null)
+          || (this.state.status === 'autoEntreprise' && this.state.creatorTaxeRate !== null)
+          || (this.state.status !== 'sarl' && this.state.status !== 'autoEntreprise'))) ||
         this.state.isCreator === false
       );
     const helperTextMonthly = (
@@ -690,6 +698,14 @@ export class Actu extends Component {
       </>
     );
 
+    const statusTab = [
+      { key: 'sarl', tooltip: '123456' },
+      { key: 'entrepriseIndividuelle', tooltip: '123456' },
+      { key: 'autoEntreprise', tooltip: '123456' },
+      { key: 'nonSalarieAgricole', tooltip: '123456' },
+      { key: 'artisteAuteur', tooltip: '123456' }
+    ];
+
 
     return (
       <StyledPaper>
@@ -703,9 +719,9 @@ export class Actu extends Component {
           <DeclarationQuestion
             label={(
               <>
-                Avez-vous une entreprise ou un statut d'autoentrepreneur ?
+                Avez-vous une entreprise ou êtes-vous auto entrepreneur ?
                 <br />
-                Ex: micro-entreprise, SARL, VDI, etc.
+                Ex: SARL, EURL, VDI, EI etc.
               </>
             )}
             name="isCreator"
@@ -715,6 +731,34 @@ export class Actu extends Component {
           />
           <div
             style={{ marginTop: '1rem', visibility: this.state.isCreator === true ? null : 'hidden' }}
+          >
+            <QuestionLabel>
+              Quelle est la forme juridique de votre entreprise ?
+          </QuestionLabel>
+            <RadioGroup
+              aria-label="Quelle est la forme juridique de votre entreprise ?"
+              name="status"
+              value={this.state.status}
+              onChange={(val) => this.setState({ status: val.target.value })}
+              style={{ marginTop: '1rem' }}
+            >
+              {statusTab.map(status => (<Box display="flex" alignItems="center" key={status.key}>
+                <Box flex={1}>
+                  <FormControlLabel
+                    value={status.key}
+                    control={<Radio color="primary" />}
+                    label={CREATOR_STATUS[status.key]}
+                  />
+                </Box>
+                <TooltipOnFocus content={status.tooltip}>
+                  <ErrorOutlineImg />
+                </TooltipOnFocus>
+              </Box>))
+              }
+            </RadioGroup>
+          </div>
+          {this.state.status === 'autoEntreprise' && (<div
+            style={{ marginTop: '1rem' }}
           >
             <QuestionLabel>
               Pour votre entreprise, vous déclarez votre chiffre d'affaire à l'URSSAF,
@@ -753,7 +797,13 @@ export class Actu extends Component {
                 </TooltipOnFocus>
               </Box>
             </RadioGroup>
-          </div>
+          </div>)}
+          {this.state.status === 'sarl' && (<DeclarationQuestion
+            label="Avez-vous été rémunéré ce mois-ci ?"
+            name="hasPay"
+            value={this.state.hasPay}
+            onAnswer={this.onAnswer}
+          />)}
           <FinalButtonsContainer>
             <MainActionButton
               primary
