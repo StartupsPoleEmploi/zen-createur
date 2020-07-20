@@ -167,7 +167,6 @@ const statusTab = [
   { key: 'entrepriseIndividuelle', tooltip: "Cette forme juridique vous concerne si vous exercez en nom propre c'est-à-dire que votre activité professionnelle n'a pas d'entité juridique distincte. En entrerprise individuelle, l'imposition fiscale et sociale est basée sur le bénéfice réalisé." },
   { key: 'autoEntreprise', tooltip: "L'auto-entreprise ou micro-entreprise est un régime simplifié de l’entreprise individuelle. Le statut VDI vous concerne si vous avez une activité de vendeur indépendant." },
   { key: 'nonSalarieAgricole', tooltip: "Cette forme juridique vous concerne si vous êtes chef d’exploitation agricole ou si vous avez un statut de collaborateur d’exploitation (vous êtes marié.e, pacsé.e ou vous vivez en concubinage avec un chef d’exploitation agricole) ou encore si vous avez le statut d’aide familial (mise en valeur d’une exploitation et que vous n’avez pas la qualité de salarié). " },
-  { key: 'artisteAuteur', tooltip: "Si vous êtes écrivains, auteurs d'œuvres cinématographiques, audiovisuelles et multimédia ou encore photographes, vous cotisez à l'Association pour la gestion de la sécurité sociale des auteurs (Agessa). Les auteurs d'arts graphiques et plastiques sont rattachés à la Maison des artistes (MDA)." }
 ];
 
 const JOB_CHECK_KEY = 'canUseService';
@@ -211,7 +210,6 @@ export class Actu extends Component {
     creatorTaxeRate: null,
     hasEmployers: null,
     completeCreatorQuestion: false,
-    hasPay: null,
     status: null,
     infos: [],
     errorsField: [],
@@ -233,7 +231,6 @@ export class Actu extends Component {
     if (declaration) {
       additionnalOptions = {
         hasEmployers: declaration.hasEmployers,
-        hasPay: declaration.hasPay,
         isCreator: declaration.taxeDue !== null,
         creatorTaxeRate: declaration.taxeDue,
         status: declaration.status
@@ -687,7 +684,7 @@ export class Actu extends Component {
       this.state.isCreator !== null &&
       (
         (this.state.isCreator === true && this.state.status !== null && (
-          (this.state.status === 'sarl' && this.state.hasPay !== null)
+          this.state.status === 'sarl'
           || (this.state.status === 'autoEntreprise' && this.state.creatorTaxeRate !== null)
           || (this.state.status !== 'sarl' && this.state.status !== 'autoEntreprise'))) ||
         this.state.isCreator === false
@@ -798,12 +795,6 @@ export class Actu extends Component {
               </Box>
             </RadioGroup>
           </div>)}
-          {this.state.status === 'sarl' && (<DeclarationQuestion
-            label="Avez-vous été rémunéré ce mois-ci ?"
-            name="hasPay"
-            value={this.state.hasPay}
-            onAnswer={this.onAnswer}
-          />)}
           <FinalButtonsContainer>
             <MainActionButton
               primary
