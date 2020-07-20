@@ -130,6 +130,46 @@ const docmentsRevenueToTransmitTypes = [
       'Q-YYYY',
     )}`,
     confirmationData: CODES.ENTREPRISE_CA_QUATERLY,
+  },
+  {
+    type: 'salarySheet',
+    label: ({ date }) => `BS-mon entreprise-${format(
+      date,
+      'MM-YYYY',
+    )}`,
+    confirmationData: null
+  },
+  {
+    type: 'VPGeneralOrDecision',
+    label: ({ date }) => `Relevé de décision-${format(
+      date,
+      'MM-YYYY',
+    )}`,
+    confirmationData: null
+  },
+  {
+    type: 'selfEmployedSocialDeclaration',
+    label: ({ date }) => `DSI - ${format(
+      date,
+      'MM-YYYY',
+    )}`,
+    confirmationData: null
+  },
+  {
+    type: 'declarationOfProfessionalIncome',
+    label: ({ date }) => `Déclaration des revenus professionnels - ${format(
+      date,
+      'YYYY',
+    )}`,
+    confirmationData: null
+  },
+  {
+    type: 'artistIncomeStatement',
+    label: ({ date }) => `Déclaration des revenus des artistes (MDA / Agessa) - ${format(
+      date,
+      'YYYY',
+    )}`,
+    confirmationData: null
   }
 ]
 

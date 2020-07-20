@@ -1,12 +1,7 @@
 import { get } from 'lodash';
 import { readAndCompressImage } from 'browser-image-resizer';
-import { CREATORTAXRATE } from '../constants';
+import { CREATORTAXRATE, DOCUMENT_LABELS, DOCUMENT_TYPES } from '../constants';
 import moment from 'moment';
-
-const salarySheetType = 'salarySheet';
-const employerCertificateType = 'employerCertificate';
-const enterpriseMontlyTurnoverType = 'enterpriseMontlyTurnover';
-const enterpriseQuaterlyTurnoverType = 'enterpriseQuaterlyTurnover';
 
 const extractFileExtension = (file) => {
   const dotIndex = file.lastIndexOf('.');
@@ -30,19 +25,39 @@ export const getMissingEnterprisesFiles = (declaration) => {
 }
 
 export const getEnterprisesFiles = (declaration) => {
-  const date = moment(declaration.declarationMonth.month);
+  switch (declaration.status) {
+    case 'sarl':
+      if (declaration.hasPay) {
+        return [{ name: DOCUMENT_LABELS.salarySheet, type: DOCUMENT_TYPES.salarySheet }];
+      } else {
+        return [{ name: DOCUMENT_LABELS.VPGeneralOrDecision, type: DOCUMENT_TYPES.VPGeneralOrDecision }];
+      }
+      break;
+    case 'entrepriseIndividuelle':
+      return [{ name: DOCUMENT_LABELS.selfEmployedSocialDeclaration, type: DOCUMENT_TYPES.selfEmployedSocialDeclaration }];
+      break;
+    case 'autoEntreprise':
+      const date = moment(declaration.declarationMonth.month);
 
-  if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
-    return [{
-      name: `Déclaration CA ${date.format('MM-YYYY')}`, type: enterpriseMontlyTurnoverType
-    }]
-  }
+      if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
+        return [{
+          name: `Déclaration CA ${date.format('MM-YYYY')}`, type: DOCUMENT_TYPES.enterpriseMontlyTurnover
+        }]
+      }
 
-  const dateMonth = moment(declaration.declarationMonth.month).format("M");
-  if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 === 0) {
-    return [{
-      name: `Déclaration CA N°${date.format('Q-YYYY')}`, type: enterpriseQuaterlyTurnoverType
-    }]
+      const dateMonth = moment(declaration.declarationMonth.month).format("M");
+      if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 === 0) {
+        return [{
+          name: `Déclaration CA N°${date.format('Q-YYYY')}`, type: DOCUMENT_TYPES.enterpriseQuaterlyTurnover
+        }]
+      }
+      break;
+    case 'nonSalarieAgricole':
+      return [{ name: DOCUMENT_LABELS.declarationOfProfessionalIncome, type: DOCUMENT_TYPES.declarationOfProfessionalIncome }];
+      break;
+    case 'artisteAuteur':
+      return [{ name: DOCUMENT_LABELS.artistIncomeStatement, type: DOCUMENT_TYPES.artistIncomeStatement }];
+      break;
   }
 
   return [];
@@ -54,7 +69,7 @@ export const getMissingEmployerFiles = (declaration) =>
       if (!get(employer, 'documents[0].isTransmitted')) {
         return prev.concat({
           name: employer.employerName,
-          type: salarySheetType,
+          type: DOCUMENT_TYPES.salarySheet,
           employerId: employer.id,
         });
       }
@@ -66,10 +81,10 @@ export const getMissingEmployerFiles = (declaration) =>
         in which case we do not count it in the needed documents.
       */
     const hasEmployerCertificate = employer.documents.some(
-      ({ type, isTransmitted }) => type === employerCertificateType && isTransmitted,
+      ({ type, isTransmitted }) => type === DOCUMENT_TYPES.employerCertificate && isTransmitted,
     );
     const hasSalarySheet = employer.documents.some(
-      ({ type, isTransmitted }) => type === salarySheetType && isTransmitted,
+      ({ type, isTransmitted }) => type === DOCUMENT_TYPES.salarySheet && isTransmitted,
     );
 
     if (hasEmployerCertificate) return prev;
@@ -77,12 +92,12 @@ export const getMissingEmployerFiles = (declaration) =>
     if (hasSalarySheet) {
       return prev.concat({
         name: employer.employerName,
-        type: employerCertificateType,
+        type: DOCUMENT_TYPES.employerCertificate,
       });
     }
     return prev.concat(
-      { name: employer.employerName, type: salarySheetType, employerId: employer.id },
-      { name: employer.employerName, type: employerCertificateType, employerId: employer.id },
+      { name: employer.employerName, type: DOCUMENT_TYPES.salarySheet, employerId: employer.id },
+      { name: employer.employerName, type: DOCUMENT_TYPES.employerCertificate, employerId: employer.id },
     );
   }, []);
 
@@ -104,10 +119,10 @@ export const getDeclarationMissingFilesNb = (declaration) => {
           in which case we do not count it in the needed documents.
         */
       const hasEmployerCertificate = employer.documents.some(
-        ({ type, isTransmitted }) => type === employerCertificateType && isTransmitted,
+        ({ type, isTransmitted }) => type === DOCUMENT_TYPES.employerCertificate && isTransmitted,
       );
       const hasSalarySheet = employer.documents.some(
-        ({ type, isTransmitted }) => type === salarySheetType && isTransmitted,
+        ({ type, isTransmitted }) => type === DOCUMENT_TYPES.salarySheet && isTransmitted,
       );
 
       if (hasEmployerCertificate) return prev + 0;

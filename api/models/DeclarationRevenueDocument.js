@@ -39,8 +39,14 @@ class DeclarationRevenueDocument extends BaseModel {
 
   static get types() {
     return {
+      salarySheet: 'salarySheet',
+      employerCertificate: 'employerCertificate',
       enterpriseMontlyTurnover: 'enterpriseMontlyTurnover',
       enterpriseQuaterlyTurnover: 'enterpriseQuaterlyTurnover',
+      VPGeneralOrDecision: 'VPGeneralOrDecision',
+      selfEmployedSocialDeclaration: 'selfEmployedSocialDeclaration',
+      declarationOfProfessionalIncome: 'declarationOfProfessionalIncome',
+      artistIncomeStatement: 'artistIncomeStatement',
     };
   }
 }

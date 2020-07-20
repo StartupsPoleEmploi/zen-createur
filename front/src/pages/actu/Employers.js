@@ -668,7 +668,8 @@ export class Employers extends Component {
   }
 
   renderCreatorQuestion = (data, index) => {
-    const needTurnover = this.props.declarations[0].taxeDue === CREATORTAXRATE.MONTHLY;
+    const declaration = this.props.declarations[0];
+    const needTurnover = !(declaration.status === 'autoEntreprise' && declaration.taxeDue !== CREATORTAXRATE.MONTHLY);
 
     return (
       <CreatorQuestion
