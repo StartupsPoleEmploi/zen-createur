@@ -1,4 +1,5 @@
 import { isObject } from 'lodash';
+import { CREATORTAXRATE } from '../constants';
 
 export const WORK_HOURS = 'workHours';
 export const SALARY = 'salary';
@@ -27,3 +28,7 @@ export const calculateTotal = (employers, field, lowLimit, highLimit) => {
 
   return Math.round(total, 10);
 };
+
+export const needTurnover = (declaration) => {
+  return declaration.status === 'sarl' || (declaration.taxeDue === CREATORTAXRATE.MONTHLY && declaration.status === 'autoEntreprise');
+}

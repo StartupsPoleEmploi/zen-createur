@@ -406,7 +406,7 @@ CreatorQuestion.propTypes = {
   needTurnover: PropTypes.bool.isRequired,
   showCollapsedTitle: PropTypes.bool.isRequired,
   defaultName: PropTypes.string.isRequired,
-  collapsed: PropTypes.bool.isRequired,
+  collapsed: PropTypes.bool.isRequired
 };
 
 export default withWidth()(CreatorQuestion);

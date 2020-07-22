@@ -230,7 +230,7 @@ export class Actu extends Component {
     if (declaration) {
       additionnalOptions = {
         hasEmployers: declaration.hasEmployers,
-        isCreator: declaration.taxeDue !== null,
+        isCreator: declaration.status !== null,
         creatorTaxeRate: declaration.taxeDue,
         status: declaration.status
       }
@@ -513,12 +513,12 @@ export class Actu extends Component {
 
     this.setState({ isValidating: true });
 
-    const hasWorked = (this.state.hasEmployers || this.state.isCreator);
+    const hasWorked = (this.state.hasEmployers || this.state.status !== null);
     const objectToSend = {
       ...this.state,
       hasWorked,
       ignoreErrors,
-      creatorTaxeRate: this.state.isCreator ? this.state.creatorTaxeRate : null
+      creatorTaxeRate: this.state.status === 'autoEntreprise' ? this.state.creatorTaxeRate : null
     };
 
     return this.props
@@ -1023,7 +1023,7 @@ export class Actu extends Component {
 
                 <MainActionButton
                   primary
-                  onClick={this.state.hasEmployers || this.state.creatorTaxeRate !== null ?
+                  onClick={this.state.hasEmployers || this.state.status !== null ?
                     this.onSubmit :
                     this.openDialog}
                   disabled={!this.hasAnsweredMainQuestions() || isValidating}

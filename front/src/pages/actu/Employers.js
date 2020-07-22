@@ -54,6 +54,7 @@ import {
   MAX_WORK_HOURS_CREATOR,
   MIN_TURNOVER,
   MAX_TURNOVER,
+  needTurnover,
 } from '../../lib/salary';
 import { setNoNeedEmployerOnBoarding as setNoNeedEmployerOnBoardingAction } from '../../redux/actions/user';
 import { ucfirst } from '../../utils/utils.tool';
@@ -203,6 +204,12 @@ const getEmployersMapFromFormData = (employers) =>
       {},
     ));
 
+const getEnterprisesMapFromFormData = (employers, declaration) => {
+  const turnover = needTurnover(declaration);
+
+  return getEmployersMapFromFormData(employers).map(e => ({ ...e, turnover: turnover ? e.turnover : null }))
+}
+
 // TODO refactor this, repeated almost exactly in WorkSummary
 const calculateTotal = (employers, field) => {
   const total = employers.reduce((prev, employer) => {
@@ -267,7 +274,7 @@ export class Employers extends Component {
           return this.props.history.replace('/files');
         }
 
-        if (currentDeclaration.taxeDue !== null) {
+        if (currentDeclaration.status !== null) {
           if (!currentDeclaration.revenues || currentDeclaration.revenues.length === 0) {
             enterprises.push({ ...enterpriseTemplate });
           } else {
@@ -364,8 +371,6 @@ export class Employers extends Component {
       }
     }
 
-    if (!isValid) return 'Champ obligatoire';
-
     if (name === WORK_HOURS) {
       if (_isNaN(value)) {
         return 'Merci de ne saisir que des chiffres';
@@ -385,11 +390,18 @@ export class Employers extends Component {
     }
 
     if (name === TURNOVER) {
-      if (_isNaN(value)) {
-        return 'Merci de ne saisir que des chiffres';
-      }
-      if (value < MIN_TURNOVER || value > MAX_TURNOVER) {
-        return 'Merci de corriger votre chiffre d\'affaire';
+      const declaration = this.props.declarations[0];
+      const turnover = needTurnover(declaration);
+
+      if (turnover) {
+        if (_isNaN(value)) {
+          return 'Merci de ne saisir que des chiffres';
+        }
+        if (value < MIN_TURNOVER || value > MAX_TURNOVER) {
+          return 'Merci de corriger votre chiffre d\'affaire';
+        }
+      } else {
+        return null;
       }
     }
 
@@ -405,6 +417,8 @@ export class Employers extends Component {
     if (name === 'hasEndedThisMonth' && !isBoolean(value)) {
       return 'Merci de répondre à la question';
     }
+
+    if (!isValid) return 'Champ obligatoire';
   }
 
   addEmployer = () => this.setState(({ employers }) => ({
@@ -453,7 +467,7 @@ export class Employers extends Component {
 
   onSave = () => this.props.postEmployers({
     employers: getEmployersMapFromFormData(this.state.employers),
-    enterprises: getEmployersMapFromFormData(this.state.enterprises),
+    enterprises: getEnterprisesMapFromFormData(this.state.enterprises, this.state.currentDeclaration),
   })
 
   saveAndRedirect = () => this.onSave().then(() => this.props.history.push('/thanks?later'))
@@ -464,7 +478,7 @@ export class Employers extends Component {
     return this.props
       .postEmployers({
         employers: getEmployersMapFromFormData(this.state.employers),
-        enterprises: getEmployersMapFromFormData(this.state.enterprises),
+        enterprises: getEnterprisesMapFromFormData(this.state.enterprises, this.state.currentDeclaration),
         isFinished: true,
         ignoreErrors,
       })
@@ -542,6 +556,8 @@ export class Employers extends Component {
         });
       }
 
+      console.log('error', error, fieldName, value)
+
       if (error) isFormValid = false;
 
       datas[node][index][fieldName] = {
@@ -616,6 +632,7 @@ export class Employers extends Component {
       showCollapsedTitle={this.state.employers.length > 1}
       canRemove={this.state.employers.length > 1}
       activeMonth={this.props.activeMonth}
+      inline={this.state.enterprises.length === 0}
     />
   )
 
@@ -669,7 +686,7 @@ export class Employers extends Component {
 
   renderCreatorQuestion = (data, index) => {
     const declaration = this.props.declarations[0];
-    const needTurnover = declaration.status === 'sarl' || (declaration.taxeDue === CREATORTAXRATE.MONTHLY && declaration.status === 'autoEntreprise');
+    const turnover = needTurnover(declaration);
 
     return (
       <CreatorQuestion
@@ -680,7 +697,7 @@ export class Employers extends Component {
         defaultName={`Entreprise ${index + 1}`}
         collapsed={this.state.selectedEnterprise !== index}
         showCollapsedTitle={this.state.enterprises.length > 1}
-        needTurnover={needTurnover}
+        needTurnover={turnover}
         canRemove={this.state.enterprises.length > 1}
         activeMonth={this.props.activeMonth}
       />
@@ -693,7 +710,7 @@ export class Employers extends Component {
 
     return (
       <>
-        {this.props.declarations[0].taxeDue && (
+        {this.props.declarations[0].status && (
           <Box flex={1}>
             <BoxPanel>
               <Block style={{ marginTop: '33px' }}>
