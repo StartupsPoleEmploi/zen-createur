@@ -1,5 +1,6 @@
 const { isNull, get } = require('lodash');
 const { transaction } = require('objection');
+const moment = require('moment');
 
 const EmployerDocument = require('../models/EmployerDocument');
 const DeclarationInfo = require('../models/DeclarationInfo');
@@ -11,6 +12,42 @@ const salarySheetType = 'salarySheet';
 const employerCertificateType = 'employerCertificate';
 const enterpriseMontlyTurnoverType = 'enterpriseMontlyTurnover';
 const enterpriseQuaterlyTurnoverType = 'enterpriseQuaterlyTurnover';
+
+const getNbEnterprisesNeedFiles = (declaration) => {
+  const dateMonth = moment(declaration.declarationMonth.month).format("M");
+
+  switch (declaration.status) {
+    case 'sarl':
+      return 1;
+      break;
+    case 'entrepriseIndividuelle':
+      if (dateMonth === 4) {
+        return 1;
+      }
+      break;
+    case 'autoEntreprise':
+      const date = moment(declaration.declarationMonth.month);
+
+      if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
+        return 1;
+      }
+
+      if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 === 0) {
+        return 1;
+      }
+      break;
+    case 'nonSalarieAgricole':
+      if (dateMonth === 1) {
+        return 1;
+      }
+      break;
+    case 'artisteAuteur':
+      return 1;
+      break;
+  }
+
+  return 0;
+}
 
 const hasMissingEmployersDocuments = (declaration) =>
   declaration.employers.reduce((prev, employer) => {
@@ -39,14 +76,8 @@ const hasMissingDeclarationDocuments = (declaration) =>
   ).length !== 0
 
 const hasMissingRevenuesDocuments = (declaration) => {
-  const nbMissingFiles = declaration.revenues.reduce((all, current) => {
-    if (current.documents.length === 0) {
-      all++;
-    } else if (current.documents.every(d => d.isTransmitted) === false) {
-      all++;
-    }
-
-    return all;
+  const nbMissingFiles = getNbEnterprisesNeedFiles(declaration) - declaration.revenues.reduce((all, current) => {
+    return all + current.documents.length;
   }, 0);
 
   return nbMissingFiles !== 0
@@ -57,7 +88,7 @@ const fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated = ({
   userId,
 }) =>
   Declaration.query()
-    .eager('[infos, employers.documents, revenues.documents]')
+    .eager('[infos, employers.documents, revenues.documents, declarationMonth]')
     .findOne({
       id: declarationId,
       userId,

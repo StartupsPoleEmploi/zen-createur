@@ -327,6 +327,7 @@ EmployerQuestion.propTypes = {
   showCollapsedTitle: PropTypes.bool.isRequired,
   defaultName: PropTypes.string.isRequired,
   collapsed: PropTypes.bool.isRequired,
+  inline: PropTypes.bool,
 };
 
 export default withWidth()(EmployerQuestion);

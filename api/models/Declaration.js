@@ -93,7 +93,6 @@ class Declaration extends BaseModel {
         transmittedAt: { type: ['string', 'object', 'null'] },
         taxeDue: { type: ['string', 'null'], enum: [null, 'monthly', 'quaterly'] },
         status: { type: ['string', 'null'] },
-        hasPay: { type: ['boolean', 'null'] },
       },
     };
   }

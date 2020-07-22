@@ -69,16 +69,11 @@ const CODES = {
     codeSituation: '3',
     codeTypeDocument: 'ASF',
   },
-  ENTREPRISE_CA_MONTHLY: {
+  ENTREPRISE_DOCUMENT: {
     codeContexte: CONTEXT_CODE,
     codeSituation: '2',
     codeTypeDocument: 'JRE',
   },
-  ENTREPRISE_CA_QUATERLY: {
-    codeContexte: CONTEXT_CODE,
-    codeSituation: '2',
-    codeTypeDocument: 'JRE',
-  }
 };
 
 const documentsToTransmitTypes = [
@@ -121,7 +116,7 @@ const docmentsRevenueToTransmitTypes = [
       date,
       'MM-YYYY',
     )}`,
-    confirmationData: CODES.ENTREPRISE_CA_MONTHLY,
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
   },
   {
     type: 'enterpriseQuaterlyTurnover',
@@ -129,7 +124,47 @@ const docmentsRevenueToTransmitTypes = [
       date,
       'Q-YYYY',
     )}`,
-    confirmationData: CODES.ENTREPRISE_CA_QUATERLY,
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
+  },
+  {
+    type: 'salarySheet',
+    label: ({ date }) => `BS-mon entreprise-${format(
+      date,
+      'MM-YYYY',
+    )}`,
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
+  },
+  {
+    type: 'VPGeneralOrDecision',
+    label: ({ date }) => `Relevé de décision-${format(
+      date,
+      'MM-YYYY',
+    )}`,
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
+  },
+  {
+    type: 'selfEmployedSocialDeclaration',
+    label: ({ date }) => `DSI - ${format(
+      date,
+      'MM-YYYY',
+    )}`,
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
+  },
+  {
+    type: 'declarationOfProfessionalIncome',
+    label: ({ date }) => `Déclaration des revenus professionnels - ${format(
+      date,
+      'YYYY',
+    )}`,
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
+  },
+  {
+    type: 'artistIncomeStatement',
+    label: ({ date }) => `Déclaration des revenus des artistes (MDA / Agessa) - ${format(
+      date,
+      'YYYY',
+    )}`,
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
   }
 ]
 

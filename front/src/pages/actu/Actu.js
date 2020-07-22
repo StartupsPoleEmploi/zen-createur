@@ -162,6 +162,12 @@ const formFields = [
   'jobSearchStopMotive',
 ];
 
+const statusTab = [
+  { key: 'entrepriseIndividuelle', tooltip: "Cette forme juridique vous concerne si vous exercez en nom propre c'est-à-dire que votre activité professionnelle n'a pas d'entité juridique distincte. En entrerprise individuelle, l'imposition fiscale et sociale est basée sur le bénéfice réalisé." },
+  { key: 'autoEntreprise', tooltip: "L'auto-entreprise ou micro-entreprise est un régime simplifié de l’entreprise individuelle. Le statut VDI vous concerne si vous avez une activité de vendeur indépendant." },
+  { key: 'nonSalarieAgricole', tooltip: "Cette forme juridique vous concerne si vous êtes chef d’exploitation agricole ou si vous avez un statut de collaborateur d’exploitation (vous êtes marié.e, pacsé.e ou vous vivez en concubinage avec un chef d’exploitation agricole) ou encore si vous avez le statut d’aide familial (mise en valeur d’une exploitation et que vous n’avez pas la qualité de salarié). " },
+];
+
 const JOB_CHECK_KEY = 'canUseService';
 
 const getJobCheckFromStore = () => {
@@ -203,7 +209,6 @@ export class Actu extends Component {
     creatorTaxeRate: null,
     hasEmployers: null,
     completeCreatorQuestion: false,
-    hasPay: null,
     status: null,
     infos: [],
     errorsField: [],
@@ -225,8 +230,7 @@ export class Actu extends Component {
     if (declaration) {
       additionnalOptions = {
         hasEmployers: declaration.hasEmployers,
-        hasPay: declaration.hasPay,
-        isCreator: declaration.taxeDue !== null,
+        isCreator: declaration.status !== null,
         creatorTaxeRate: declaration.taxeDue,
         status: declaration.status
       }
@@ -509,12 +513,12 @@ export class Actu extends Component {
 
     this.setState({ isValidating: true });
 
-    const hasWorked = (this.state.hasEmployers || this.state.isCreator);
+    const hasWorked = (this.state.hasEmployers || this.state.status !== null);
     const objectToSend = {
       ...this.state,
       hasWorked,
       ignoreErrors,
-      creatorTaxeRate: this.state.isCreator ? this.state.creatorTaxeRate : null
+      creatorTaxeRate: this.state.status === 'autoEntreprise' ? this.state.creatorTaxeRate : null
     };
 
     return this.props
@@ -679,7 +683,7 @@ export class Actu extends Component {
       this.state.isCreator !== null &&
       (
         (this.state.isCreator === true && this.state.status !== null && (
-          (this.state.status === 'sarl' && this.state.hasPay !== null)
+          this.state.status === 'sarl'
           || (this.state.status === 'autoEntreprise' && this.state.creatorTaxeRate !== null)
           || (this.state.status !== 'sarl' && this.state.status !== 'autoEntreprise'))) ||
         this.state.isCreator === false
@@ -697,14 +701,6 @@ export class Actu extends Component {
         <u>Autoentrepreneur.urssaf.fr.</u>
       </>
     );
-
-    const statusTab = [
-      { key: 'sarl', tooltip: '123456' },
-      { key: 'entrepriseIndividuelle', tooltip: '123456' },
-      { key: 'autoEntreprise', tooltip: '123456' },
-      { key: 'nonSalarieAgricole', tooltip: '123456' },
-      { key: 'artisteAuteur', tooltip: '123456' }
-    ];
 
 
     return (
@@ -798,12 +794,6 @@ export class Actu extends Component {
               </Box>
             </RadioGroup>
           </div>)}
-          {this.state.status === 'sarl' && (<DeclarationQuestion
-            label="Avez-vous été rémunéré ce mois-ci ?"
-            name="hasPay"
-            value={this.state.hasPay}
-            onAnswer={this.onAnswer}
-          />)}
           <FinalButtonsContainer>
             <MainActionButton
               primary
@@ -1033,7 +1023,7 @@ export class Actu extends Component {
 
                 <MainActionButton
                   primary
-                  onClick={this.state.hasEmployers || this.state.creatorTaxeRate !== null ?
+                  onClick={this.state.hasEmployers || this.state.status !== null ?
                     this.onSubmit :
                     this.openDialog}
                   disabled={!this.hasAnsweredMainQuestions() || isValidating}

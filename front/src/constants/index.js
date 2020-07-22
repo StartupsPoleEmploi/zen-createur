@@ -40,6 +40,21 @@ export const DOCUMENT_LABELS = {
   salarySheet: 'Bulletin de salaire',
   enterpriseMontlyTurnover: 'Déclaration CA mensuelle',
   enterpriseQuaterlyTurnover: 'Déclaration CA trimestrielle',
+  VPGeneralOrDecision: 'Procès-verbal d\'assemblée générale ou Relevé de décision',
+  selfEmployedSocialDeclaration: 'Déclaration Sociale des indépendants',
+  declarationOfProfessionalIncome: 'Déclaration des revenus professionnels',
+  artistIncomeStatement: 'Déclaration des revenus des artistes (MDA / Agessa)',
+};
+
+export const DOCUMENT_TYPES = {
+  salarySheet: 'salarySheet',
+  employerCertificate: 'employerCertificate',
+  enterpriseMontlyTurnover: 'enterpriseMontlyTurnover',
+  enterpriseQuaterlyTurnover: 'enterpriseQuaterlyTurnover',
+  VPGeneralOrDecision: 'VPGeneralOrDecision',
+  selfEmployedSocialDeclaration: 'selfEmployedSocialDeclaration',
+  declarationOfProfessionalIncome: 'declarationOfProfessionalIncome',
+  artistIncomeStatement: 'artistIncomeStatement',
 };
 
 export const jobSearchEndMotive = {

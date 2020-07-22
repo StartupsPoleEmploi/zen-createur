@@ -15,7 +15,7 @@ import {
   formatDate,
 } from '../../../lib/date';
 import {
-  ActuTypes as types, jobSearchEndMotive, TIMEWORKED, CREATORTAXRATE,
+  ActuTypes as types, jobSearchEndMotive, TIMEWORKED, CREATORTAXRATE, CREATOR_STATUS,
 } from '../../../constants';
 import { ucfirst } from '../../../utils/utils.tool';
 
@@ -188,29 +188,61 @@ const DeclarationSummaryDialog = ({
                             break;
                         }
 
-                        if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
-                          rightPart = (
-                            <>
-                              Déclaration URSSAF tous les mois
+                        switch (declaration.status) {
+                          case 'sarl':
+                            rightPart = (
+                              <>
+                                {CREATOR_STATUS.sarl}
+                                {' '}
+                              -
                               {' '}
-                            -
-                            {' '}
-                              <NumberFormat
-                                thousandSeparator=" "
-                                decimalSeparator=","
-                                decimalScale={0}
-                                fixedDecimalScale
-                                displayType="text"
-                                suffix="€"
-                                value={enterprise.turnover.value}
-                              />
-                            </>
-                          );
-                        } else {
-                          rightPart = <>
-                            Déclaration URSSAF tous les trismestres
-                          </>;
+                                <NumberFormat
+                                  thousandSeparator=" "
+                                  decimalSeparator=","
+                                  decimalScale={0}
+                                  fixedDecimalScale
+                                  displayType="text"
+                                  suffix="€"
+                                  value={enterprise.turnover.value}
+                                />
+                              </>
+                            );
+                            break;
+                          case 'entrepriseIndividuelle':
+                            rightPart = CREATOR_STATUS.entrepriseIndividuelle;
+                            break;
+                          case 'autoEntreprise':
+                            if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
+                              rightPart = (
+                                <>
+                                  {CREATOR_STATUS.autoEntreprise}{' '} - Déclaration URSSAF tous les mois
+                                  {' '}
+                                -
+                                {' '}
+                                  <NumberFormat
+                                    thousandSeparator=" "
+                                    decimalSeparator=","
+                                    decimalScale={0}
+                                    fixedDecimalScale
+                                    displayType="text"
+                                    suffix="€"
+                                    value={enterprise.turnover.value}
+                                  />
+                                </>
+                              );
+                            } else {
+                              rightPart = <>
+                                {CREATOR_STATUS.autoEntreprise}{' '} - Déclaration URSSAF tous les trismestres
+                              </>;
+                            }
+                            break;
+                          case 'nonSalarieAgricole':
+                            rightPart = CREATOR_STATUS.nonSalarieAgricole;
+                            break;
                         }
+
+
+
 
                         return (
                           <DeclarationLi key={key}>

@@ -28,11 +28,19 @@ const getDeclarationWorkHours = (declaration) => {
   // We cannot declare more than 420 hours to PE.fr
   // or the form will refuse our input
   const actualWorkHours = declaration.employers.reduce(
-    (prev, { workHours }) => prev + workHours,
-    0,
+    (prev, { workHours }) => {
+      if (workHours !== null) { return prev + workHours }
+
+      return prev;
+    },
+    null,
   ) + declaration.revenues.reduce(
-    (prev, { workHours }) => prev + workHours,
-    0,
+    (prev, { workHours }) => {
+      if (workHours !== null) { return prev + workHours }
+
+      return prev;
+    },
+    null,
   );
 
   return actualWorkHours > MAX_DECLARABLE_HOURS
@@ -41,15 +49,26 @@ const getDeclarationWorkHours = (declaration) => {
 };
 
 const getDeclarationRevenue = (declaration) => {
-  const actualRevenues =
-    declaration.employers.reduce((prev, { salary }) => prev + salary, 0) +
-    declaration.revenues.reduce((prev, { turnover }) => prev + turnover, 0);
+  const actualEmployerRevenues = declaration.employers.reduce(
+    (prev, { salary }) => {
+      if (salary !== null) { return prev + salary }
 
-  if (declaration.employers.length === 0 && declaration.taxeDue === 'quaterly') {
-    return '';
-  }
+      return prev;
+    },
+    null,
+  );
 
-  return Math.round(actualRevenues);
+  const actualEnterpriseRevenues = declaration.revenues.reduce(
+    (prev, { turnover }) => {
+      if (turnover !== null) { return prev + turnover }
+
+      return prev;
+    },
+    null,
+  );
+
+  return actualEmployerRevenues === null && actualEnterpriseRevenues === null ?
+    '' : Math.round(actualEmployerRevenues + actualEnterpriseRevenues);
 }
 
 const convertDeclarationToAPIFormat = (declaration) => {
@@ -158,7 +177,7 @@ const sendDeclaration = ({
 
   // NEVER ACTIVATE IN PRODUCTION
   if (isFakeAuth || config.get('bypassDeclarationDispatch')) {
-    winston.info(`Simulating sending ${declaration.id} to PE`);
+    winston.info(`Simulating sending ${declaration.id} to PE : ${JSON.stringify(dataToSend)}`);
     return Promise.resolve({ body: { statut: 0 } });
   }
 
@@ -170,7 +189,6 @@ const sendDeclaration = ({
     headers: [{ key: 'media', value: 'I' }],
   })
     .then((response) => {
-      console.log('PE api response', response)
       const { body } = response
       if (body.statut !== DECLARATION_STATUSES.SAVED) {
         // the service will answer with HTTP 200 for a bunch of errors
