@@ -163,7 +163,6 @@ const formFields = [
 ];
 
 const statusTab = [
-  { key: 'sarl', tooltip: 'Si votre entreprise a une de ces formes juridiques, vous êtes une personne "assimilée-salarié" rémunérée ou non remunérée.' },
   { key: 'entrepriseIndividuelle', tooltip: "Cette forme juridique vous concerne si vous exercez en nom propre c'est-à-dire que votre activité professionnelle n'a pas d'entité juridique distincte. En entrerprise individuelle, l'imposition fiscale et sociale est basée sur le bénéfice réalisé." },
   { key: 'autoEntreprise', tooltip: "L'auto-entreprise ou micro-entreprise est un régime simplifié de l’entreprise individuelle. Le statut VDI vous concerne si vous avez une activité de vendeur indépendant." },
   { key: 'nonSalarieAgricole', tooltip: "Cette forme juridique vous concerne si vous êtes chef d’exploitation agricole ou si vous avez un statut de collaborateur d’exploitation (vous êtes marié.e, pacsé.e ou vous vivez en concubinage avec un chef d’exploitation agricole) ou encore si vous avez le statut d’aide familial (mise en valeur d’une exploitation et que vous n’avez pas la qualité de salarié). " },

@@ -69,16 +69,11 @@ const CODES = {
     codeSituation: '3',
     codeTypeDocument: 'ASF',
   },
-  ENTREPRISE_CA_MONTHLY: {
+  ENTREPRISE_DOCUMENT: {
     codeContexte: CONTEXT_CODE,
     codeSituation: '2',
     codeTypeDocument: 'JRE',
   },
-  ENTREPRISE_CA_QUATERLY: {
-    codeContexte: CONTEXT_CODE,
-    codeSituation: '2',
-    codeTypeDocument: 'JRE',
-  }
 };
 
 const documentsToTransmitTypes = [
@@ -121,7 +116,7 @@ const docmentsRevenueToTransmitTypes = [
       date,
       'MM-YYYY',
     )}`,
-    confirmationData: CODES.ENTREPRISE_CA_MONTHLY,
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
   },
   {
     type: 'enterpriseQuaterlyTurnover',
@@ -129,7 +124,7 @@ const docmentsRevenueToTransmitTypes = [
       date,
       'Q-YYYY',
     )}`,
-    confirmationData: CODES.ENTREPRISE_CA_QUATERLY,
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
   },
   {
     type: 'salarySheet',
@@ -137,7 +132,7 @@ const docmentsRevenueToTransmitTypes = [
       date,
       'MM-YYYY',
     )}`,
-    confirmationData: null
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
   },
   {
     type: 'VPGeneralOrDecision',
@@ -145,7 +140,7 @@ const docmentsRevenueToTransmitTypes = [
       date,
       'MM-YYYY',
     )}`,
-    confirmationData: null
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
   },
   {
     type: 'selfEmployedSocialDeclaration',
@@ -153,7 +148,7 @@ const docmentsRevenueToTransmitTypes = [
       date,
       'MM-YYYY',
     )}`,
-    confirmationData: null
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
   },
   {
     type: 'declarationOfProfessionalIncome',
@@ -161,7 +156,7 @@ const docmentsRevenueToTransmitTypes = [
       date,
       'YYYY',
     )}`,
-    confirmationData: null
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
   },
   {
     type: 'artistIncomeStatement',
@@ -169,7 +164,7 @@ const docmentsRevenueToTransmitTypes = [
       date,
       'YYYY',
     )}`,
-    confirmationData: null
+    confirmationData: CODES.ENTREPRISE_DOCUMENT,
   }
 ]
 
