@@ -556,8 +556,6 @@ export class Employers extends Component {
         });
       }
 
-      console.log('error', error, fieldName, value)
-
       if (error) isFormValid = false;
 
       datas[node][index][fieldName] = {

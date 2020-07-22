@@ -254,6 +254,11 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
             ])).then(() => declaration);
         })
     })
+    .then(declaration =>
+      fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated({
+        declarationId: declaration.id,
+        userId: req.session.user.id,
+      }))
     .then(val => res.json(val))
     .catch(next);
 });

@@ -25,6 +25,8 @@ export const getMissingEnterprisesFiles = (declaration) => {
 }
 
 export const getEnterprisesFiles = (declaration) => {
+  const dateMonth = moment(declaration.declarationMonth.month).format("M");
+
   switch (declaration.status) {
     case 'sarl':
       if (declaration.hasPay) {
@@ -34,7 +36,9 @@ export const getEnterprisesFiles = (declaration) => {
       }
       break;
     case 'entrepriseIndividuelle':
-      return [{ name: DOCUMENT_LABELS.selfEmployedSocialDeclaration, type: DOCUMENT_TYPES.selfEmployedSocialDeclaration }];
+      if (dateMonth === 4) {
+        return [{ name: DOCUMENT_LABELS.selfEmployedSocialDeclaration, type: DOCUMENT_TYPES.selfEmployedSocialDeclaration }];
+      }
       break;
     case 'autoEntreprise':
       const date = moment(declaration.declarationMonth.month);
@@ -45,7 +49,6 @@ export const getEnterprisesFiles = (declaration) => {
         }]
       }
 
-      const dateMonth = moment(declaration.declarationMonth.month).format("M");
       if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 === 0) {
         return [{
           name: `Déclaration CA N°${date.format('Q-YYYY')}`, type: DOCUMENT_TYPES.enterpriseQuaterlyTurnover
@@ -53,7 +56,9 @@ export const getEnterprisesFiles = (declaration) => {
       }
       break;
     case 'nonSalarieAgricole':
-      return [{ name: DOCUMENT_LABELS.declarationOfProfessionalIncome, type: DOCUMENT_TYPES.declarationOfProfessionalIncome }];
+      if (dateMonth === 1) {
+        return [{ name: DOCUMENT_LABELS.declarationOfProfessionalIncome, type: DOCUMENT_TYPES.declarationOfProfessionalIncome }];
+      }
       break;
     case 'artisteAuteur':
       return [{ name: DOCUMENT_LABELS.artistIncomeStatement, type: DOCUMENT_TYPES.artistIncomeStatement }];
@@ -107,6 +112,7 @@ export const getDeclarationMissingFilesNb = (declaration) => {
   ).length;
 
   const revenues = declaration.revenues || [];
+  const nbNeedEntrepriseFile = getEnterprisesFiles(declaration).length;
 
   return (
     declaration.employers.reduce((prev, employer) => {
@@ -127,14 +133,8 @@ export const getDeclarationMissingFilesNb = (declaration) => {
 
       if (hasEmployerCertificate) return prev + 0;
       return prev + (hasSalarySheet ? 1 : 2);
-    }, 0) + infoDocumentsRequiredNb + revenues.reduce((all, current) => {
-      if (current.documents.length === 0) {
-        all++;
-      } else if (current.documents.every(d => d.isTransmitted) === false) {
-        all++;
-      }
-
-      return all;
+    }, 0) + infoDocumentsRequiredNb + nbNeedEntrepriseFile - revenues.reduce((all, current) => {
+      return all + current.documents.length;
     }, 0));
 };
 
