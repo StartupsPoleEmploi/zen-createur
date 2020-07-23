@@ -13,6 +13,12 @@ const employerCertificateType = 'employerCertificate';
 const enterpriseMontlyTurnoverType = 'enterpriseMontlyTurnover';
 const enterpriseQuaterlyTurnoverType = 'enterpriseQuaterlyTurnover';
 
+const CREATORTAXRATE = {
+  MONTHLY: 'monthly',
+  QUATERLY: 'quaterly',
+  YEARLY: 'yearly',
+};
+
 const getNbEnterprisesNeedFiles = (declaration) => {
   const dateMonth = moment(declaration.declarationMonth.month).format("M");
 
