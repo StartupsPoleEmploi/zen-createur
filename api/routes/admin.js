@@ -357,7 +357,7 @@ router.get('/users/:id', (req, res, next) => {
 
 router.get('/declarations/:id', (req, res, next) => {
   Declaration.query()
-    .eager('[user, employers.documents, review, infos, declarationMonth]')
+    .eager('[user, employers.documents, review, infos, declarationMonth, revenues.documents]')
     .findById(req.params.id)
     .then((declaration) => {
       if (!declaration) return res.send(404, 'Declaration not found');

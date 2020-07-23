@@ -19,6 +19,7 @@ import ZnHeader from '../../components/ZnHeader';
 import DeclarationDetails from './components/DeclarationDetails';
 import DeclarationInfos from './components/DeclarationInfos';
 import DeclarationEmployers from './components/DeclarationEmployers';
+import DeclarationEnterprises from './components/DeclarationEnterprises';
 
 async function getDeclaration(id) {
   return superagent
@@ -101,6 +102,7 @@ export default function Declaration({ match }: Props) {
             <DeclarationDetails declaration={declaration} />
             <DeclarationInfos declaration={declaration} />
             <DeclarationEmployers declaration={declaration} />
+            <DeclarationEnterprises declaration={declaration} />
 
             <Card title="Modification" style={{ marginBottom: '20px' }}>
               <Checkbox

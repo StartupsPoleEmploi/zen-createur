@@ -39,7 +39,7 @@ export default function DeclarationDetails({ declaration }: Props) {
                       ? ' ou en congé paternité'
                       : ''
                     // eslint-disable-next-line no-irregular-whitespace
-                  } ?`}
+                    } ?`}
                 </b>
               </td>
               <td><IconBoolean val={declaration.hasSickLeave} /></td>
@@ -55,7 +55,7 @@ export default function DeclarationDetails({ declaration }: Props) {
             <tr>
               <td>
                 <b>
-                Avoir une nouvelle pension d'invalidité
+                  Avoir une nouvelle pension d'invalidité
                   <br />
                 de 2eme ou 3eme catégorie ?
                 </b>
@@ -105,6 +105,14 @@ export default function DeclarationDetails({ declaration }: Props) {
             <tr>
               <td><b>Identifiant du mois</b></td>
               <td>{declaration.monthId}</td>
+            </tr>
+            <tr>
+              <td><b>Déclaration URSSAF</b></td>
+              <td>{declaration.taxeDue}</td>
+            </tr>
+            <tr>
+              <td><b>Statut entrepreneur</b></td>
+              <td>{declaration.status}</td>
             </tr>
           </tbody>
         </table>
