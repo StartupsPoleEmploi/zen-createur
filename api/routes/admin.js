@@ -175,9 +175,11 @@ router.post('/declarations/review', (req, res, next) => {
     return res.status(400).json('Incomplete request');
   }
 
+  const declarationId = +req.body.declarationId
+
   Declaration.query()
     .eager('review')
-    .findById(req.body.declarationId)
+    .findById(declarationId)
     .then((declaration) => {
       const declarationNoteObj = {};
 
@@ -197,7 +199,7 @@ router.post('/declarations/review', (req, res, next) => {
 
       return DeclarationReview.query()
         .insert({
-          declarationId: req.body.declarationId,
+          declarationId: declarationId,
           ...declarationNoteObj,
         })
         .then(() => res.json('ok'));
@@ -355,7 +357,7 @@ router.get('/users/:id', (req, res, next) => {
 
 router.get('/declarations/:id', (req, res, next) => {
   Declaration.query()
-    .eager('[user, employers.documents, review, infos, declarationMonth]')
+    .eager('[user, employers.documents, review, infos, declarationMonth, revenues.documents]')
     .findById(req.params.id)
     .then((declaration) => {
       if (!declaration) return res.send(404, 'Declaration not found');
