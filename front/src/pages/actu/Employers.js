@@ -59,6 +59,7 @@ import {
 import { setNoNeedEmployerOnBoarding as setNoNeedEmployerOnBoardingAction } from '../../redux/actions/user';
 import { ucfirst } from '../../utils/utils.tool';
 import { CreatorQuestion } from '../../components/Actu/CreatorQuestion';
+import { InlineEmployerQuestion } from '../../components/Actu/InlineEmployerQuestion';
 
 const StyledEmployers = styled.div`
   padding-bottom: 4rem;
@@ -618,20 +619,31 @@ export class Employers extends Component {
   }
 
   renderEmployerQuestion = (data, index) => (
-    <EmployerQuestion
-      {...data}
-      key={index}
-      index={index}
-      onChange={this.onChange}
-      onRemove={() => this.onRemove(index, 'employers')}
-      onCollapsed={() => this.onCollapsed(index)}
-      defaultName={`Employeur ${index + 1}`}
-      collapsed={this.state.selectedEmployer !== index}
-      showCollapsedTitle={this.state.employers.length > 1}
-      canRemove={this.state.employers.length > 1}
-      activeMonth={this.props.activeMonth}
-      inline={this.state.enterprises.length === 0}
-    />
+    this.state.enterprises.length === 0 ?
+      <InlineEmployerQuestion {...data}
+        key={index}
+        index={index}
+        onChange={this.onChange}
+        onRemove={() => this.onRemove(index, 'employers')}
+        onCollapsed={() => this.onCollapsed(index)}
+        defaultName={`Employeur ${index + 1}`}
+        collapsed={this.state.selectedEmployer !== index}
+        showCollapsedTitle={this.state.employers.length > 1}
+        canRemove={this.state.employers.length > 1}
+        activeMonth={this.props.activeMonth} /> :
+      <EmployerQuestion
+        {...data}
+        key={index}
+        index={index}
+        onChange={this.onChange}
+        onRemove={() => this.onRemove(index, 'employers')}
+        onCollapsed={() => this.onCollapsed(index)}
+        defaultName={`Employeur ${index + 1}`}
+        collapsed={this.state.selectedEmployer !== index}
+        showCollapsedTitle={this.state.employers.length > 1}
+        canRemove={this.state.employers.length > 1}
+        activeMonth={this.props.activeMonth}
+      />
   )
 
   renderEmployerPanel = () => {
@@ -641,7 +653,7 @@ export class Employers extends Component {
       <>
         {this.props.declarations[0].hasEmployers && (
           <Box flex={1}>
-            <BoxPanel style={{ marginTop: '70px' }}>
+            <BoxPanel style={{ marginTop: '70px', width: this.state.enterprises.length === 0 ? '100%' : '' }}>
               <Title variant="h6" component="h1" style={{ marginLeft: '40px' }}>
                 <b>{employers.length > 1 ? 'MES EMPLOYEURS' : 'MON EMPLOYEUR'}</b>
                 {' '}
@@ -650,7 +662,7 @@ export class Employers extends Component {
                 {ucfirst(moment(this.props.activeMonth).format('MMMM YYYY'))}
               </Title>
               <Block style={{ backgroundColor: 'transparent' }}>
-                {employers.length <= 1 && (
+                {(employers.length <= 1 && this.state.enterprises.length !== 0) && (
                   <TypographyLight>
                     Pour quel employeur avez-vous travaillé
                     <br />
