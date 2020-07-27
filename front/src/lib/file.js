@@ -134,7 +134,12 @@ export const getDeclarationMissingFilesNb = (declaration) => {
       if (hasEmployerCertificate) return prev + 0;
       return prev + (hasSalarySheet ? 1 : 2);
     }, 0) + infoDocumentsRequiredNb + nbNeedEntrepriseFile - revenues.reduce((all, current) => {
-      return all + current.documents.length;
+      if(current.documents.every(({isTransmitted}) => isTransmitted)) {
+        return all + current.documents.length;
+      } else {
+        return all;
+      }
+      
     }, 0));
 };
 
