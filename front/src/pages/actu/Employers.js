@@ -448,7 +448,7 @@ export class Employers extends Component {
     index, name, value, error, from,
   }) =>
     this.setState(({ [from]: prevEmployers }) => ({
-      [from]: prevEmployers.map((employer, key) =>
+      [from]: (prevEmployers || []).map((employer, key) =>
         (key === index ? { ...employer, [name]: { value, error } } : employer)),
       error: null,
     }));

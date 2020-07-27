@@ -120,6 +120,7 @@ export class InlineEmployerQuestion extends PureComponent {
       name,
       value,
       index: this.props.index,
+      from: 'employers',
     });
   }
 
@@ -306,7 +307,7 @@ InlineEmployerQuestion.propTypes = {
   onRemove: PropTypes.func.isRequired,
   activeMonth: PropTypes.instanceOf(Date).isRequired,
   verticalLayout: PropTypes.bool,
-  width: PropTypes.string.isRequired,
+  width: PropTypes.string,
   canRemove: PropTypes.bool
 };
 
