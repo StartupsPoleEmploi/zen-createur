@@ -83,7 +83,11 @@ const hasMissingDeclarationDocuments = (declaration) =>
 
 const hasMissingRevenuesDocuments = (declaration) => {
   const nbMissingFiles = getNbEnterprisesNeedFiles(declaration) - declaration.revenues.reduce((all, current) => {
-    return all + current.documents.length;
+    if(current.documents.every(({isTransmitted}) => isTransmitted)) {
+      return all + current.documents.length;
+    } else {
+      return all;
+    }
   }, 0);
 
   return nbMissingFiles !== 0
