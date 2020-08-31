@@ -29,6 +29,7 @@ export const calculateTotal = (employers, field, lowLimit, highLimit) => {
   return Math.round(total, 10);
 };
 
-export const needTurnover = (declaration) => {
-  return declaration.status === 'sarl' || (declaration.taxeDue === CREATORTAXRATE.MONTHLY && declaration.status === 'autoEntreprise');
+export const needTurnover = (declaration, index = 0) => {
+  const enterprise = declaration.revenues[index];
+  return enterprise.status === 'sarl' || (declaration.taxeDue === CREATORTAXRATE.MONTHLY && enterprise.status === 'autoEntreprise');
 }

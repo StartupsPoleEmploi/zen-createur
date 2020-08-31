@@ -10,15 +10,15 @@ class DeclarationRevenue extends BaseModel {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['userId', 'declarationId'],
+      required: ['declarationId'],
 
       properties: {
         id: { type: 'integer' },
-        userId: { type: 'integer' },
         declarationId: { type: 'integer' },
         workHours: { type: ['integer', 'null'] },
         turnover: { type: ['number', 'null'] },
         hasEndedThisMonth: { type: ['boolean', 'null'] },
+        status: { type: ['string', 'null'] },
       },
     };
   }
@@ -36,14 +36,6 @@ class DeclarationRevenue extends BaseModel {
   // This object defines the relations to other models.
   static get relationMappings() {
     return {
-      user: {
-        relation: BelongsToOneRelation,
-        modelClass: `${__dirname}/User`,
-        join: {
-          from: 'declaration_revenues.userId',
-          to: 'Users.id',
-        },
-      },
       declaration: {
         relation: BelongsToOneRelation,
         modelClass: `${__dirname}/Declaration`,

@@ -218,6 +218,12 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
     return res.status(400).json(e);
   }
 
+  // format revenues of declaration
+  declarationData = {...declarationData, revenues: declarationData.status.map(status => ({
+    status,
+    userId: req.session.user.id
+  }))}
+
   return Declaration.query()
     .findOne({
       // if req.body.id is defined, this finds the specified declaration
@@ -233,17 +239,21 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
       const saveDeclaration = async (trx) => {
         // remove old revenus 
         if (declaration) {
-          await DeclarationRevenue.query()
-            .delete()
-            .where({ declarationId: declaration.id });
+          const revenues = await DeclarationRevenue.query().where('declarationId', '=', declaration.id);
+          await Promise.all(
+            revenues.map(async (d) =>
+              d.$query().delete()),
+          )
 
-          await Employer.query()
-            .delete()
-            .where({ declarationId: declaration.id });
+          const employers = await Employer.query().where('declarationId', '=', declaration.id);
+          await Promise.all(
+            employers.map(async (d) =>
+              d.$query().delete()),
+          )
         }
 
 
-        return Declaration.query(trx).upsertGraphAndFetch(declarationData);
+        return Declaration.query(trx).upsertGraphAndFetch(declarationData)
       }
 
       const saveAndLogDeclaration = () =>
