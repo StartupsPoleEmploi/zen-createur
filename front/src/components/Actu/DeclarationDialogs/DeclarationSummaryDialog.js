@@ -59,7 +59,9 @@ const DeclarationUl = styled.ul`
 
 const DeclarationLi = styled(DeclarationValues).attrs({
   component: 'li',
-})``;
+})`
+  margin-bottom: 8px;
+`;
 
 const ButtonsContainer = styled.div`
   display: flex;
@@ -163,6 +165,7 @@ const DeclarationSummaryDialog = ({
                     </DeclarationHeader>
                     <DeclarationUl className="employer-declared-list">
                       {enterprises.map((enterprise, i) => {
+                        const enterpriseDetails = declaration.revenues[i];
                         const key = `${i}-${enterprise.workHoursCreator.value}`;
 
                         let leftPart = null;
@@ -246,6 +249,8 @@ const DeclarationSummaryDialog = ({
 
                         return (
                           <DeclarationLi key={key}>
+                            <b>{CREATOR_STATUS[enterpriseDetails.status]}</b> {' '}
+                            - {' '}
                             {leftPart}
                             {leftPart && rightPart && (
                               <>

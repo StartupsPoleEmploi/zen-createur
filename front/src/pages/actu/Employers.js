@@ -201,7 +201,11 @@ const getEmployersMapFromFormData = (employers) =>
     ));
 
 const getEnterprisesMapFromFormData = (employers, declaration) => {
-  return getEmployersMapFromFormData(employers).map((e, index) => ({ ...e, turnover: needTurnover(declaration, index) ? e.turnover : null }))
+  return getEmployersMapFromFormData(employers).map((e, index) => {
+    const enterprise = declaration.revenues[index];
+
+    return { ...e, turnover: needTurnover(declaration, index) ? e.turnover : null, id: enterprise.id, status: enterprise.status  }
+  })
 }
 
 // TODO refactor this, repeated almost exactly in WorkSummary
@@ -380,7 +384,6 @@ export class Employers extends Component {
     if (name === TURNOVER) {
       const declaration = this.props.declarations[0];
       const turnover = needTurnover(declaration, index);
-      console.log('turnover', turnover, name, value)
 
       if (turnover) {
         if (_isNaN(value)) {
@@ -456,21 +459,18 @@ export class Employers extends Component {
 
   onSave = () => this.props.postEmployers({
     employers: getEmployersMapFromFormData(this.state.employers),
-    enterprises: getEnterprisesMapFromFormData(this.state.enterprises),
-  })
+    enterprises: getEnterprisesMapFromFormData(this.state.enterprises, this.state.currentDeclaration),
+    })
 
   saveAndRedirect = () => this.onSave().then(() => this.props.history.push('/thanks?later'))
 
   onSubmit = ({ ignoreErrors = false } = {}) => {
     this.setState({ isValidating: true });
 
-console.log('getEnterprisesMapFromFormData(this.state.enterprises)',getEnterprisesMapFromFormData(this.state.enterprises))
-    return false;
-
     return this.props
       .postEmployers({
         employers: getEmployersMapFromFormData(this.state.employers),
-        enterprises: getEnterprisesMapFromFormData(this.state.enterprises),
+        enterprises: getEnterprisesMapFromFormData(this.state.enterprises, this.state.currentDeclaration),
         isFinished: true,
         ignoreErrors,
       })
