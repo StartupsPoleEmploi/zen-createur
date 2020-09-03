@@ -345,7 +345,7 @@ export class Employers extends Component {
       get(this.state.currentDeclaration, 'hasFinishedDeclaringEmployers') ===
       false
     ) {
-      // this.onSave(); TODO ici
+      // this.onSave();
     }
   }
 
