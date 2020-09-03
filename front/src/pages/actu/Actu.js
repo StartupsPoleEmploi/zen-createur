@@ -41,6 +41,7 @@ import {
 } from '../../constants';
 import ScrollToButton from '../../components/Generic/ScrollToButton';
 import TooltipOnFocus from '../../components/Generic/TooltipOnFocus';
+import { Checkbox } from '@material-ui/core';
 
 const USER_GENDER_MALE = 'male';
 const MAX_DATE = new Date('2029-12-31T00:00:00.000Z');
@@ -163,6 +164,7 @@ const formFields = [
 ];
 
 const statusTab = [
+  { key: 'sarl', tooltip: "TODO" },
   { key: 'entrepriseIndividuelle', tooltip: "Cette forme juridique vous concerne si vous exercez en nom propre c'est-à-dire que votre activité professionnelle n'a pas d'entité juridique distincte. En entreprise individuelle, l'imposition fiscale et sociale est basée sur le bénéfice réalisé." },
   { key: 'autoEntreprise', tooltip: "L'auto-entreprise ou micro-entreprise est un régime simplifié de l’entreprise individuelle. Le statut VDI vous concerne si vous avez une activité de vendeur indépendant." },
   { key: 'nonSalarieAgricole', tooltip: "Cette forme juridique vous concerne si vous êtes chef d’exploitation agricole ou si vous avez un statut de collaborateur d’exploitation (vous êtes marié.e, pacsé.e ou vous vivez en concubinage avec un chef d’exploitation agricole) ou encore si vous avez le statut d’aide familial (mise en valeur d’une exploitation et que vous n’avez pas la qualité de salarié). " },
@@ -209,7 +211,7 @@ export class Actu extends Component {
     creatorTaxeRate: null,
     hasEmployers: null,
     completeCreatorQuestion: false,
-    status: null,
+    status: [],
     infos: [],
     errorsField: [],
     ...formFields.reduce((prev, field) => ({ ...prev, [field]: null }), {}),
@@ -228,11 +230,19 @@ export class Actu extends Component {
     let additionnalOptions = {};
 
     if (declaration) {
+      const revenues = (declaration.revenues || []).reduce((all, cur) => {
+        if(cur.status) {
+          all.push(cur);
+        }
+
+        return all;
+      }, []);
+
       additionnalOptions = {
         hasEmployers: declaration.hasEmployers,
-        isCreator: declaration.status !== null,
+        isCreator: revenues.length !== 0,
         creatorTaxeRate: declaration.taxeDue,
-        status: declaration.status
+        status: revenues.map(r => r.status)
       }
     }
 
@@ -513,12 +523,12 @@ export class Actu extends Component {
 
     this.setState({ isValidating: true });
 
-    const hasWorked = (this.state.hasEmployers || this.state.status !== null);
+    const hasWorked = (this.state.hasEmployers || this.state.status.length !== 0);
     const objectToSend = {
       ...this.state,
       hasWorked,
       ignoreErrors,
-      creatorTaxeRate: this.state.status === 'autoEntreprise' ? this.state.creatorTaxeRate : null
+      creatorTaxeRate: this.state.status.indexOf('autoEntreprise') !== -1 ? this.state.creatorTaxeRate : null
     };
 
     return this.props
@@ -678,14 +688,26 @@ export class Actu extends Component {
     this.setState({ completeCreatorQuestion: state });
   }
 
+  toggleStatus = (newStatus) => {
+    const {status} = this.state;
+    const index = status.indexOf(newStatus);
+    if(index !== -1) {
+      status.splice(index, 1)
+    } else {
+      status.push(newStatus)
+    }
+
+    this.setState({status});
+  }
+
   renderCreatorQuestions = () => {
     const isValidating = this.state.hasEmployers !== null &&
       this.state.isCreator !== null &&
       (
-        (this.state.isCreator === true && this.state.status !== null && (
-          this.state.status === 'sarl'
-          || (this.state.status === 'autoEntreprise' && this.state.creatorTaxeRate !== null)
-          || (this.state.status !== 'sarl' && this.state.status !== 'autoEntreprise'))) ||
+        (this.state.isCreator === true && this.state.status.length !== 0 && (
+          (this.state.status.indexOf('autoEntreprise') !== -1 && this.state.creatorTaxeRate !== null)
+          || this.state.status.indexOf('autoEntreprise') === -1
+          )) ||
         this.state.isCreator === false
       );
     const helperTextMonthly = (
@@ -701,7 +723,6 @@ export class Actu extends Component {
         <u>Autoentrepreneur.urssaf.fr.</u>
       </>
     );
-
 
     return (
       <StyledPaper>
@@ -731,33 +752,28 @@ export class Actu extends Component {
             <QuestionLabel>
               Quelle est la forme juridique de votre entreprise ?
           </QuestionLabel>
-            <RadioGroup
-              aria-label="Quelle est la forme juridique de votre entreprise ?"
-              name="status"
-              value={this.state.status}
-              onChange={(val) => this.setState({ status: val.target.value })}
-              style={{ marginTop: '1rem' }}
-            >
-              {statusTab.map(status => (<Box display="flex" alignItems="center" key={status.key}>
-                <Box flex={1}>
-                  <FormControlLabel
-                    value={status.key}
-                    control={<Radio color="primary" />}
-                    label={CREATOR_STATUS[status.key]}
-                  />
-                </Box>
-                <TooltipOnFocus content={status.tooltip}>
-                  <ErrorOutlineImg />
-                </TooltipOnFocus>
-              </Box>))
-              }
-            </RadioGroup>
+            {statusTab.map(status => (<Box display="flex" alignItems="center" key={status.key}>
+              <Box flex={1}>
+                <FormControlLabel
+                  control={<Checkbox
+                    checked={this.state.status.indexOf(status.key) !== -1}
+                    onChange={() => this.toggleStatus(status.key)}
+                    color="primary"
+                  />}
+                  label={CREATOR_STATUS[status.key]}
+                />
+              </Box>
+              <TooltipOnFocus content={status.tooltip}>
+                <ErrorOutlineImg />
+              </TooltipOnFocus>
+            </Box>))
+            }
           </div>
-          {this.state.status === 'autoEntreprise' && (<div
+          {this.state.status.indexOf('autoEntreprise') !== -1 && (<div
             style={{ marginTop: '1rem' }}
           >
             <QuestionLabel>
-              Pour votre entreprise, vous déclarez votre chiffre d'affaire à l'URSSAF,
+              Pour votre Autoentreprise, vous déclarez votre chiffre d'affaire à l'URSSAF,
               <br />
               aux impôts...
             </QuestionLabel>

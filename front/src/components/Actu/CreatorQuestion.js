@@ -41,6 +41,7 @@ const DialogContentTextLabel = styled(Typography)`
 
 const StyledContainer = styled.div`
   position: relative;
+  margin-bottom: 14px;
 `;
 
 const Asterisk = styled.span`

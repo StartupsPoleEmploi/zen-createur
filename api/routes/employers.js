@@ -61,10 +61,12 @@ const getSanitizedEmployer = ({ employer, declaration, user }) => {
 const getSanitizedEnterprise = ({ enterprise, declaration, user }) => {
   const workHours = parseFloat(enterprise.workHoursCreator);
   const turnover = parseFloat(enterprise.turnover);
+
   const object = {
     id: enterprise.id || null,
     userId: user.id,
     declarationId: declaration.id,
+    status: enterprise.status,
     // Save temp data as much as possible
     workHours: !Number.isNaN(workHours) ? ceil(workHours) : null,
     turnover: !Number.isNaN(turnover) ? ceil(turnover) : null,

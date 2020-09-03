@@ -40,6 +40,7 @@ import {
   TIMEWORKED,
   MAXHOURCANWORK,
   DEFAULT_ERROR_MESSAGE,
+  CREATOR_STATUS,
 } from '../../constants';
 import {
   MAX_SALARY,
@@ -189,12 +190,6 @@ const employerTemplate = {
   hasEndedThisMonth: { value: null, error: null },
 };
 
-const enterpriseTemplate = {
-  workHoursCreator: { value: MIN_WORK_HOURS, error: null },
-  turnover: { value: '', error: null },
-  timeWorked: { value: '', error: null },
-};
-
 const getEmployersMapFromFormData = (employers) =>
   employers.map((employerFormData) =>
     Object.keys(employerFormData).reduce(
@@ -206,9 +201,11 @@ const getEmployersMapFromFormData = (employers) =>
     ));
 
 const getEnterprisesMapFromFormData = (employers, declaration) => {
-  const turnover = needTurnover(declaration);
+  return getEmployersMapFromFormData(employers).map((e, index) => {
+    const enterprise = declaration.revenues[index];
 
-  return getEmployersMapFromFormData(employers).map(e => ({ ...e, turnover: turnover ? e.turnover : null }))
+    return { ...e, turnover: needTurnover(declaration, index) ? e.turnover : null, id: enterprise.id, status: enterprise.status  }
+  })
 }
 
 // TODO refactor this, repeated almost exactly in WorkSummary
@@ -275,18 +272,12 @@ export class Employers extends Component {
           return this.props.history.replace('/files');
         }
 
-        if (currentDeclaration.status !== null) {
-          if (!currentDeclaration.revenues || currentDeclaration.revenues.length === 0) {
-            enterprises.push({ ...enterpriseTemplate });
-          } else {
-            enterprises = currentDeclaration.revenues.map(r => ({
-              workHoursCreator: { value: r.workHours, error: null },
-              turnover: { value: r.turnover || 0, error: null },
-              timeWorked: { value: r.workHours <= MIN_WORK_HOURS ? TIMEWORKED.NO : r.workHours === MAXHOURCANWORK ? TIMEWORKED.FULL : TIMEWORKED.ALF, error: null },
-            }));
-          }
-        }
-
+        enterprises = currentDeclaration.revenues.map(r => ({
+          workHoursCreator: { value: r.workHours, error: null },
+          turnover: { value: r.turnover || 0, error: null },
+          timeWorked: { value: r.workHours === null ? null : r.workHours <= MIN_WORK_HOURS ? TIMEWORKED.NO : r.workHours === MAXHOURCANWORK ? TIMEWORKED.FULL : TIMEWORKED.ALF, error: null },
+        }));
+        
         if (currentDeclaration.hasEmployers) {
           if (currentDeclaration.employers.length === 0) {
 
@@ -354,12 +345,12 @@ export class Employers extends Component {
       get(this.state.currentDeclaration, 'hasFinishedDeclaringEmployers') ===
       false
     ) {
-      this.onSave();
+      // this.onSave();
     }
   }
 
 
-  getFieldError({ name, value, from }) {
+  getFieldError({ name, value, from, index }) {
     const isValid = !isNull(value) && !isUndefined(value) && value !== '';
 
     if (from === 'enterprises' && !isValid) {
@@ -392,7 +383,7 @@ export class Employers extends Component {
 
     if (name === TURNOVER) {
       const declaration = this.props.declarations[0];
-      const turnover = needTurnover(declaration);
+      const turnover = needTurnover(declaration, index);
 
       if (turnover) {
         if (_isNaN(value)) {
@@ -436,7 +427,7 @@ export class Employers extends Component {
     if (!ignoreError &&
       ((value !== undefined && ignoreUndefined === true) ||
         (value === undefined && ignoreUndefined === false))) {
-      error = this.getFieldError({ name, value, from });
+      error = this.getFieldError({ name, value, from, index });
     }
 
     this.updateValue({
@@ -469,7 +460,7 @@ export class Employers extends Component {
   onSave = () => this.props.postEmployers({
     employers: getEmployersMapFromFormData(this.state.employers),
     enterprises: getEnterprisesMapFromFormData(this.state.enterprises, this.state.currentDeclaration),
-  })
+    })
 
   saveAndRedirect = () => this.onSave().then(() => this.props.history.push('/thanks?later'))
 
@@ -546,7 +537,6 @@ export class Employers extends Component {
         }
       }
 
-
       let error = null;
       if (checkError) {
         error = this.getFieldError({
@@ -554,6 +544,7 @@ export class Employers extends Component {
           value,
           ignoreUndefined: false,
           from: node,
+          index,
         });
       }
 
@@ -610,11 +601,11 @@ export class Employers extends Component {
 
   closePreviousEmployersModal = () => this.setState({ showPreviousEmployersModal: false })
 
-  onCollapsed = (index) => {
-    if (this.state.selectedEmployer === index) {
-      this.setState({ selectedEmployer: -1 });
+  onCollapsed = (index, nodeName = 'selectedEmployer') => {
+    if (this.state[nodeName] === index) {
+      this.setState({ [nodeName]: -1 });
     } else {
-      this.setState({ selectedEmployer: index });
+      this.setState({ [nodeName]: index });
     }
   }
 
@@ -696,7 +687,8 @@ export class Employers extends Component {
 
   renderCreatorQuestion = (data, index) => {
     const declaration = this.props.declarations[0];
-    const turnover = needTurnover(declaration);
+    const enterprise = declaration.revenues[index];
+    const turnover = needTurnover(declaration, index);
 
     return (
       <CreatorQuestion
@@ -704,11 +696,11 @@ export class Employers extends Component {
         key={index}
         index={index}
         onChange={this.onChange}
-        defaultName={`Entreprise ${index + 1}`}
+        defaultName={CREATOR_STATUS[enterprise.status]}
         collapsed={this.state.selectedEnterprise !== index}
+        onCollapsed={() => this.onCollapsed(index, 'selectedEnterprise')}
         showCollapsedTitle={this.state.enterprises.length > 1}
         needTurnover={turnover}
-        canRemove={this.state.enterprises.length > 1}
         activeMonth={this.props.activeMonth}
       />
     );
@@ -717,14 +709,13 @@ export class Employers extends Component {
   renderCreatorPanel = () => {
     const { enterprises } = this.state;
 
-
     return (
       <>
-        {this.props.declarations[0].status && (
+        {enterprises.length > 0 && (
           <Box flex={1}>
             <BoxPanel>
               <Block style={{ marginTop: '33px' }}>
-                <Title variant="h6" component="h1">
+                <Title variant="h6" component="h1" style={{marginBottom: '50px'}}>
                   <b>{enterprises.length > 1 ? 'MES ENTREPRISES' : 'MON ENTREPRISE'}</b>
                   {' '}
                 -
