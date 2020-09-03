@@ -62,7 +62,6 @@ const getSanitizedEnterprise = ({ enterprise, declaration, user }) => {
   const workHours = parseFloat(enterprise.workHoursCreator);
   const turnover = parseFloat(enterprise.turnover);
 
-  console.log('e', enterprise)
   const object = {
     id: enterprise.id || null,
     userId: user.id,
@@ -76,8 +75,6 @@ const getSanitizedEnterprise = ({ enterprise, declaration, user }) => {
   if (object.id === null) {
     delete object.id
   }
-
-  console.log('o', object)
 
   return object;
 };
