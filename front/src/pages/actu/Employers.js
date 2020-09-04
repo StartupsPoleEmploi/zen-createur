@@ -345,7 +345,7 @@ export class Employers extends Component {
       get(this.state.currentDeclaration, 'hasFinishedDeclaringEmployers') ===
       false
     ) {
-      // this.onSave();
+      this.onSave();
     }
   }
 
@@ -697,6 +697,8 @@ export class Employers extends Component {
         index={index}
         onChange={this.onChange}
         defaultName={CREATOR_STATUS[enterprise.status]}
+        caText={enterprise.status === 'artisteAuteur' ? 'Montant total des factures' : null}
+        caHelper={enterprise.status === 'artisteAuteur' ? <>Vous devez renseigner la somme de vos factures de ce mois-ci.</> : null}
         collapsed={this.state.selectedEnterprise !== index}
         onCollapsed={() => this.onCollapsed(index, 'selectedEnterprise')}
         showCollapsedTitle={this.state.enterprises.length > 1}

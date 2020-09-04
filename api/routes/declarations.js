@@ -236,6 +236,7 @@ router.post('/', [requireActiveMonth, refreshAccessToken], (req, res, next) => {
     })
     .skipUndefined()
     .then(async (declaration) => {
+      console.log('declaration',declaration)
       const saveDeclaration = async (trx) => {
         // remove old revenus 
         if (declaration) {

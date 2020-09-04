@@ -355,8 +355,8 @@ export class CreatorQuestion extends PureComponent {
                   className="root-salary"
                   label={this.renderLabel({
                     id: `creator-turnover[${index}]`,
-                    label: "Montant chiffre d'affaire",
-                    content: <>Vous devez renseigner un chiffre d'affaire en <b>€ TTC avant abattement, mis à jour</b> avec le ou les montants facturés ce mois-ci.</>,
+                    label: this.props.caText ? this.props.caText : "Montant chiffre d'affaire",
+                    content: this.props.caHelper ? this.props.caHelper : <>Vous devez renseigner un chiffre d'affaire en <b>€ TTC avant abattement, mis à jour</b> avec le ou les montants facturés ce mois-ci.</>,
                     showTooltip,
                   })}
                   name={`turnover[${index}]`}
@@ -407,7 +407,9 @@ CreatorQuestion.propTypes = {
   needTurnover: PropTypes.bool.isRequired,
   showCollapsedTitle: PropTypes.bool.isRequired,
   defaultName: PropTypes.string.isRequired,
-  collapsed: PropTypes.bool.isRequired
+  collapsed: PropTypes.bool.isRequired,
+  caText: PropTypes.string,
+  caHelper: PropTypes.object,
 };
 
 export default withWidth()(CreatorQuestion);
