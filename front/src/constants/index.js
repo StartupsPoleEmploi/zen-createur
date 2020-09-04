@@ -88,5 +88,5 @@ export const CREATOR_STATUS = {
   entrepriseIndividuelle: 'Entreprise individuelle',
   autoEntreprise: 'Autoentreprise ou VDI',
   nonSalarieAgricole: 'Non Salarié Agricole',
-  artisteAuteur: 'Artiste Auteur'
+  artisteAuteur: 'Artiste Auteur avec prestations facturées',
 };

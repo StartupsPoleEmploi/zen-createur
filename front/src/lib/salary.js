@@ -31,5 +31,5 @@ export const calculateTotal = (employers, field, lowLimit, highLimit) => {
 
 export const needTurnover = (declaration, index = 0) => {
   const enterprise = declaration.revenues[index];
-  return enterprise.status === 'sarl' || (declaration.taxeDue === CREATORTAXRATE.MONTHLY && enterprise.status === 'autoEntreprise');
+  return enterprise.status === 'sarl' || enterprise.status === 'artisteAuteur' || (declaration.taxeDue === CREATORTAXRATE.MONTHLY && enterprise.status === 'autoEntreprise');
 }
