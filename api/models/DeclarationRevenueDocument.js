@@ -39,8 +39,7 @@ class DeclarationRevenueDocument extends BaseModel {
 
   static get types() {
     return {
-      salarySheet: 'salarySheet',
-      employerCertificate: 'employerCertificate',
+      salarySheetSarl: 'salarySheetSarl',
       enterpriseMontlyTurnover: 'enterpriseMontlyTurnover',
       enterpriseQuaterlyTurnover: 'enterpriseQuaterlyTurnover',
       VPGeneralOrDecision: 'VPGeneralOrDecision',

@@ -15,57 +15,64 @@ export const canUsePDFViewer = (fileName) => {
   return ['.png', '.pdf', '.jpg', '.jpeg'].includes(extension);
 };
 
-export const getMissingEnterprisesFiles = (declaration) => {
-  const hasNotSentDocument = declaration.revenues && declaration.revenues.length && declaration.revenues.some(r => r.documents.length === 0);
-  if (hasNotSentDocument) {
-    return getEnterprisesFiles(declaration);
-  }
-
-  return [];
-}
-
-export const getEnterprisesFiles = (declaration) => {
+export const getMissingEnterprisesFiles = (declaration, lastDeclaration = null) => {
   const dateMonth = moment(declaration.declarationMonth.month).format("M");
+  const fileList = [];
 
-  switch (declaration.status) {
-    case 'sarl':
-      if (declaration.hasPay) {
-        return [{ name: DOCUMENT_LABELS.salarySheet, type: DOCUMENT_TYPES.salarySheet }];
-      } else {
-        return [{ name: DOCUMENT_LABELS.VPGeneralOrDecision, type: DOCUMENT_TYPES.VPGeneralOrDecision }];
-      }
+  declaration.revenues.map(enterprise => {
+    switch (enterprise.status) {
+      case 'sarl':
+        if(dateMonth === 1 || lastDeclaration == null) {
+          if(enterprise.documents.length > 0 && enterprise.documents.some(d => d.type === DOCUMENT_TYPES.salarySheetSarl)) {
+            fileList.push({ name: DOCUMENT_LABELS.salarySheetSarl, type: DOCUMENT_TYPES.salarySheetSarl, declarationRevenueId: enterprise.id, documents: enterprise.documents });
+          } else if(enterprise.documents.length > 0 && enterprise.documents.some(d => d.type === DOCUMENT_TYPES.VPGeneralOrDecision)) {
+            fileList.push({ name: DOCUMENT_LABELS.VPGeneralOrDecision, type: DOCUMENT_TYPES.VPGeneralOrDecision, declarationRevenueId: enterprise.id, documents: enterprise.documents });            
+          } else {
+            fileList.push({ name: DOCUMENT_LABELS.salarySheetSarl, type: DOCUMENT_TYPES.salarySheetSarl, declarationRevenueId: enterprise.id, documents: enterprise.documents });
+            fileList.push({ name: DOCUMENT_LABELS.VPGeneralOrDecision, type: DOCUMENT_TYPES.VPGeneralOrDecision, declarationRevenueId: enterprise.id, documents: enterprise.documents });
+          }
+        } else if(lastDeclaration !== null && lastDeclaration.revenues.length > 0) {
+          const getSarl = lastDeclaration.revenues.find(r => r.type === 'sarl')
+          if(getSarl && getSarl.documents.some(d => d.type === DOCUMENT_TYPES.salarySheetSarl)) {
+            fileList.push({ name: DOCUMENT_LABELS.salarySheetSarl, type: DOCUMENT_TYPES.salarySheetSarl, declarationRevenueId: enterprise.id, documents: enterprise.documents });
+          } else {
+            fileList.push({ name: DOCUMENT_LABELS.salarySheetSarl, type: DOCUMENT_TYPES.salarySheetSarl, declarationRevenueId: enterprise.id, documents: enterprise.documents });
+            fileList.push({ name: DOCUMENT_LABELS.VPGeneralOrDecision, type: DOCUMENT_TYPES.VPGeneralOrDecision, declarationRevenueId: enterprise.id, documents: enterprise.documents });
+          }
+        }
       break;
-    case 'entrepriseIndividuelle':
-      if (dateMonth === 4) {
-        return [{ name: DOCUMENT_LABELS.selfEmployedSocialDeclaration, type: DOCUMENT_TYPES.selfEmployedSocialDeclaration }];
-      }
-      break;
-    case 'autoEntreprise':
-      const date = moment(declaration.declarationMonth.month);
+      case 'entrepriseIndividuelle':
+        if (dateMonth === 4) {
+          fileList.push({ name: DOCUMENT_LABELS.selfEmployedSocialDeclaration, type: DOCUMENT_TYPES.selfEmployedSocialDeclaration, declarationRevenueId: enterprise.id, documents: enterprise.documents });
+        }
+        break;
+      case 'autoEntreprise':
+        const date = moment(declaration.declarationMonth.month);
+  
+        if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
+          fileList.push({
+            name: `Déclaration CA ${date.format('MM-YYYY')}`, type: DOCUMENT_TYPES.enterpriseMontlyTurnover, declarationRevenueId: enterprise.id, documents: enterprise.documents
+          })
+        }
+  
+        if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 === 0) {
+          fileList.push({
+            name: `Déclaration CA N°${date.format('Q-YYYY')}`, type: DOCUMENT_TYPES.enterpriseQuaterlyTurnover, declarationRevenueId: enterprise.id, documents: enterprise.documents
+          })
+        }
+        break;
+      case 'nonSalarieAgricole':
+        if (dateMonth === 1) {
+          fileList.push({ name: DOCUMENT_LABELS.declarationOfProfessionalIncome, type: DOCUMENT_TYPES.declarationOfProfessionalIncome, declarationRevenueId: enterprise.id, documents: enterprise.documents });
+        }
+        break;
+      case 'artisteAuteur':
+        fileList.push({ name: DOCUMENT_LABELS.artistIncomeStatement, type: DOCUMENT_TYPES.artistIncomeStatement, declarationRevenueId: enterprise.id, documents: enterprise.documents });
+        break;
+    }
+  })
 
-      if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
-        return [{
-          name: `Déclaration CA ${date.format('MM-YYYY')}`, type: DOCUMENT_TYPES.enterpriseMontlyTurnover
-        }]
-      }
-
-      if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 === 0) {
-        return [{
-          name: `Déclaration CA N°${date.format('Q-YYYY')}`, type: DOCUMENT_TYPES.enterpriseQuaterlyTurnover
-        }]
-      }
-      break;
-    case 'nonSalarieAgricole':
-      if (dateMonth === 1) {
-        return [{ name: DOCUMENT_LABELS.declarationOfProfessionalIncome, type: DOCUMENT_TYPES.declarationOfProfessionalIncome }];
-      }
-      break;
-    case 'artisteAuteur':
-      return [{ name: DOCUMENT_LABELS.artistIncomeStatement, type: DOCUMENT_TYPES.artistIncomeStatement }];
-      break;
-  }
-
-  return [];
+  return fileList;
 }
 
 export const getMissingEmployerFiles = (declaration) =>
@@ -106,13 +113,14 @@ export const getMissingEmployerFiles = (declaration) =>
     );
   }, []);
 
-export const getDeclarationMissingFilesNb = (declaration) => {
+export const getDeclarationMissingFilesNb = (declaration, oldDeclaration = null) => {
   const infoDocumentsRequiredNb = declaration.infos.filter(
     ({ type, isTransmitted }) => type !== 'jobSearch' && !isTransmitted,
   ).length;
 
   const revenues = declaration.revenues || [];
-  const nbNeedEntrepriseFile = getEnterprisesFiles(declaration).length;
+  const nbNeedEntrepriseFile = getMissingEnterprisesFiles(declaration, oldDeclaration)
+  .filter(e => e.documents.length === 0 || e.documents.some(d => d.isTransmitted === false)).length;
 
   return (
     declaration.employers.reduce((prev, employer) => {
@@ -133,14 +141,7 @@ export const getDeclarationMissingFilesNb = (declaration) => {
 
       if (hasEmployerCertificate) return prev + 0;
       return prev + (hasSalarySheet ? 1 : 2);
-    }, 0) + infoDocumentsRequiredNb + nbNeedEntrepriseFile - revenues.reduce((all, current) => {
-      if(current.documents.every(({isTransmitted}) => isTransmitted)) {
-        return all + current.documents.length;
-      } else {
-        return all;
-      }
-      
-    }, 0));
+    }, 0) + infoDocumentsRequiredNb + nbNeedEntrepriseFile);
 };
 
 export function getMissingFilesNb(allDeclarations) {
@@ -149,7 +150,7 @@ export function getMissingFilesNb(allDeclarations) {
       hasFinishedDeclaringEmployers && !isFinished,
   )
 
-  const [lastDeclaration] = declarations
+  const [lastDeclaration, oldDeclaration] = declarations
   if (
     !lastDeclaration ||
     (lastDeclaration.isFinished && declarations.length === 0)
@@ -158,7 +159,7 @@ export function getMissingFilesNb(allDeclarations) {
   }
 
   return declarations.reduce(
-    (prev, decl) => prev + getDeclarationMissingFilesNb(decl),
+    (prev, decl) => prev + getDeclarationMissingFilesNb(decl, oldDeclaration),
     0,
   )
 }

@@ -10,8 +10,23 @@ const ActivityLog = require('../models/ActivityLog');
 const docTypes = DeclarationInfo.types;
 const salarySheetType = 'salarySheet';
 const employerCertificateType = 'employerCertificate';
-const enterpriseMontlyTurnoverType = 'enterpriseMontlyTurnover';
-const enterpriseQuaterlyTurnoverType = 'enterpriseQuaterlyTurnover';
+
+const DOCUMENT_LABELS = {
+  sickLeave: 'Feuille maladie',
+  internship: 'Attestation de stage',
+  maternityLeave: 'Attestation de congé maternité',
+  retirement: 'Attestation retraite',
+  invalidity: 'Attestation invalidité',
+  employerCertificate: 'Attestation employeur',
+  salarySheet: 'Bulletin de salaire',
+  salarySheetSarl: 'Bulletin de salaire',
+  enterpriseMontlyTurnover: 'Déclaration CA mensuelle',
+  enterpriseQuaterlyTurnover: 'Déclaration CA trimestrielle',
+  VPGeneralOrDecision: 'Procès-verbal d\'assemblée générale ou Relevé de décision',
+  selfEmployedSocialDeclaration: 'Déclaration Sociale des indépendants',
+  declarationOfProfessionalIncome: 'Déclaration des revenus professionnels',
+  artistIncomeStatement: 'Déclaration des revenus des artistes (MDA / Agessa)',
+};
 
 const CREATORTAXRATE = {
   MONTHLY: 'monthly',
@@ -19,40 +34,55 @@ const CREATORTAXRATE = {
   YEARLY: 'yearly',
 };
 
-const getNbEnterprisesNeedFiles = (declaration) => {
+const getNbEnterprisesNeedFiles = (declaration, lastDeclaration = null) => {
   const dateMonth = moment(declaration.declarationMonth.month).format("M");
+  const nbMissingFiles = 0;
 
-  switch (declaration.status) {
-    case 'sarl':
-      return 1;
+  declaration.revenues.filter(r => r.documents.length === 0 || r.documents.every(d => d.isTransmitted === false))
+    .map(enterprise => {
+    switch (enterprise.status) {
+      case 'sarl':
+        if(dateMonth === 1 || lastDeclaration == null) {
+          if(enterprise.documents.length > 0 && enterprise.documents.some(d => d.type === DOCUMENT_TYPES.salarySheetSarl)) {
+            nbMissingFiles ++;
+          } else if(enterprise.documents.length > 0 && enterprise.documents.some(d => d.type === DOCUMENT_TYPES.VPGeneralOrDecision)) {
+            nbMissingFiles ++;
+          } else {
+            nbMissingFiles ++;
+            nbMissingFiles ++;
+          }
+        } else if(lastDeclaration !== null && lastDeclaration.revenues.length > 0 && lastDeclaration.revenues[0].type === DOCUMENT_TYPES.salarySheet) {
+          nbMissingFiles ++;
+        }
       break;
-    case 'entrepriseIndividuelle':
-      if (dateMonth === 4) {
-        return 1;
-      }
-      break;
-    case 'autoEntreprise':
-      const date = moment(declaration.declarationMonth.month);
+      case 'entrepriseIndividuelle':
+        if (dateMonth === 4) {
+          nbMissingFiles ++;
+        }
+        break;
+      case 'autoEntreprise':
+        const date = moment(declaration.declarationMonth.month);
+  
+        if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
+          nbMissingFiles ++;
+        }
+  
+        if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 === 0) {
+          nbMissingFiles ++;
+        }
+        break;
+      case 'nonSalarieAgricole':
+        if (dateMonth === 1) {
+          nbMissingFiles ++;
+        }
+        break;
+      case 'artisteAuteur':
+        nbMissingFiles ++;
+        break;
+    }
+  })
 
-      if (declaration.taxeDue === CREATORTAXRATE.MONTHLY) {
-        return 1;
-      }
-
-      if (declaration.taxeDue === CREATORTAXRATE.QUATERLY && dateMonth % 3 === 0) {
-        return 1;
-      }
-      break;
-    case 'nonSalarieAgricole':
-      if (dateMonth === 1) {
-        return 1;
-      }
-      break;
-    case 'artisteAuteur':
-      return 1;
-      break;
-  }
-
-  return 0;
+  return nbMissingFiles;
 }
 
 const hasMissingEmployersDocuments = (declaration) =>
@@ -81,16 +111,8 @@ const hasMissingDeclarationDocuments = (declaration) =>
     ({ type, isTransmitted }) => type !== 'jobSearch' && !isTransmitted,
   ).length !== 0
 
-const hasMissingRevenuesDocuments = (declaration) => {
-  const nbMissingFiles = getNbEnterprisesNeedFiles(declaration) - declaration.revenues.reduce((all, current) => {
-    if(current.documents.every(({isTransmitted}) => isTransmitted)) {
-      return all + current.documents.length;
-    } else {
-      return all;
-    }
-  }, 0);
-
-  return nbMissingFiles !== 0
+const hasMissingRevenuesDocuments = (declaration, lastDeclaration) => {
+  return getNbEnterprisesNeedFiles(declaration, lastDeclaration) !== 0
 }
 
 const fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated = ({
@@ -99,15 +121,17 @@ const fetchDeclarationAndSaveAsFinishedIfAllDocsAreValidated = ({
 }) =>
   Declaration.query()
     .eager('[infos, employers.documents, revenues.documents, declarationMonth]')
-    .findOne({
-      id: declarationId,
-      userId,
-    })
-    .then((declaration) => {
+    .where(userId, '=', userId)
+    .orderBy('monthId', 'desc')
+    .limit(2)
+    .then(declarations => {
+      const [declaration, lastDeclaration] = declarations;
+
       if (
-        hasMissingEmployersDocuments(declaration)
+        declaration === null 
+        || hasMissingEmployersDocuments(declaration)
         || hasMissingDeclarationDocuments(declaration)
-        || hasMissingRevenuesDocuments(declaration)
+        || hasMissingRevenuesDocuments(declaration, lastDeclaration)
       ) {
         return declaration;
       }
