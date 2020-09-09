@@ -127,7 +127,8 @@ class DashboardJustificatifs extends PureComponent {
     if (declaration.isFinished) return null
 
     const employerFilesMissing = getMissingEmployerFiles(declaration)
-    const enterprisesFilesMissing = getMissingEnterprisesFiles(declaration)
+    const enterprisesFilesMissing = getMissingEnterprisesFiles(declaration, this.props.declarations.length > 1 ? this.props.declarations[1] : null)
+    .filter(e => e.documents.length === 0 || e.documents.some(d => d.isTransmitted === false))
     const infoFilesMissing = declaration.infos.filter((f) => !f.isTransmitted)
     const formattedMonth = formattedDeclarationMonth(
       declaration.declarationMonth.month,

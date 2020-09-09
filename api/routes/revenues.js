@@ -42,7 +42,6 @@ router.post(
         .eager('[documents]')
         .findOne({
           id: declarationRevenueId,
-          userId: req.session.user.id,
         });
 
     return fetchRevenue()
@@ -78,12 +77,12 @@ router.get('/files', (req, res, next) => {
   if (!req.query.documentId) return res.status(400).json('Missing employerId');
 
   return DeclarationRevenueDocument.query()
-    .eager('declarationRevenue.user')
+    .eager('declarationRevenue.declaration')
     .findOne({
       id: req.query.documentId,
     })
     .then((document) => {
-      if (get(document, 'declarationRevenue.user.id') !== req.session.user.id) {
+      if (get(document, 'declarationRevenue.declaration.userId') !== req.session.user.id) {
         return res.status(404).json('No such file');
       }
 
@@ -110,12 +109,12 @@ router.post('/validateDocument', (req, res, next) => {
   if (!id) return res.status(400).json('Missing id');
 
   return DeclarationRevenueDocument.query()
-    .eager('declarationRevenue.[user, declaration.declarationMonth]')
+    .eager('declarationRevenue.declaration.[user, declarationMonth]')
     .findOne({ id })
     .then((revenueDoc) => {
       if (
         !revenueDoc
-        || get(revenueDoc, 'declarationRevenue.user.id') !== req.session.user.id
+        || get(revenueDoc, 'declarationRevenue.declaration.userId') !== req.session.user.id
       ) {
         return res.status(404).json('Not found');
       }

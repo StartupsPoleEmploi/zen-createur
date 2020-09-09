@@ -59,8 +59,8 @@ const StyledDoneIcon = styled(DoneIcon)`
   }
 `;
 
-const MissingCell = ({ lastMonthId, width, declaration }) => {
-  const missingFilesNumber = getDeclarationMissingFilesNb(declaration);
+const MissingCell = ({ lastMonthId, width, declaration, oldDeclaration }) => {
+  const missingFilesNumber = getDeclarationMissingFilesNb(declaration, oldDeclaration);
 
   function renderAllFilesSend(declarationContent) {
     const filesByType = {};
@@ -126,6 +126,7 @@ const MissingCell = ({ lastMonthId, width, declaration }) => {
 MissingCell.propTypes = {
   declaration: PropTypes.object,
   lastMonthId: PropTypes.number.isRequired,
+  oldDeclaration: PropTypes.object,
   width: PropTypes.string.isRequired,
 };
 

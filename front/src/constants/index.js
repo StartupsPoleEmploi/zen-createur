@@ -38,6 +38,7 @@ export const DOCUMENT_LABELS = {
   invalidity: 'Attestation invalidité',
   employerCertificate: 'Attestation employeur',
   salarySheet: 'Bulletin de salaire',
+  salarySheetSarl: 'Bulletin de salaire',
   enterpriseMontlyTurnover: 'Déclaration CA mensuelle',
   enterpriseQuaterlyTurnover: 'Déclaration CA trimestrielle',
   VPGeneralOrDecision: 'Procès-verbal d\'assemblée générale ou Relevé de décision',
@@ -48,6 +49,7 @@ export const DOCUMENT_LABELS = {
 
 export const DOCUMENT_TYPES = {
   salarySheet: 'salarySheet',
+  salarySheetSarl: 'salarySheetSarl',
   employerCertificate: 'employerCertificate',
   enterpriseMontlyTurnover: 'enterpriseMontlyTurnover',
   enterpriseQuaterlyTurnover: 'enterpriseQuaterlyTurnover',

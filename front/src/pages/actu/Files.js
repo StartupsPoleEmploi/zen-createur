@@ -39,7 +39,7 @@ import LoginAgainDialog from '../../components/Actu/LoginAgainDialog';
 import DocumentDialog from '../../components/Generic/documents/DocumentDialog';
 import { muiBreakpoints, primaryBlue, secondaryBlue, DEFAULT_ERROR_MESSAGE } from '../../constants';
 import { formattedDeclarationMonth } from '../../lib/date';
-import { getDeclarationMissingFilesNb, getEnterprisesFiles, isImage, optimizeImage } from '../../lib/file';
+import { getDeclarationMissingFilesNb, isImage, optimizeImage, getMissingEnterprisesFiles } from '../../lib/file';
 import {
   selectPreviewedEmployerDoc,
   selectPreviewedInfoDoc,
@@ -287,10 +287,10 @@ export class Files extends Component {
 
     if (!prevDeclaration || !updatedDeclaration) return;
     const missingFilesOnPrevDeclaration = getDeclarationMissingFilesNb(
-      prevDeclaration,
+      prevDeclaration, this.props.declarations.length > 1 ? this.props.declarations[1] : null
     );
     const missingFilesOnUpdatedDeclaration = getDeclarationMissingFilesNb(
-      updatedDeclaration,
+      updatedDeclaration, this.props.declarations.length > 1 ? this.props.declarations[1] : null
     );
 
     if (
@@ -334,7 +334,7 @@ export class Files extends Component {
     });
 
     const isOldTab = this.state.selectedTab === OLD_MONTHS_TAB;
-    const missingEnterprisesFiles = getEnterprisesFiles(declaration);
+    const missingEnterprisesFiles = getMissingEnterprisesFiles(declaration, this.props.declarations.length > 1 ? this.props.declarations[1] : null);
 
     const infoDocumentsNodes = neededAdditionalDocumentsSpecs.map(
       (neededDocumentSpecs) => (
@@ -408,7 +408,6 @@ export class Files extends Component {
             <StyledUl>
               {this.renderEnterpriseRow({
                 documents: missingEnterprisesFiles,
-                declaration,
                 allowSkipFile: true
               })}
             </StyledUl>
@@ -542,31 +541,26 @@ export class Files extends Component {
     );
   }
 
-  renderEnterpriseRow = ({ documents, declaration, allowSkipFile }) => {
+  renderEnterpriseRow = ({ documents }) => {
     const commonProps = {
       showTooltip: true,
-      //allowSkipFile,
       useLightVersion:
         muiBreakpoints.xs === this.props.width ||
         muiBreakpoints.sm === this.props.width,
     };
 
-    const declarationRevenueId = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].id : null;
-    const filesSents = declaration.revenues && declaration.revenues.length ? declaration.revenues[0].documents : [];
-
-    const documentByTypes = (type) => filesSents.find(d => d.type === type) || null;
-
     return (
       <>
         {documents.map(doc => {
+          const documentByTypes = (type) => doc.documents.find(d => d.type === type) || null;
           const docType = documentByTypes(doc.type) || { id: `${doc.name}-${doc.type}` };
 
           return (<DocumentUpload
             {...commonProps}
             key={`revenue-${docType.id}`}
-            submitFile={(params) => this.sentRevenuesDocumentation({ ...params, type: doc.type, declarationRevenueId, id: docType.id })}
+            submitFile={(params) => this.sentRevenuesDocumentation({ ...params, type: doc.type, declarationRevenueId: doc.declarationRevenueId, id: docType.id })}
             skipFile={(params) => this.askToSkipFile(() => {
-              this.sentRevenuesDocumentation({ type: doc.type, declarationRevenueId, id: docType.id })
+              this.sentRevenuesDocumentation({ type: doc.type, declarationRevenueId: doc.declarationRevenueId, id: docType.id })
               this.closeSkipModal();
             })}
             label={doc.name}
@@ -775,7 +769,7 @@ export class Files extends Component {
   }
 
   renderSection = (declaration) => {
-    const declarationRemainingDocsNb = getDeclarationMissingFilesNb(declaration);
+    const declarationRemainingDocsNb = getDeclarationMissingFilesNb(declaration, this.props.declarations.length > 1 ? this.props.declarations[1] : null);
 
     const formattedMonth = formattedDeclarationMonth(
       declaration.declarationMonth.month,
@@ -907,7 +901,7 @@ export class Files extends Component {
 
     const lastDeclarationMissingFiles = lastDeclaration &&
       lastDeclaration.hasFinishedDeclaringEmployers ?
-      getDeclarationMissingFilesNb(lastDeclaration) :
+      getDeclarationMissingFilesNb(lastDeclaration, this.props.declarations.length > 1 ? this.props.declarations[1] : null) :
       0;
 
     const oldDeclarationsMissingFiles = oldDeclarations.reduce(
@@ -918,7 +912,7 @@ export class Files extends Component {
         ) {
           return prev;
         }
-        return prev + getDeclarationMissingFilesNb(declaration);
+        return prev + getDeclarationMissingFilesNb(declaration, this.props.declarations.length > 1 ? this.props.declarations[1] : null);
       },
       0,
     );

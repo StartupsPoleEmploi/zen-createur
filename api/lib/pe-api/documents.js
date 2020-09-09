@@ -127,7 +127,7 @@ const docmentsRevenueToTransmitTypes = [
     confirmationData: CODES.ENTREPRISE_DOCUMENT,
   },
   {
-    type: 'salarySheet',
+    type: 'salarySheetSarl',
     label: ({ date }) => `BS-mon entreprise-${format(
       date,
       'MM-YYYY',
@@ -270,7 +270,7 @@ async function sendDocument({ accessToken, document, isFakeAuth = false }) {
   } else if (Object.values(DeclarationRevenueDocument.types).includes(document.type)) {
     infosToSendDocument = formatRevenueDoc(document);
     documentType = `RevenueDocument ${document.type}`;
-    userId = document.declarationRevenue.userId;
+    userId = document.declarationRevenue.declaration.userId;
   } else {
     throw new Error('Unknown document type');
   }
