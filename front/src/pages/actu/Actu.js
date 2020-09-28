@@ -524,12 +524,18 @@ export class Actu extends Component {
 
     this.setState({ isValidating: true });
 
-    const hasWorked = (this.state.hasEmployers || this.state.status.length !== 0);
+    let status = this.state.status;
+    if(this.state.isCreator === false) {
+      status = [];
+    }
+
+    const hasWorked = (this.state.hasEmployers || status.length !== 0);
     const objectToSend = {
       ...this.state,
       hasWorked,
       ignoreErrors,
-      creatorTaxeRate: this.state.status.indexOf('autoEntreprise') !== -1 ? this.state.creatorTaxeRate : null
+      status,
+      creatorTaxeRate: status.indexOf('autoEntreprise') !== -1 ? this.state.creatorTaxeRate : null
     };
 
     return this.props
@@ -770,7 +776,7 @@ export class Actu extends Component {
             </Box>))
             }
           </div>
-          {this.state.status.indexOf('autoEntreprise') !== -1 && (<div
+          {this.state.isCreator === true && this.state.status.indexOf('autoEntreprise') !== -1 && (<div
             style={{ marginTop: '1rem' }}
           >
             <QuestionLabel>
