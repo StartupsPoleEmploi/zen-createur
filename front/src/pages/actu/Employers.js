@@ -690,6 +690,16 @@ export class Employers extends Component {
     const enterprise = declaration.revenues[index];
     const turnover = needTurnover(declaration, index);
 
+    let caText = null;
+    let caHelper = null;
+    if(enterprise.status === 'artisteAuteur') {
+      caText = 'Montant total des factures';
+      caHelper = <>Vous devez renseigner la somme de vos factures de ce mois-ci.</>;
+    } else if(enterprise.status === 'sarl') {
+      caText = 'Montant de la rémunération';
+      caHelper = <>Vous devez renseigner le montant de votre rémunération de ce mois-ci.</>;
+    }
+
     return (
       <CreatorQuestion
         {...data}
@@ -697,8 +707,8 @@ export class Employers extends Component {
         index={index}
         onChange={this.onChange}
         defaultName={CREATOR_STATUS[enterprise.status]}
-        caText={enterprise.status === 'artisteAuteur' ? 'Montant total des factures' : null}
-        caHelper={enterprise.status === 'artisteAuteur' ? <>Vous devez renseigner la somme de vos factures de ce mois-ci.</> : null}
+        caText={caText}
+        caHelper={caHelper}
         collapsed={this.state.selectedEnterprise !== index}
         onCollapsed={() => this.onCollapsed(index, 'selectedEnterprise')}
         showCollapsedTitle={this.state.enterprises.length > 1}

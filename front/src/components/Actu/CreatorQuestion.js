@@ -243,7 +243,6 @@ export class CreatorQuestion extends PureComponent {
       showCollapsedTitle,
     } = this.props;
 
-    const showTooltip = index === 0;
     const hasFormError = workHoursCreator.error || turnover.error;
 
     return (
@@ -357,7 +356,7 @@ export class CreatorQuestion extends PureComponent {
                     id: `creator-turnover[${index}]`,
                     label: this.props.caText ? this.props.caText : "Montant chiffre d'affaire",
                     content: this.props.caHelper ? this.props.caHelper : <>Vous devez renseigner un chiffre d'affaire en <b>€ TTC avant abattement, mis à jour</b> avec le ou les montants facturés ce mois-ci.</>,
-                    showTooltip,
+                    showTooltip: true,
                   })}
                   name={`turnover[${index}]`}
                   value={turnover.value}
