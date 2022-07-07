@@ -27,7 +27,7 @@
     "chart.js": "^2.9.3",
     "customize-cra": "^0.9.1",
     "history": "^4.9.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "react": "^16.8.6",
     "react-app-rewired": "^2.1.5",
     "react-chartkick": "^0.4.0",
